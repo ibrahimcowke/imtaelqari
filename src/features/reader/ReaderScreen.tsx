@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useReaderStore } from '../../store/readerStore';
 import { bookDataService } from '../../data/service';
 import {
@@ -15,58 +15,62 @@ import { ProgressBar } from './components/ProgressBar';
 import { HighlightPopover } from './components/HighlightPopover';
 import { db } from '../../lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 
-/* ── Flip-hand tap zone ── */
+/* ── Edge Tap Zone with Animated Hand Hint ── */
 const TapZone: React.FC<{
   side: 'left' | 'right';
   onClick: () => void;
   disabled?: boolean;
-}> = ({ side, onClick, disabled }) => {
+  isDark: boolean;
+}> = ({ side, onClick, disabled, isDark }) => {
   const [pressed, setPressed] = useState(false);
 
   if (disabled) return null;
 
   return (
-    <button
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
       onPointerDown={() => setPressed(true)}
-      onPointerUp={() => { setPressed(false); onClick(); }}
+      onPointerUp={() => setPressed(false)}
       onPointerLeave={() => setPressed(false)}
-      className="absolute top-16 bottom-16 z-10 w-[22%] flex items-center justify-center select-none"
+      className="hidden md:flex absolute top-16 bottom-20 z-10 w-20 items-center justify-center cursor-pointer transition-all group select-none"
       style={{
         [side]: 0,
         background: pressed
-          ? 'rgba(163,124,108,0.07)'
+          ? (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(163,124,108,0.1)')
           : 'transparent',
-        transition: 'background 0.15s ease',
       }}
-      aria-label={side === 'left' ? 'الصفحة التالية' : 'الصفحة السابقة'}
+      title={side === 'left' ? 'الصفحة التالية (يسار)' : 'الصفحة السابقة (يمين)'}
     >
       <motion.div
-        animate={pressed ? { scale: 0.85 } : { scale: [1, 1.08, 1] }}
+        animate={pressed ? { scale: 0.85 } : { scale: [1, 1.12, 1] }}
         transition={pressed
           ? { duration: 0.1 }
-          : { duration: 1.8, repeat: Infinity, repeatDelay: 2, ease: 'easeInOut' }
+          : { duration: 2, repeat: Infinity, repeatDelay: 1.5, ease: 'easeInOut' }
         }
-        className="flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100"
-        style={{ opacity: pressed ? 0.7 : 0 }}
+        className="opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center gap-1 p-2 rounded-2xl"
+        style={{
+          background: isDark ? 'rgba(30,30,30,0.85)' : 'rgba(255,255,255,0.9)',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+          border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(163,124,108,0.2)',
+        }}
       >
-        <span className="text-3xl" style={{ transform: side === 'left' ? 'scaleX(-1)' : 'none' }}>👆</span>
+        <span className="text-xl" style={{ transform: side === 'left' ? 'scaleX(-1)' : 'none' }}>
+          👈
+        </span>
+        <span className="text-[10px] font-arabic font-bold text-brand-600">
+          {side === 'left' ? 'التالية' : 'السابقة'}
+        </span>
       </motion.div>
-
-      {/* Visible hint shown only on first-render pulse */}
-      <motion.div
-        initial={{ opacity: 0.5, scale: 0.9 }}
-        animate={{ opacity: [0.5, 0.15, 0.5], scale: [0.9, 1, 0.9] }}
-        transition={{ duration: 3, repeat: 2, repeatDelay: 1 }}
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{ opacity: 0 }}
-      />
-    </button>
+    </div>
   );
 };
 
-/* ── Mobile nav arrow button ── */
+/* ── Mobile Navigation Pill ── */
 const MobileNavBtn: React.FC<{
   direction: 'next' | 'prev';
   onClick: () => void;
@@ -77,13 +81,14 @@ const MobileNavBtn: React.FC<{
     onClick={(e) => { e.stopPropagation(); onClick(); }}
     disabled={disabled}
     whileTap={{ scale: 0.88 }}
-    className="flex items-center justify-center rounded-2xl transition-all disabled:opacity-20"
+    className="flex items-center justify-center rounded-2xl transition-all disabled:opacity-20 flex-shrink-0"
     style={{
       width: 44,
       height: 44,
-      background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(163,124,108,0.1)',
-      border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(163,124,108,0.2)',
+      background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(163,124,108,0.12)',
+      border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(163,124,108,0.25)',
     }}
+    aria-label={direction === 'next' ? 'الصفحة التالية' : 'الصفحة السابقة'}
   >
     {direction === 'next'
       ? <ChevronLeft  className="w-5 h-5" style={{ color: isDark ? '#e0cec7' : '#a37c6c' }} />
@@ -92,7 +97,7 @@ const MobileNavBtn: React.FC<{
   </motion.button>
 );
 
-/* ── Header icon button ── */
+/* ── Header Icon Button ── */
 const HeaderBtn: React.FC<{
   onClick: (e: React.MouseEvent) => void;
   icon: React.ReactNode;
@@ -106,13 +111,13 @@ const HeaderBtn: React.FC<{
     className="w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200 active:scale-90 flex-shrink-0"
     style={{
       background: active
-        ? isDark ? 'rgba(163,124,108,0.4)' : 'rgba(163,124,108,0.15)'
+        ? (isDark ? 'rgba(163,124,108,0.4)' : 'rgba(163,124,108,0.15)')
         : 'transparent',
       color: active
-        ? isDark ? '#e0cec7' : '#a37c6c'
-        : isDark ? 'rgba(224,206,199,0.55)' : 'rgba(117,89,78,0.65)',
+        ? (isDark ? '#e0cec7' : '#a37c6c')
+        : (isDark ? 'rgba(224,206,199,0.55)' : 'rgba(117,89,78,0.65)'),
       border: active
-        ? isDark ? '1px solid rgba(163,124,108,0.5)' : '1px solid rgba(163,124,108,0.3)'
+        ? (isDark ? '1px solid rgba(163,124,108,0.5)' : '1px solid rgba(163,124,108,0.3)')
         : '1px solid transparent',
     }}
   >
@@ -120,13 +125,40 @@ const HeaderBtn: React.FC<{
   </button>
 );
 
+/* ── Page Flip Animation Variants ── */
+const pageFlipVariants: Variants = {
+  enter: (dir: number) => ({
+    x: dir < 0 ? 50 : -50,
+    opacity: 0,
+    scale: 0.98,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.28,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+  exit: (dir: number) => ({
+    x: dir < 0 ? -50 : 50,
+    opacity: 0,
+    scale: 0.98,
+    transition: {
+      duration: 0.2,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  }),
+};
+
 export const ReaderScreen: React.FC = () => {
   const { currentPage, preferences, setCurrentPage, toggleControls, isControlsVisible, isReadingAloud, toggleReadingAloud } = useReaderStore();
   const navigate = useNavigate();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAnnotationsOpen, setIsAnnotationsOpen] = useState(false);
   const [isTOCOpen, setIsTOCOpen] = useState(false);
-  const [slideDir, setSlideDir] = useState(0); // 1 for next, -1 for prev
+  const [slideDir, setSlideDir] = useState<-1 | 1>(-1); // -1: Next, 1: Prev
   const totalPages = bookDataService.getPages().length;
   const isDark = preferences.theme === 'dark';
 
@@ -142,15 +174,37 @@ export const ReaderScreen: React.FC = () => {
     [currentPage]
   ) ?? [];
 
+  // Touch gesture coordinates for swipe detection
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+
+  const handleNextPage = useCallback(() => {
+    if (currentPage < totalPages) {
+      setSlideDir(-1);
+      setCurrentPage(currentPage + 1);
+    }
+  }, [currentPage, totalPages, setCurrentPage]);
+
+  const handlePrevPage = useCallback(() => {
+    if (currentPage > 1) {
+      setSlideDir(1);
+      setCurrentPage(currentPage - 1);
+    }
+  }, [currentPage, setCurrentPage]);
+
+  // Keyboard navigation (Arrow keys)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') { setSlideDir(1); handlePrevPage(); }
-      if (e.key === 'ArrowLeft') { setSlideDir(-1); handleNextPage(); }
+      if (e.key === 'ArrowRight' || e.key === 'PageUp') {
+        handlePrevPage();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageDown' || e.key === ' ') {
+        handleNextPage();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage]);
+  }, [handleNextPage, handlePrevPage]);
 
+  // Text to speech
   useEffect(() => {
     if (isReadingAloud) {
       window.speechSynthesis.cancel();
@@ -163,9 +217,8 @@ export const ReaderScreen: React.FC = () => {
       
       utterance.onend = () => {
         if (isReadingAloud) {
-          if (currentPage < bookDataService.getPages().length) {
-            setSlideDir(-1);
-            setCurrentPage(currentPage + 1);
+          if (currentPage < totalPages) {
+            handleNextPage();
           } else {
             toggleReadingAloud();
           }
@@ -178,21 +231,7 @@ export const ReaderScreen: React.FC = () => {
     }
     
     return () => window.speechSynthesis.cancel();
-  }, [isReadingAloud, currentPage, preferences.ttsRate, pageData]);
-
-  const handleNextPage = useCallback(() => {
-    if (currentPage < totalPages) {
-      setSlideDir(-1);
-      setCurrentPage(currentPage + 1);
-    }
-  }, [currentPage, totalPages]);
-
-  const handlePrevPage = useCallback(() => {
-    if (currentPage > 1) {
-      setSlideDir(1);
-      setCurrentPage(currentPage - 1);
-    }
-  }, [currentPage]);
+  }, [isReadingAloud, currentPage, preferences.ttsRate, pageData, totalPages, handleNextPage, toggleReadingAloud]);
 
   const toggleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -209,6 +248,42 @@ export const ReaderScreen: React.FC = () => {
     }
   };
 
+  // Touch Swipe Handlers for Flip Gesture
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      touchStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+        time: Date.now(),
+      };
+    }
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const touchEnd = e.changedTouches[0];
+    const deltaX = touchEnd.clientX - touchStartRef.current.x;
+    const deltaY = touchEnd.clientY - touchStartRef.current.y;
+    const deltaTime = Date.now() - touchStartRef.current.time;
+
+    touchStartRef.current = null;
+
+    // Skip if user was selecting text
+    if (window.getSelection()?.toString().length) return;
+
+    // Horizontal swipe threshold: min 40px, predominantly horizontal, within reasonable time (800ms)
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3 && deltaTime < 800) {
+      if (deltaX < 0) {
+        // Swiped Left -> Next page in Arabic (RTL)
+        handleNextPage();
+      } else {
+        // Swiped Right -> Previous page in Arabic (RTL)
+        handlePrevPage();
+      }
+    }
+  };
+
+  // Tap handler (Tap left 25% -> next, Tap right 25% -> prev, Tap center -> toggle toolbar)
   const handleReaderClick = (e: React.MouseEvent) => {
     // Don't trigger if user is selecting text
     if (window.getSelection()?.toString().length) return;
@@ -218,10 +293,8 @@ export const ReaderScreen: React.FC = () => {
     
     // Arabic RTL: Left side (0-25%) goes to next page, Right side (75-100%) goes to prev page
     if (clientX < innerWidth * 0.25) {
-      setSlideDir(-1);
       handleNextPage();
     } else if (clientX > innerWidth * 0.75) {
-      setSlideDir(1);
       handlePrevPage();
     } else {
       if (preferences.autoHideControls) {
@@ -236,9 +309,6 @@ export const ReaderScreen: React.FC = () => {
     const highlights = pageHighlights.filter(h => h.blockId === blockId);
     if (!highlights.length) return text;
 
-    // A simplified render: If there are highlights for this block, we wrap the matching text.
-    // Exact offset mapping requires complex HTML node reconstruction.
-    // For now, we replace exact text matches.
     let result = text;
     highlights.forEach(h => {
       const colorClass = h.color === 'amber' ? 'bg-amber-200/60' :
@@ -251,7 +321,7 @@ export const ReaderScreen: React.FC = () => {
   };
 
   if (!pageData) {
-    return <div className="h-screen flex items-center justify-center">جاري التحميل...</div>;
+    return <div className="h-screen flex items-center justify-center font-arabic">جاري التحميل...</div>;
   }
 
   const containerMaxWidth = 
@@ -259,15 +329,18 @@ export const ReaderScreen: React.FC = () => {
     preferences.readerWidth === 'medium' ? 'max-w-3xl' : 'max-w-5xl';
 
   return (
-    <div className={`h-screen flex flex-col reader-container relative overflow-hidden`}
-         style={{ 
-           fontFamily: preferences.fontFamily, 
-           fontSize: `${preferences.fontSize}px`, 
-           lineHeight: preferences.lineHeight,
-           letterSpacing: preferences.letterSpacing === 'tight' ? '-0.5px' : preferences.letterSpacing === 'loose' ? '1px' : 'normal',
-           textAlign: preferences.textAlign,
-         }}>
-      
+    <div
+      className="h-screen flex flex-col reader-container relative overflow-hidden select-text"
+      style={{ 
+        fontFamily: preferences.fontFamily, 
+        fontSize: `${preferences.fontSize}px`, 
+        lineHeight: preferences.lineHeight,
+        letterSpacing: preferences.letterSpacing === 'tight' ? '-0.5px' : preferences.letterSpacing === 'loose' ? '1px' : 'normal',
+        textAlign: preferences.textAlign,
+      }}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
       <HighlightPopover />
 
       {/* ══ Top App Bar ══ */}
@@ -288,7 +361,6 @@ export const ReaderScreen: React.FC = () => {
         }}
       >
         <div className="flex items-center justify-between px-3 py-2 gap-2">
-
           {/* LEFT — back button */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
@@ -305,7 +377,7 @@ export const ReaderScreen: React.FC = () => {
             </button>
           </div>
 
-          {/* CENTER — mode toggle + page title */}
+          {/* CENTER — mode indicator + page title */}
           <div className="flex flex-col items-center gap-1 flex-1 min-w-0 overflow-hidden">
             <ReaderModeToggle isDark={isDark} />
             <div
@@ -318,14 +390,12 @@ export const ReaderScreen: React.FC = () => {
 
           {/* RIGHT — action icons */}
           <div className="flex items-center gap-1 flex-shrink-0">
-            {/* Table of Contents */}
             <HeaderBtn
               onClick={(e) => { e.stopPropagation(); setIsTOCOpen(true); }}
               icon={<List className="w-4 h-4" />}
               label="المحتويات"
               isDark={isDark}
             />
-            {/* TTS */}
             <HeaderBtn
               onClick={(e) => { e.stopPropagation(); toggleReadingAloud(); }}
               icon={isReadingAloud
@@ -336,7 +406,6 @@ export const ReaderScreen: React.FC = () => {
               isDark={isDark}
               active={isReadingAloud}
             />
-            {/* Bookmark */}
             <HeaderBtn
               onClick={toggleBookmark}
               icon={isBookmarked
@@ -347,14 +416,12 @@ export const ReaderScreen: React.FC = () => {
               isDark={isDark}
               active={isBookmarked as boolean}
             />
-            {/* Annotations sidebar */}
             <HeaderBtn
               onClick={(e) => { e.stopPropagation(); setIsAnnotationsOpen(true); }}
               icon={<PanelRightOpen className="w-4 h-4" />}
               label="الملاحظات"
               isDark={isDark}
             />
-            {/* Settings */}
             <HeaderBtn
               onClick={(e) => { e.stopPropagation(); setIsSettingsOpen(true); }}
               icon={<Settings className="w-4 h-4" />}
@@ -365,33 +432,34 @@ export const ReaderScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Left tap zone (next page in RTL) ── */}
+      {/* ── Left & Right Edge Tap/Flip Zones ── */}
       <TapZone
         side="left"
-        onClick={() => handleNextPage()}
+        onClick={handleNextPage}
         disabled={currentPage >= totalPages}
+        isDark={isDark}
       />
-
-      {/* ── Right tap zone (prev page in RTL) ── */}
       <TapZone
         side="right"
-        onClick={() => handlePrevPage()}
+        onClick={handlePrevPage}
         disabled={currentPage <= 1}
+        isDark={isDark}
       />
 
-      {/* Main Content Area */}
-      <div
-        className="flex-1 overflow-y-auto w-full pt-16 pb-20 px-4 md:px-8 custom-scrollbar"
+      {/* ── Main Content Area with Flip Animations ── */}
+      <div 
+        className="flex-1 overflow-y-auto w-full pt-16 pb-24 px-4 md:px-12 custom-scrollbar touch-pan-y"
         onClick={handleReaderClick}
       >
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence mode="wait" initial={false} custom={slideDir}>
           <motion.div 
             key={currentPage}
-            initial={{ opacity: 0, x: slideDir * 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: slideDir * -20 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className={`${containerMaxWidth} mx-auto my-4 md:my-8`}
+            custom={slideDir}
+            variants={pageFlipVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            className={`${containerMaxWidth} mx-auto my-4 md:my-8 min-h-[60vh]`}
           >
             {preferences.mode === 'text' && (
               <div>
@@ -415,49 +483,11 @@ export const ReaderScreen: React.FC = () => {
                 ))}
               </div>
             )}
-
-            {preferences.mode === 'scan' && (
-              <div className="flex justify-center bg-gray-100 p-4 rounded-xl">
-                <img 
-                  src={`/${pageData.image}`} 
-                  alt={pageData.title} 
-                  className="max-w-full h-auto shadow-md rounded border border-gray-300"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="100%" height="100%" fill="%23e2e8f0"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="20" fill="%2364748b">الصورة الأصلية غير متوفرة</text></svg>';
-                  }}
-                />
-              </div>
-            )}
-
-            {preferences.mode === 'compare' && (
-              <div className="flex flex-col md:flex-row gap-8">
-                <div className="flex-1 bg-gray-100 p-4 rounded-xl flex items-center justify-center min-h-[50vh]">
-                   <img 
-                    src={`/${pageData.image}`} 
-                    alt={pageData.title} 
-                    className="max-w-full h-auto shadow-md rounded border border-gray-300"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="100%" height="100%" fill="%23e2e8f0"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="20" fill="%2364748b">الصورة الأصلية غير متوفرة</text></svg>';
-                    }}
-                  />
-                </div>
-                <div className="flex-1 bg-white p-6 rounded-xl shadow-sm border border-brand-100 h-fit" onClick={(e) => e.stopPropagation()}>
-                  <div className="text-sm font-bold text-brand-600 mb-4 pb-2 border-b flex justify-between items-center font-sans">
-                    <span>تعديل النص المستخرج</span>
-                    <button className="bg-brand-50 text-brand-600 px-3 py-1 rounded text-xs hover:bg-brand-100">حفظ التصحيح</button>
-                  </div>
-                  <textarea 
-                    className="w-full h-[60vh] p-4 font-arabic leading-relaxed resize-none outline-none focus:ring-2 focus:ring-brand-500 rounded bg-gray-50 border border-gray-200"
-                    defaultValue={pageData.raw_ocr_text}
-                  />
-                </div>
-              </div>
-            )}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* ── Desktop nav arrows ── */}
+      {/* ── Desktop Nav Floating Buttons ── */}
       <div className="hidden md:block absolute top-1/2 -translate-y-1/2 left-4 z-10">
         <motion.button
           onClick={(e) => { e.stopPropagation(); handleNextPage(); }}
@@ -466,6 +496,7 @@ export const ReaderScreen: React.FC = () => {
           whileTap={{ scale: 0.9 }}
           className="p-3 rounded-2xl shadow-lg transition-all disabled:opacity-0 disabled:pointer-events-none"
           style={{ background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)' }}
+          title="الصفحة التالية"
         >
           <ChevronLeft className="w-7 h-7" style={{ color: isDark ? '#e0cec7' : '#a37c6c' }} />
         </motion.button>
@@ -478,6 +509,7 @@ export const ReaderScreen: React.FC = () => {
           whileTap={{ scale: 0.9 }}
           className="p-3 rounded-2xl shadow-lg transition-all disabled:opacity-0 disabled:pointer-events-none"
           style={{ background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)' }}
+          title="الصفحة السابقة"
         >
           <ChevronRight className="w-7 h-7" style={{ color: isDark ? '#e0cec7' : '#a37c6c' }} />
         </motion.button>
@@ -486,7 +518,8 @@ export const ReaderScreen: React.FC = () => {
       {/* ── Scrubbable Progress Bar + Mobile Nav Buttons ── */}
       <div className={`transition-transform duration-300 ${showControls ? 'translate-y-0' : 'translate-y-full'}`}>
         {/* Mobile prev/next row above progress bar */}
-        <div className="md:hidden flex items-center justify-between px-4 py-2 gap-3"
+        <div
+          className="md:hidden flex items-center justify-between px-4 py-2 gap-3"
           style={{
             background: isDark ? 'rgba(18,18,18,0.85)' : 'rgba(253,248,246,0.9)',
             backdropFilter: 'blur(16px)',
