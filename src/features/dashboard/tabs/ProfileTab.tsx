@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../../../lib/db';
 import { bookDataService } from '../../../data/service';
 import { useReaderStore } from '../../../store/readerStore';
@@ -7,7 +8,7 @@ import {
   User, BookOpen, Bookmark, Highlighter, Target,
   AlignJustify, AlignRight, Type,
   Minus, Plus, Palette, RotateCcw, ChevronLeft, Check,
-  BarChart3, Award, Clock, TrendingUp, Zap, Flame,
+  BarChart3, Award, Clock, TrendingUp, Zap, Flame, Sparkles,
 } from 'lucide-react';
 import { motion, type Variants } from 'framer-motion';
 import type { ReaderTheme, ReaderWidth, TextAlign } from '../../../types/book';
@@ -45,6 +46,7 @@ const WIDTHS: { id: ReaderWidth; label: string }[] = [
 
 /* ════════════════════════════════════════════════ */
 export const ProfileTab: React.FC = () => {
+  const navigate = useNavigate();
   const { currentPage, preferences, updatePreferences } = useReaderStore();
   const totalPages = bookDataService.getPages().length;
   const progress = Math.round((currentPage / totalPages) * 100);
@@ -423,8 +425,17 @@ export const ProfileTab: React.FC = () => {
         )}
       </motion.div>
 
-      {/* ── Reset Button ── */}
-      <motion.div variants={itemVariants}>
+      {/* ── Welcome Screen & Reset Actions ── */}
+      <motion.div variants={itemVariants} className="space-y-2.5">
+        <button
+          onClick={() => navigate('/welcome')}
+          className="w-full flex items-center justify-center gap-2.5 rounded-2xl px-5 py-3.5 font-arabic text-sm font-semibold transition-all active:scale-95 shadow-sm"
+          style={{ background: 'var(--app-brand-dim)', border: '1px solid var(--app-brand-border)', color: 'var(--app-brand)' }}
+        >
+          <Sparkles className="w-4 h-4" />
+          عرض شاشة الترحيب والتعريف بالكتاب
+        </button>
+
         <button onClick={resetPrefs}
           className="w-full flex items-center justify-center gap-2.5 rounded-2xl px-5 py-3.5 font-arabic text-sm font-semibold transition-all active:scale-95"
           style={{ background: 'rgba(244,63,94,0.06)', border: '1px solid rgba(244,63,94,0.15)', color: '#e05f7a' }}>

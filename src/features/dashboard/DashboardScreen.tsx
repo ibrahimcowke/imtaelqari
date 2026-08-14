@@ -3,7 +3,7 @@ import { HomeTab } from './tabs/HomeTab';
 import { ChaptersTab } from './tabs/ChaptersTab';
 import { AnnotationsTab } from './tabs/AnnotationsTab';
 import { ProfileTab } from './tabs/ProfileTab';
-import { BookOpen, List, Bookmark, Search, Feather, UserCircle, BookOpenCheck, Music, BookMarked, Layers } from 'lucide-react';
+import { BookOpen, List, Bookmark, Search, UserCircle, BookOpenCheck, Music, BookMarked, Layers } from 'lucide-react';
 import { SearchSheet } from '../search/SearchSheet';
 import { AmbientSoundModal } from '../audio/AmbientSoundModal';
 import { ArabicDictionaryModal } from '../dictionary/ArabicDictionaryModal';
@@ -57,10 +57,12 @@ export const DashboardScreen: React.FC = () => {
         {/* Logo */}
         <div className="px-6 pt-8 pb-6 border-b border-white/5">
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg"
-              style={{ background: 'var(--app-brand-grad)', boxShadow: '0 4px 16px var(--app-brand-glow)' }}>
-              <Feather className="w-5 h-5 text-white" />
-            </div>
+            <img
+              src="/app-logo.png"
+              alt="شعار إمتاع القارئ"
+              className="w-10 h-10 rounded-2xl object-cover shadow-lg border border-white/10 flex-shrink-0"
+              style={{ boxShadow: '0 4px 16px var(--app-brand-glow)' }}
+            />
             <div>
               <h1 className="text-base font-bold font-arabic leading-tight shimmer-text">إمتاع القارئ</h1>
               <p className="text-[10px] font-sans tracking-wide uppercase mt-0.5 opacity-60">Digital Reader</p>
@@ -101,10 +103,11 @@ export const DashboardScreen: React.FC = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-md"
-                  style={{ background: 'var(--app-brand-grad)' }}>
-                  <Feather className="w-4 h-4 text-white" />
-                </div>
+                <img
+                  src="/app-logo.png"
+                  alt="شعار إمتاع القارئ"
+                  className="w-8 h-8 rounded-xl object-cover shadow-md border border-white/10 flex-shrink-0"
+                />
                 <h1 className="text-base font-bold font-arabic" style={{ color: 'var(--app-text)' }}>{TAB_LABELS[activeTab]}</h1>
               </div>
             </div>

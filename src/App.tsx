@@ -1,10 +1,61 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { useReaderStore } from './store/readerStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { DashboardScreen } from './features/dashboard/DashboardScreen';
 import { ReaderScreen } from './features/reader/ReaderScreen';
+import { WelcomeScreen } from './features/welcome/WelcomeScreen';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+
+function RootRouter() {
+  const navigate = useNavigate();
+  const [showWelcome, setShowWelcome] = useState(() => {
+    return localStorage.getItem('imta_welcome_seen') !== 'true';
+  });
+
+  const handleStart = () => {
+    localStorage.setItem('imta_welcome_seen', 'true');
+    setShowWelcome(false);
+    navigate('/');
+  };
+
+  const handleOpenReader = () => {
+    localStorage.setItem('imta_welcome_seen', 'true');
+    setShowWelcome(false);
+    navigate('/read');
+  };
+
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          showWelcome ? (
+            <WelcomeScreen onStart={handleStart} onOpenReader={handleOpenReader} />
+          ) : (
+            <DashboardScreen />
+          )
+        }
+      />
+      <Route path="/read" element={<ReaderScreen />} />
+      <Route
+        path="/welcome"
+        element={
+          <WelcomeScreen
+            onStart={() => {
+              localStorage.setItem('imta_welcome_seen', 'true');
+              navigate('/');
+            }}
+            onOpenReader={() => {
+              localStorage.setItem('imta_welcome_seen', 'true');
+              navigate('/read');
+            }}
+          />
+        }
+      />
+    </Routes>
+  );
+}
 
 function App() {
   const { preferences } = useReaderStore();
@@ -30,10 +81,7 @@ function App() {
           transition: 'background 0.35s ease, color 0.35s ease',
         }}
       >
-        <Routes>
-          <Route path="/" element={<DashboardScreen />} />
-          <Route path="/read" element={<ReaderScreen />} />
-        </Routes>
+        <RootRouter />
         <Analytics />
         <SpeedInsights />
       </div>
