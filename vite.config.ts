@@ -7,29 +7,29 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'app-logo.png'],
       manifest: {
-        name: 'إمتاع القارئ',
+        name: 'إمتاع القارئ بجمال الكلم وروائع الحكم',
         short_name: 'إمتاع القارئ',
         description: 'تطبيق إمتاع القارئ بجمال الكلم وروائع الحكم',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        theme_color: '#2a1c16',
+        background_color: '#090e17',
         display: 'standalone',
         dir: 'rtl',
         lang: 'ar',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'app-logo.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'app-logo.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'app-logo.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
@@ -38,4 +38,27 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'vendor-react';
+            }
+            if (id.includes('framer-motion')) {
+              return 'vendor-motion';
+            }
+            if (id.includes('dexie')) {
+              return 'vendor-db';
+            }
+            if (id.includes('lucide-react')) {
+              return 'vendor-icons';
+            }
+          }
+        }
+      }
+    }
+  }
 })
