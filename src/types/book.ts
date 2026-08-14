@@ -40,7 +40,7 @@ export interface Book {
   direction: string;
 }
 
-export type ReaderTheme = "paper" | "white" | "sage" | "sepia" | "dark";
+export type ReaderTheme = "paper" | "white" | "sage" | "sepia" | "dark" | "emerald" | "midnight" | "rose" | "coffee" | "slate";
 export type ReaderMode = "text" | "scan" | "compare" | "continuous";
 export type ReaderWidth = "narrow" | "medium" | "wide";
 export type HighlightColor = "amber" | "rose" | "sage" | "blue-gray";

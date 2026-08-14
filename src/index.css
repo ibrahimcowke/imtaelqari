@@ -124,6 +124,121 @@ body.theme-dark {
   --reader-text:      #e0e0e0;
 }
 
+body.theme-emerald {
+  --app-bg:           #081711;
+  --app-bg-2:         #0d221a;
+  --app-bg-3:         #132e23;
+  --app-surface:      rgba(15,38,28,0.92);
+  --app-surface-border: rgba(30,70,52,0.8);
+  --app-surface-shadow: rgba(0,20,10,0.4);
+  --app-bar:          rgba(10,26,19,0.94);
+  --app-bar-border:   rgba(46,125,90,0.3);
+  --app-bar-shadow:   rgba(0,20,10,0.35);
+  --app-text:         #e2f3ea;
+  --app-text-muted:   #8dbba5;
+  --app-text-faint:   rgba(141,187,165,0.4);
+  --app-brand:        #2ea879;
+  --app-brand-dim:    rgba(46,168,121,0.15);
+  --app-brand-border: rgba(46,168,121,0.3);
+  --app-divider:      rgba(46,125,90,0.2);
+  --sidebar-bg:       linear-gradient(180deg,#0a1b14 0%,#06110d 60%,#030906 100%);
+  --sidebar-border:   rgba(46,125,90,0.25);
+  --reader-bg:        #0a1f16;
+  --reader-text:      #e2f3ea;
+}
+
+body.theme-midnight {
+  --app-bg:           #080e1a;
+  --app-bg-2:         #0f172a;
+  --app-bg-3:         #172038;
+  --app-surface:      rgba(15,23,42,0.92);
+  --app-surface-border: rgba(30,41,69,0.8);
+  --app-surface-shadow: rgba(0,5,15,0.4);
+  --app-bar:          rgba(10,15,28,0.94);
+  --app-bar-border:   rgba(56,116,203,0.25);
+  --app-bar-shadow:   rgba(0,5,15,0.35);
+  --app-text:         #e2e8f0;
+  --app-text-muted:   #94a3b8;
+  --app-text-faint:   rgba(148,163,184,0.4);
+  --app-brand:        #38bdf8;
+  --app-brand-dim:    rgba(56,189,248,0.12);
+  --app-brand-border: rgba(56,189,248,0.28);
+  --app-divider:      rgba(56,116,203,0.15);
+  --sidebar-bg:       linear-gradient(180deg,#0b1329 0%,#070c1a 60%,#03060d 100%);
+  --sidebar-border:   rgba(56,116,203,0.2);
+  --reader-bg:        #0a1122;
+  --reader-text:      #e2e8f0;
+}
+
+body.theme-rose {
+  --app-bg:           #fbf4f2;
+  --app-bg-2:         #f5e8e5;
+  --app-bg-3:         #eedcd8;
+  --app-surface:      rgba(255,250,249,0.92);
+  --app-surface-border: rgba(235,210,205,0.8);
+  --app-surface-shadow: rgba(180,90,90,0.06);
+  --app-bar:          rgba(251,244,242,0.92);
+  --app-bar-border:   rgba(214,142,136,0.25);
+  --app-bar-shadow:   rgba(180,90,90,0.05);
+  --app-text:         #332022;
+  --app-text-muted:   #755255;
+  --app-text-faint:   rgba(117,82,85,0.45);
+  --app-brand:        #c96868;
+  --app-brand-dim:    rgba(201,104,104,0.12);
+  --app-brand-border: rgba(201,104,104,0.25);
+  --app-divider:      rgba(201,104,104,0.15);
+  --sidebar-bg:       linear-gradient(180deg,#2e1b1d 0%,#1f1113 60%,#140a0c 100%);
+  --sidebar-border:   rgba(201,104,104,0.2);
+  --reader-bg:        #fbf3f0;
+  --reader-text:      #332022;
+}
+
+body.theme-coffee {
+  --app-bg:           #140f0c;
+  --app-bg-2:         #1d1511;
+  --app-bg-3:         #281e18;
+  --app-surface:      rgba(29,21,17,0.92);
+  --app-surface-border: rgba(64,48,38,0.8);
+  --app-surface-shadow: rgba(0,0,0,0.4);
+  --app-bar:          rgba(20,15,12,0.94);
+  --app-bar-border:   rgba(196,145,108,0.25);
+  --app-bar-shadow:   rgba(0,0,0,0.35);
+  --app-text:         #ede0d4;
+  --app-text-muted:   #bda18a;
+  --app-text-faint:   rgba(189,161,138,0.4);
+  --app-brand:        #d4a373;
+  --app-brand-dim:    rgba(212,163,115,0.14);
+  --app-brand-border: rgba(212,163,115,0.3);
+  --app-divider:      rgba(196,145,108,0.15);
+  --sidebar-bg:       linear-gradient(180deg,#1c130e 0%,#120c09 60%,#090604 100%);
+  --sidebar-border:   rgba(212,163,115,0.2);
+  --reader-bg:        #18120e;
+  --reader-text:      #ede0d4;
+}
+
+body.theme-slate {
+  --app-bg:           #0f1216;
+  --app-bg-2:         #151920;
+  --app-bg-3:         #1d222c;
+  --app-surface:      rgba(21,25,32,0.92);
+  --app-surface-border: rgba(45,55,70,0.8);
+  --app-surface-shadow: rgba(0,0,0,0.35);
+  --app-bar:          rgba(15,18,22,0.94);
+  --app-bar-border:   rgba(100,120,145,0.25);
+  --app-bar-shadow:   rgba(0,0,0,0.35);
+  --app-text:         #e6edf3;
+  --app-text-muted:   #8b949e;
+  --app-text-faint:   rgba(139,148,158,0.4);
+  --app-brand:        #58a6ff;
+  --app-brand-dim:    rgba(88,166,255,0.14);
+  --app-brand-border: rgba(88,166,255,0.28);
+  --app-divider:      rgba(100,120,145,0.15);
+  --sidebar-bg:       linear-gradient(180deg,#161b22 0%,#0d1117 60%,#05080b 100%);
+  --sidebar-border:   rgba(88,166,255,0.2);
+  --reader-bg:        #13171d;
+  --reader-text:      #e6edf3;
+}
+
 @layer base {
   body {
     @apply antialiased selection:bg-brand-500 selection:text-white;

@@ -24,11 +24,16 @@ const itemVariants: Variants = {
 
 /* ── Global Theme config ── */
 const THEMES: { id: ReaderTheme; label: string; bg: string; ring: string; icon: string }[] = [
-  { id: 'paper',  label: 'ورقي',  bg: '#fdfcf8', ring: '#a37c6c', icon: '📜' },
-  { id: 'white',  label: 'أبيض',  bg: '#ffffff', ring: '#aaaaaa', icon: '☁️' },
-  { id: 'sage',   label: 'أخضر',  bg: '#e8ece1', ring: '#5a8a5a', icon: '🌿' },
-  { id: 'sepia',  label: 'بني',   bg: '#f4ecd8', ring: '#8a6040', icon: '📚' },
-  { id: 'dark',   label: 'ليلي',  bg: '#121212', ring: '#c8a090', icon: '🌙' },
+  { id: 'paper',    label: 'ورقي',       bg: '#fdfcf8', ring: '#a37c6c', icon: '📜' },
+  { id: 'white',    label: 'أبيض',       bg: '#ffffff', ring: '#aaaaaa', icon: '☁️' },
+  { id: 'sage',     label: 'أخضر هادئ',  bg: '#e8ece1', ring: '#5a8a5a', icon: '🌿' },
+  { id: 'sepia',    label: 'بني تراثي',  bg: '#f4ecd8', ring: '#8a6040', icon: '📚' },
+  { id: 'rose',     label: 'وردي أندلسي', bg: '#fbf4f2', ring: '#c96868', icon: '🌸' },
+  { id: 'emerald',  label: 'زمردي ملكي', bg: '#081711', ring: '#2ea879', icon: '💎' },
+  { id: 'midnight', label: 'كحلي ليلي',  bg: '#080e1a', ring: '#38bdf8', icon: '🌌' },
+  { id: 'coffee',   label: 'قهوة عربية', bg: '#140f0c', ring: '#d4a373', icon: '☕' },
+  { id: 'slate',    label: 'رمادي فحمي', bg: '#0f1216', ring: '#58a6ff', icon: '⚡' },
+  { id: 'dark',     label: 'ليلي أسود',  bg: '#0f0f0f', ring: '#c8a090', icon: '🌙' },
 ];
 
 const FONT_SIZES = [16, 18, 20, 22, 24, 26, 28];
@@ -169,25 +174,28 @@ export const ProfileTab: React.FC = () => {
               <button
                 key={t.id}
                 onClick={() => updatePreferences({ theme: t.id })}
-                className="flex flex-col items-center gap-2 p-2 rounded-2xl transition-all active:scale-90"
+                className="flex flex-col items-center gap-1.5 p-1.5 sm:p-2 rounded-2xl transition-all active:scale-90"
                 style={{
                   background: isActive ? 'var(--app-brand-dim)' : 'transparent',
                   border: isActive ? `2px solid ${t.ring}` : '2px solid transparent',
                   boxShadow: isActive ? `0 0 0 3px ${t.ring}22` : 'none',
                 }}
+                title={t.label}
               >
                 {/* Swatch */}
-                <div className="w-10 h-10 rounded-xl relative flex items-center justify-center"
+                <div className="w-10 h-10 rounded-xl relative flex items-center justify-center flex-shrink-0"
                   style={{ background: t.bg, boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>
-                  <span className="text-lg">{t.icon}</span>
+                  <span className="text-base sm:text-lg">{t.icon}</span>
                   {isActive && (
-                    <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
+                    <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center shadow-sm"
                       style={{ background: t.ring }}>
                       <Check className="w-2.5 h-2.5 text-white" />
                     </div>
                   )}
                 </div>
-                <span className="text-[10px] font-arabic font-medium" style={textMuted}>{t.label}</span>
+                <span className="text-[10px] font-arabic font-medium truncate max-w-full text-center" style={textMuted}>
+                  {t.label}
+                </span>
               </button>
             );
           })}
