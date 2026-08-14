@@ -9,15 +9,15 @@ import {
   Minus, Plus, Palette, RotateCcw, ChevronLeft, Check,
   BarChart3, Award, Clock, TrendingUp, Zap,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import type { ReaderTheme, ReaderWidth, TextAlign } from '../../../types/book';
 
 /* ── helpers ── */
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.09 } },
 };
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 22 } },
 };
@@ -52,8 +52,6 @@ export const ProfileTab: React.FC = () => {
   const estMinutes = Math.round(pagesLeft * 1.5);
 
   const [readingOpen, setReadingOpen] = useState(false);
-
-  const isDark = preferences.theme === 'dark';
 
   const resetPrefs = () => updatePreferences({
     theme: 'paper', fontSize: 20, fontFamily: 'Noto Naskh Arabic',

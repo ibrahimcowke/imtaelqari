@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../lib/db';
 import { useReaderStore } from '../../../store/readerStore';
 import { Bookmark, Highlighter, Trash2, FileX } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 
 const COLOR_MAP: Record<string, { border: string; bg: string; label: string; dot: string }> = {
   amber: {
@@ -53,13 +53,13 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
     await db.highlights.delete(id);
   };
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.08 } },
   };
-  const itemVariants = {
-    hidden: { opacity: 0, y: 16, scale: 0.97 },
-    show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 280, damping: 22 } },
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 16 },
+    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
   };
 
   const SectionHeader: React.FC<{ icon: React.ReactNode; title: string; count: number; iconBg: string; iconColor: string }> = ({ icon, title, count, iconBg, iconColor }) => (

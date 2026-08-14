@@ -6,14 +6,6 @@ import { X, Type, Palette, Settings, Volume2, Layout, Maximize } from 'lucide-re
 export const SettingsSheet: React.FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = ({ open, onOpenChange }) => {
   const { preferences, updatePreferences } = useReaderStore();
 
-  const themes = [
-    { id: 'paper', name: 'ورق', bg: 'bg-[#fdfcf8]', text: 'text-gray-900' },
-    { id: 'white', name: 'أبيض', bg: 'bg-white', text: 'text-gray-900 border border-gray-200' },
-    { id: 'sage', name: 'مريح', bg: 'bg-[#e8ece1]', text: 'text-gray-900' },
-    { id: 'sepia', name: 'قديم', bg: 'bg-[#f4ecd8]', text: 'text-gray-900' },
-    { id: 'dark', name: 'ليلي', bg: 'bg-[#121212]', text: 'text-white' },
-  ];
-
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>

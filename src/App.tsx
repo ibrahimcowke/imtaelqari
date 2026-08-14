@@ -3,6 +3,8 @@ import { useReaderStore } from './store/readerStore';
 import { useEffect } from 'react';
 import { DashboardScreen } from './features/dashboard/DashboardScreen';
 import { ReaderScreen } from './features/reader/ReaderScreen';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
   const { preferences } = useReaderStore();
@@ -26,6 +28,8 @@ function App() {
           <Route path="/" element={<DashboardScreen />} />
           <Route path="/read" element={<ReaderScreen />} />
         </Routes>
+        <Analytics />
+        <SpeedInsights />
       </div>
     </BrowserRouter>
   );

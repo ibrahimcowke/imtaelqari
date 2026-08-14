@@ -1,10 +1,7 @@
 import React from 'react';
-import { useReaderStore } from '../../../store/readerStore';
 import { Type } from 'lucide-react';
 
 export const ReaderModeToggle: React.FC<{ isDark?: boolean }> = ({ isDark = false }) => {
-  const { preferences } = useReaderStore();
-
   // Only text mode is shown — scan/compare removed per user request
   return (
     <div

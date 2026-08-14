@@ -2,7 +2,7 @@ import React from 'react';
 import { bookDataService } from '../../../data/service';
 import { useReaderStore } from '../../../store/readerStore';
 import { Clock, BookOpen, Zap, ChevronLeft } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 
 const QUOTES = [
   "والحكمة من أجلّ ما يمكن أن يمنحه الله للإنسان بعد الإيمان بالله والتحلي بمكارم الأخلاق، وهي أمل كل الناجحين.",
@@ -21,11 +21,11 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
   const quoteIndex = today.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % QUOTES.length;
   const quoteOfTheDay = QUOTES[quoteIndex];
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.12 } }
   };
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 24 },
     show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 22 } }
   };

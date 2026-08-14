@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { bookDataService } from '../../../data/service';
 import { useReaderStore } from '../../../store/readerStore';
 import { ChevronLeft, BookMarked } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 
 export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) => {
   const { setCurrentPage, currentPage } = useReaderStore();
@@ -33,13 +33,13 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
     onNavigate();
   };
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.05 } },
   };
-  const itemVariants = {
-    hidden: { opacity: 0, x: 16 },
-    show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 26 } },
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, x: 20 },
+    show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
   };
 
   return (
