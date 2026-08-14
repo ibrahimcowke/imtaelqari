@@ -81,6 +81,7 @@ export interface FavoriteQuote {
   page: number;
   blockId?: string;
   heading?: string;
+  source?: string;
   createdAt: string;
 }
 
