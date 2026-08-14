@@ -3,8 +3,11 @@ import { HomeTab } from './tabs/HomeTab';
 import { ChaptersTab } from './tabs/ChaptersTab';
 import { AnnotationsTab } from './tabs/AnnotationsTab';
 import { ProfileTab } from './tabs/ProfileTab';
-import { BookOpen, List, Bookmark, Search, Feather, UserCircle, BookOpenCheck } from 'lucide-react';
+import { BookOpen, List, Bookmark, Search, Feather, UserCircle, BookOpenCheck, Music, BookMarked, Layers } from 'lucide-react';
 import { SearchSheet } from '../search/SearchSheet';
+import { AmbientSoundModal } from '../audio/AmbientSoundModal';
+import { ArabicDictionaryModal } from '../dictionary/ArabicDictionaryModal';
+import { TopicsModal } from '../topics/TopicsModal';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -20,6 +23,9 @@ const TAB_LABELS: Record<Tab, string> = {
 export const DashboardScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSoundOpen, setIsSoundOpen] = useState(false);
+  const [isDictOpen, setIsDictOpen] = useState(false);
+  const [isTopicsOpen, setIsTopicsOpen] = useState(false);
   const navigate = useNavigate();
 
   const renderTab = () => {
@@ -63,7 +69,7 @@ export const DashboardScreen: React.FC = () => {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-4 py-6 space-y-1.5">
+        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
           <p className="text-[10px] font-sans uppercase tracking-widest px-4 mb-3 opacity-50" style={{ color: 'var(--app-brand)' }}>القائمة</p>
           <SidebarNavItem active={activeTab === 'home'}        onClick={() => setActiveTab('home')}        icon={<BookOpen />}    label="الرئيسية" />
           <SidebarNavItem active={activeTab === 'chapters'}    onClick={() => setActiveTab('chapters')}    icon={<List />}        label="الفصول" />
@@ -71,8 +77,11 @@ export const DashboardScreen: React.FC = () => {
           <SidebarNavItem active={activeTab === 'profile'}     onClick={() => setActiveTab('profile')}     icon={<UserCircle />}  label="الملف الشخصي" />
 
           <div className="pt-4 border-t border-white/5 mt-4">
-            <p className="text-[10px] font-sans uppercase tracking-widest px-4 mb-3 opacity-50" style={{ color: 'var(--app-brand)' }}>أدوات</p>
+            <p className="text-[10px] font-sans uppercase tracking-widest px-4 mb-3 opacity-50" style={{ color: 'var(--app-brand)' }}>أدوات إضافية</p>
             <SidebarNavItem active={false} onClick={() => setIsSearchOpen(true)} icon={<Search />} label="البحث في الكتاب" />
+            <SidebarNavItem active={false} onClick={() => setIsSoundOpen(true)} icon={<Music className="w-4 h-4" />} label="أصوات التركيز" />
+            <SidebarNavItem active={false} onClick={() => setIsDictOpen(true)} icon={<BookMarked className="w-4 h-4" />} label="المعجم اللغوي" />
+            <SidebarNavItem active={false} onClick={() => setIsTopicsOpen(true)} icon={<Layers className="w-4 h-4" />} label="التصفح الموضوعي" />
           </div>
         </nav>
 
@@ -100,6 +109,16 @@ export const DashboardScreen: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Soundscape button */}
+              <button
+                onClick={() => setIsSoundOpen(true)}
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-95"
+                style={{ background: 'var(--app-brand-dim)', border: '1px solid var(--app-brand-border)', color: 'var(--app-brand)' }}
+                title="أصوات التركيز القرائي"
+              >
+                <Music className="w-4 h-4" />
+              </button>
+
               {/* Back to reading button */}
               <button
                 onClick={() => navigate('/read')}
@@ -155,6 +174,9 @@ export const DashboardScreen: React.FC = () => {
       </nav>
 
       <SearchSheet open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+      <AmbientSoundModal open={isSoundOpen} onOpenChange={setIsSoundOpen} />
+      <ArabicDictionaryModal open={isDictOpen} onOpenChange={setIsDictOpen} />
+      <TopicsModal open={isTopicsOpen} onOpenChange={setIsTopicsOpen} onNavigate={() => navigate('/read')} />
     </div>
   );
 };

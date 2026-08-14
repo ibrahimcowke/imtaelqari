@@ -5,6 +5,7 @@ import {
   ArrowRight, Settings, Bookmark,
   List, ChevronLeft, ChevronRight,
   Volume2, VolumeX, PanelRightOpen,
+  Music, Sparkles, BookMarked,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { SettingsSheet } from './components/SettingsSheet';
@@ -13,6 +14,9 @@ import { AnnotationsSidebar } from './components/AnnotationsSidebar';
 import { TableOfContents } from './components/TableOfContents';
 import { ProgressBar } from './components/ProgressBar';
 import { HighlightPopover } from './components/HighlightPopover';
+import { QuoteCardModal } from '../quote-studio/QuoteCardModal';
+import { AmbientSoundModal } from '../audio/AmbientSoundModal';
+import { ArabicDictionaryModal } from '../dictionary/ArabicDictionaryModal';
 import { db } from '../../lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
@@ -158,6 +162,9 @@ export const ReaderScreen: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAnnotationsOpen, setIsAnnotationsOpen] = useState(false);
   const [isTOCOpen, setIsTOCOpen] = useState(false);
+  const [isCardStudioOpen, setIsCardStudioOpen] = useState(false);
+  const [isSoundModalOpen, setIsSoundModalOpen] = useState(false);
+  const [isDictModalOpen, setIsDictModalOpen] = useState(false);
   const [slideDir, setSlideDir] = useState<-1 | 1>(-1); // -1: Next, 1: Prev
   const totalPages = bookDataService.getPages().length;
   const isDark = preferences.theme === 'dark';
@@ -391,6 +398,24 @@ export const ReaderScreen: React.FC = () => {
           {/* RIGHT — action icons */}
           <div className="flex items-center gap-1 flex-shrink-0">
             <HeaderBtn
+              onClick={(e) => { e.stopPropagation(); setIsSoundModalOpen(true); }}
+              icon={<Music className="w-4 h-4" />}
+              label="أصوات التركيز"
+              isDark={isDark}
+            />
+            <HeaderBtn
+              onClick={(e) => { e.stopPropagation(); setIsDictModalOpen(true); }}
+              icon={<BookMarked className="w-4 h-4" />}
+              label="المعجم اللغوي"
+              isDark={isDark}
+            />
+            <HeaderBtn
+              onClick={(e) => { e.stopPropagation(); setIsCardStudioOpen(true); }}
+              icon={<Sparkles className="w-4 h-4" />}
+              label="استوديو البطاقات"
+              isDark={isDark}
+            />
+            <HeaderBtn
               onClick={(e) => { e.stopPropagation(); setIsTOCOpen(true); }}
               icon={<List className="w-4 h-4" />}
               label="المحتويات"
@@ -564,6 +589,21 @@ export const ReaderScreen: React.FC = () => {
       <SettingsSheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
       <AnnotationsSidebar open={isAnnotationsOpen} onOpenChange={setIsAnnotationsOpen} />
       <TableOfContents open={isTOCOpen} onOpenChange={setIsTOCOpen} />
+      <QuoteCardModal
+        open={isCardStudioOpen}
+        onOpenChange={setIsCardStudioOpen}
+        quoteText={pageData.display_text.slice(0, 280)}
+        sourceText={pageData.title}
+        pageNumber={currentPage}
+      />
+      <AmbientSoundModal
+        open={isSoundModalOpen}
+        onOpenChange={setIsSoundModalOpen}
+      />
+      <ArabicDictionaryModal
+        open={isDictModalOpen}
+        onOpenChange={setIsDictModalOpen}
+      />
     </div>
   );
 };

@@ -5,9 +5,13 @@ import { db } from '../../../lib/db';
 import {
   Clock, BookOpen, Zap, Dices, Copy,
   Check, Share2, Star, Flame, Play, Pause, RotateCcw,
-  Sparkles, Compass, ArrowRight,
+  Sparkles, Compass, ArrowRight, Music, BookMarked, Layers,
 } from 'lucide-react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { QuoteCardModal } from '../../quote-studio/QuoteCardModal';
+import { AmbientSoundModal } from '../../audio/AmbientSoundModal';
+import { ArabicDictionaryModal } from '../../dictionary/ArabicDictionaryModal';
+import { TopicsModal } from '../../topics/TopicsModal';
 
 const CURATED_WISDOMS = [
   {
@@ -78,6 +82,12 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
   const [timerDuration, setTimerDuration] = useState(10); // in minutes
   const [timeLeft, setTimeLeft] = useState(10 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
+
+  // New Feature Modals
+  const [isCardStudioOpen, setIsCardStudioOpen] = useState(false);
+  const [isSoundModalOpen, setIsSoundModalOpen] = useState(false);
+  const [isDictModalOpen, setIsDictModalOpen] = useState(false);
+  const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(false);
 
   // Countdown effect
   useEffect(() => {
@@ -429,6 +439,15 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                 {/* Quote Action Buttons */}
                 <div className="flex items-center gap-1">
                   <button
+                    onClick={() => setIsCardStudioOpen(true)}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-arabic font-bold transition-all active:scale-95 shadow-sm"
+                    style={{ background: 'var(--app-brand-grad)', color: 'white' }}
+                    title="تصميم بطاقة اقتباس للنشر والمشاركة"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>تصميم بطاقة</span>
+                  </button>
+                  <button
                     onClick={copyQuote}
                     className="p-2 rounded-lg transition-all hover:bg-black/5 active:scale-90"
                     style={{ color: copied ? '#0d8f60' : 'var(--app-brand)' }}
@@ -562,7 +581,93 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
         </div>
       </motion.div>
 
-      {/* ── 5. Stat Cards Grid ── */}
+      {/* ── 5. Advanced Literary & Reading Tools Grid ── */}
+      <motion.div variants={itemVariants} className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4" style={{ color: 'var(--app-brand)' }} />
+          <h3 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text-muted)' }}>أدوات القراءة المتقدمة</h3>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <button
+            onClick={() => setIsCardStudioOpen(true)}
+            className="p-4 rounded-2xl text-right transition-all flex flex-col justify-between group active:scale-95 shadow-sm"
+            style={{
+              background: 'var(--app-surface)',
+              border: '1px solid var(--app-surface-border)',
+              boxShadow: '0 2px 12px var(--app-surface-shadow)',
+            }}
+          >
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2 shadow-sm"
+              style={{ background: 'var(--app-brand-grad)', color: 'white' }}>
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="font-arabic font-bold text-xs mb-0.5" style={{ color: 'var(--app-text)' }}>استوديو البطاقات</h4>
+              <p className="text-[10px] font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>تصميم صور ونشر</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setIsSoundModalOpen(true)}
+            className="p-4 rounded-2xl text-right transition-all flex flex-col justify-between group active:scale-95 shadow-sm"
+            style={{
+              background: 'var(--app-surface)',
+              border: '1px solid var(--app-surface-border)',
+              boxShadow: '0 2px 12px var(--app-surface-shadow)',
+            }}
+          >
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2 shadow-sm"
+              style={{ background: 'var(--app-brand-grad)', color: 'white' }}>
+              <Music className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="font-arabic font-bold text-xs mb-0.5" style={{ color: 'var(--app-text)' }}>أصوات التركيز</h4>
+              <p className="text-[10px] font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>مطر وهدوء طبيعي</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setIsDictModalOpen(true)}
+            className="p-4 rounded-2xl text-right transition-all flex flex-col justify-between group active:scale-95 shadow-sm"
+            style={{
+              background: 'var(--app-surface)',
+              border: '1px solid var(--app-surface-border)',
+              boxShadow: '0 2px 12px var(--app-surface-shadow)',
+            }}
+          >
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2 shadow-sm"
+              style={{ background: 'var(--app-brand-grad)', color: 'white' }}>
+              <BookMarked className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="font-arabic font-bold text-xs mb-0.5" style={{ color: 'var(--app-text)' }}>المعجم اللغوي</h4>
+              <p className="text-[10px] font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>شرح وجذور الكلمات</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setIsTopicsModalOpen(true)}
+            className="p-4 rounded-2xl text-right transition-all flex flex-col justify-between group active:scale-95 shadow-sm"
+            style={{
+              background: 'var(--app-surface)',
+              border: '1px solid var(--app-surface-border)',
+              boxShadow: '0 2px 12px var(--app-surface-shadow)',
+            }}
+          >
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2 shadow-sm"
+              style={{ background: 'var(--app-brand-grad)', color: 'white' }}>
+              <Layers className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="font-arabic font-bold text-xs mb-0.5" style={{ color: 'var(--app-text)' }}>التصفح الموضوعي</h4>
+              <p className="text-[10px] font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>حسب موضوعات الحياة</p>
+            </div>
+          </button>
+        </div>
+      </motion.div>
+
+      {/* ── 6. Stat Cards Grid ── */}
       <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
         <StatCard
           icon={<BookOpen />}
@@ -593,6 +698,31 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
           bg="rgba(16,185,129,0.12)"
         />
       </motion.div>
+
+      {/* ── Feature Modals ── */}
+      <QuoteCardModal
+        open={isCardStudioOpen}
+        onOpenChange={setIsCardStudioOpen}
+        quoteText={currentWisdom.text}
+        sourceText={currentWisdom.source}
+        pageNumber={currentWisdom.page}
+      />
+
+      <AmbientSoundModal
+        open={isSoundModalOpen}
+        onOpenChange={setIsSoundModalOpen}
+      />
+
+      <ArabicDictionaryModal
+        open={isDictModalOpen}
+        onOpenChange={setIsDictModalOpen}
+      />
+
+      <TopicsModal
+        open={isTopicsModalOpen}
+        onOpenChange={setIsTopicsModalOpen}
+        onNavigate={onNavigate}
+      />
 
     </motion.div>
   );
