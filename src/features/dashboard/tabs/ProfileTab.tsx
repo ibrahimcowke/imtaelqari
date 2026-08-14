@@ -238,6 +238,50 @@ export const ProfileTab: React.FC = () => {
             </div>
           </div>
 
+          {/* Font Family Selection */}
+          <div>
+            <p className="text-xs uppercase tracking-widest mb-3 flex items-center gap-2" style={textMuted}>
+              <Type className="w-3.5 h-3.5" /> نوع الخط العربي (يغير كل التطبيق والقراءة)
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {[
+                { id: 'Noto Naskh Arabic', name: 'خط النسخ (الافتراضي)', sample: 'جمال الكلم وروائع الحكم' },
+                { id: 'Amiri', name: 'خط أميري التراثي', sample: 'جمال الكلم وروائع الحكم' },
+                { id: 'Cairo', name: 'خط كايرو الحديث', sample: 'جمال الكلم وروائع الحكم' },
+                { id: 'Tajawal', name: 'خط تجوال الهندسي', sample: 'جمال الكلم وروائع الحكم' },
+                { id: 'Almarai', name: 'خط المراعي النقي', sample: 'جمال الكلم وروائع الحكم' },
+              ].map(f => {
+                const isSelected = preferences.fontFamily === f.id;
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => updatePreferences({ fontFamily: f.id })}
+                    className="p-3 rounded-2xl text-right transition-all active:scale-95 flex flex-col justify-between"
+                    style={{
+                      background: isSelected ? 'var(--app-brand-dim)' : 'transparent',
+                      border: isSelected ? '2px solid var(--app-brand)' : '1px solid var(--app-surface-border)',
+                      boxShadow: isSelected ? '0 0 0 3px var(--app-brand-glow)' : 'none',
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-1.5 w-full">
+                      <span className="text-xs font-bold" style={{ color: isSelected ? 'var(--app-brand)' : 'var(--app-text)' }}>
+                        {f.name}
+                      </span>
+                      {isSelected && (
+                        <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--app-brand)' }}>
+                          <Check className="w-2.5 h-2.5 text-white" />
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs leading-relaxed truncate opacity-75" style={{ fontFamily: `"${f.id}", sans-serif`, color: 'var(--app-text)' }}>
+                      {f.sample}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Reader width */}
           <div>
             <p className="text-xs uppercase tracking-widest mb-3" style={textMuted}>عرض القارئ</p>

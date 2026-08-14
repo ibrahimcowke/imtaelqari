@@ -10,19 +10,25 @@ function App() {
   const { preferences } = useReaderStore();
 
   useEffect(() => {
-    // Apply theme to document body
+    // Apply theme and font to document body
     document.body.className = '';
     document.body.classList.add(`theme-${preferences.theme}`);
+    document.body.style.fontFamily = `"${preferences.fontFamily}", "Noto Naskh Arabic", sans-serif`;
     document.documentElement.dir = 'rtl';
     document.documentElement.lang = 'ar';
-  }, [preferences.theme]);
+  }, [preferences.theme, preferences.fontFamily]);
 
   return (
     <BrowserRouter>
       <div
         dir="rtl"
-        className={`min-h-screen font-sans selection:bg-brand-500 selection:text-white theme-${preferences.theme}`}
-        style={{ background: 'var(--app-bg)', color: 'var(--app-text)', transition: 'background 0.4s ease, color 0.4s ease' }}
+        className={`min-h-screen selection:bg-brand-500 selection:text-white theme-${preferences.theme}`}
+        style={{
+          background: 'var(--app-bg)',
+          color: 'var(--app-text)',
+          fontFamily: `"${preferences.fontFamily}", "Noto Naskh Arabic", sans-serif`,
+          transition: 'background 0.35s ease, color 0.35s ease',
+        }}
       >
         <Routes>
           <Route path="/" element={<DashboardScreen />} />

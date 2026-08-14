@@ -54,19 +54,30 @@ export const SettingsSheet: React.FC<{ open: boolean; onOpenChange: (open: boole
                   </div>
                 </div>
 
-                <div className="flex gap-2 mb-4">
-                  <button 
-                    onClick={() => updatePreferences({ fontFamily: 'Noto Naskh Arabic' })}
-                    className={`flex-1 py-2 rounded-lg font-['Noto_Naskh_Arabic'] border transition-colors ${
-                      preferences.fontFamily === 'Noto Naskh Arabic' ? 'bg-brand-50 border-brand-500 text-brand-900 font-bold' : 'bg-white border-gray-200 text-gray-600'
-                    }`}
-                  >نسخ</button>
-                  <button 
-                    onClick={() => updatePreferences({ fontFamily: 'Amiri' })}
-                    className={`flex-1 py-2 rounded-lg font-['Amiri'] border transition-colors ${
-                      preferences.fontFamily === 'Amiri' ? 'bg-brand-50 border-brand-500 text-brand-900 font-bold' : 'bg-white border-gray-200 text-gray-600'
-                    }`}
-                  >أميري</button>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 mb-4">
+                  {[
+                    { id: 'Noto Naskh Arabic', name: 'نسخ' },
+                    { id: 'Amiri', name: 'أميري' },
+                    { id: 'Cairo', name: 'كايرو' },
+                    { id: 'Tajawal', name: 'تجوال' },
+                    { id: 'Almarai', name: 'المراعي' },
+                  ].map(f => (
+                    <button
+                      key={f.id}
+                      onClick={() => updatePreferences({ fontFamily: f.id })}
+                      className={`py-2 rounded-xl text-xs transition-all active:scale-95 ${
+                        preferences.fontFamily === f.id
+                          ? 'font-bold shadow-sm'
+                          : 'border border-gray-200 text-gray-600 bg-white hover:bg-gray-50'
+                      }`}
+                      style={preferences.fontFamily === f.id
+                        ? { background: 'var(--app-brand-grad)', color: 'white' }
+                        : {}
+                      }
+                    >
+                      {f.name}
+                    </button>
+                  ))}
                 </div>
 
                 <div className="flex items-center justify-between mb-4 mt-6">
