@@ -1,0 +1,250 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+/* ════════════════════════════════════════════════════════
+   GLOBAL THEME VARIABLES
+   Applied to body via App.tsx → document.body.classList
+   Every component reads these variables instead of
+   hardcoding light/dark colours.
+   ════════════════════════════════════════════════════════ */
+
+:root,
+body.theme-paper {
+  --app-bg:           #fdf8f6;
+  --app-bg-2:         #f5ede8;
+  --app-bg-3:         #ede0d8;
+  --app-surface:      rgba(255,255,255,0.82);
+  --app-surface-border: rgba(255,255,255,0.9);
+  --app-surface-shadow: rgba(163,124,108,0.07);
+  --app-bar:          rgba(253,248,246,0.88);
+  --app-bar-border:   rgba(163,124,108,0.12);
+  --app-bar-shadow:   rgba(163,124,108,0.08);
+  --app-text:         #1a1a1a;
+  --app-text-muted:   rgba(117,89,78,0.65);
+  --app-text-faint:   rgba(163,124,108,0.5);
+  --app-brand:        #a37c6c;
+  --app-brand-dim:    rgba(163,124,108,0.1);
+  --app-brand-border: rgba(163,124,108,0.2);
+  --app-divider:      rgba(163,124,108,0.1);
+  --sidebar-bg:       linear-gradient(180deg,#2a1c16 0%,#1e1410 60%,#150e0a 100%);
+  --sidebar-border:   rgba(163,124,108,0.15);
+  --reader-bg:        #fdfcf8;
+  --reader-text:      #1a1a1a;
+}
+
+body.theme-white {
+  --app-bg:           #f8f8f8;
+  --app-bg-2:         #f0f0f0;
+  --app-bg-3:         #e8e8e8;
+  --app-surface:      rgba(255,255,255,0.9);
+  --app-surface-border: rgba(220,220,220,0.9);
+  --app-surface-shadow: rgba(0,0,0,0.05);
+  --app-bar:          rgba(255,255,255,0.9);
+  --app-bar-border:   rgba(200,200,200,0.4);
+  --app-bar-shadow:   rgba(0,0,0,0.06);
+  --app-text:         #111111;
+  --app-text-muted:   #555555;
+  --app-text-faint:   #aaaaaa;
+  --app-brand:        #a37c6c;
+  --app-brand-dim:    rgba(163,124,108,0.08);
+  --app-brand-border: rgba(163,124,108,0.18);
+  --app-divider:      rgba(0,0,0,0.08);
+  --sidebar-bg:       linear-gradient(180deg,#2a1c16 0%,#1e1410 60%,#150e0a 100%);
+  --sidebar-border:   rgba(163,124,108,0.15);
+  --reader-bg:        #ffffff;
+  --reader-text:      #111111;
+}
+
+body.theme-sage {
+  --app-bg:           #dce4d5;
+  --app-bg-2:         #d0dac8;
+  --app-bg-3:         #c4d0bb;
+  --app-surface:      rgba(232,236,225,0.9);
+  --app-surface-border: rgba(180,196,168,0.7);
+  --app-surface-shadow: rgba(30,60,30,0.07);
+  --app-bar:          rgba(232,236,225,0.9);
+  --app-bar-border:   rgba(140,170,130,0.3);
+  --app-bar-shadow:   rgba(30,60,30,0.06);
+  --app-text:         #1a2a1a;
+  --app-text-muted:   #3a5a3a;
+  --app-text-faint:   rgba(30,80,30,0.4);
+  --app-brand:        #5a8a5a;
+  --app-brand-dim:    rgba(90,138,90,0.12);
+  --app-brand-border: rgba(90,138,90,0.25);
+  --app-divider:      rgba(90,138,90,0.15);
+  --sidebar-bg:       linear-gradient(180deg,#1a2e1a 0%,#111f11 60%,#0a150a 100%);
+  --sidebar-border:   rgba(90,138,90,0.2);
+  --reader-bg:        #e8ece1;
+  --reader-text:      #1a2a1a;
+}
+
+body.theme-sepia {
+  --app-bg:           #ede4d0;
+  --app-bg-2:         #e5d9c0;
+  --app-bg-3:         #ddd0b0;
+  --app-surface:      rgba(244,236,216,0.9);
+  --app-surface-border: rgba(200,180,140,0.7);
+  --app-surface-shadow: rgba(80,50,20,0.07);
+  --app-bar:          rgba(240,232,210,0.9);
+  --app-bar-border:   rgba(160,130,80,0.3);
+  --app-bar-shadow:   rgba(80,50,20,0.06);
+  --app-text:         #3b2f2f;
+  --app-text-muted:   #6b4f3f;
+  --app-text-faint:   rgba(100,70,40,0.5);
+  --app-brand:        #8a6040;
+  --app-brand-dim:    rgba(138,96,64,0.12);
+  --app-brand-border: rgba(138,96,64,0.25);
+  --app-divider:      rgba(138,96,64,0.15);
+  --sidebar-bg:       linear-gradient(180deg,#2e1e0e 0%,#1e120a 60%,#140c06 100%);
+  --sidebar-border:   rgba(138,96,64,0.2);
+  --reader-bg:        #f4ecd8;
+  --reader-text:      #3b2f2f;
+}
+
+body.theme-dark {
+  --app-bg:           #0f0f0f;
+  --app-bg-2:         #161616;
+  --app-bg-3:         #1e1e1e;
+  --app-surface:      rgba(30,30,30,0.9);
+  --app-surface-border: rgba(60,60,60,0.7);
+  --app-surface-shadow: rgba(0,0,0,0.3);
+  --app-bar:          rgba(18,18,18,0.92);
+  --app-bar-border:   rgba(255,255,255,0.06);
+  --app-bar-shadow:   rgba(0,0,0,0.4);
+  --app-text:         #e0e0e0;
+  --app-text-muted:   rgba(224,206,199,0.6);
+  --app-text-faint:   rgba(224,206,199,0.3);
+  --app-brand:        #c8a090;
+  --app-brand-dim:    rgba(163,124,108,0.15);
+  --app-brand-border: rgba(163,124,108,0.3);
+  --app-divider:      rgba(255,255,255,0.07);
+  --sidebar-bg:       linear-gradient(180deg,#1a1a1a 0%,#111111 60%,#080808 100%);
+  --sidebar-border:   rgba(255,255,255,0.06);
+  --reader-bg:        #121212;
+  --reader-text:      #e0e0e0;
+}
+
+@layer base {
+  body {
+    @apply antialiased selection:bg-brand-500 selection:text-white;
+    background: var(--app-bg);
+    color: var(--app-text);
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+}
+
+@layer utilities {
+  /* Reader content area */
+  .reader-container {
+    background-color: var(--reader-bg);
+    color: var(--reader-text);
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  /* App surface card */
+  .app-surface {
+    background: var(--app-surface);
+    border: 1px solid var(--app-surface-border);
+    box-shadow: 0 2px 12px var(--app-surface-shadow);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: background 0.4s ease, border-color 0.4s ease;
+  }
+
+  /* App top/bottom bars */
+  .app-bar {
+    background: var(--app-bar);
+    border-color: var(--app-bar-border);
+    box-shadow: 0 4px 24px var(--app-bar-shadow);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: background 0.4s ease;
+  }
+
+  /* Legacy compat */
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-xl border border-white/50 shadow-glass;
+  }
+  .glass-panel-dark {
+    @apply bg-black/60 backdrop-blur-xl border border-white/10 shadow-glass;
+  }
+  .clay-card {
+    @apply bg-white rounded-3xl shadow-clay border border-white/80 transition-all duration-300;
+  }
+  .clay-button {
+    @apply bg-white rounded-2xl shadow-clay border border-white/80 active:shadow-clay-active active:scale-95 transition-all duration-200;
+  }
+  .glass-morph {
+    background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.3) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 8px 32px 0 rgba(31,38,135,0.07);
+  }
+
+  /* ── Premium Dashboard Cards ── */
+  .premium-card {
+    background: var(--app-surface);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--app-surface-border);
+    border-radius: 1.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 16px var(--app-surface-shadow),
+      inset 0 1px 0 var(--app-surface-border);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .premium-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 12px 40px var(--app-surface-shadow),
+      inset 0 1px 0 var(--app-surface-border);
+  }
+
+  /* ── Sidebar ── */
+  .sidebar-dark {
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    box-shadow: 4px 0 32px rgba(0,0,0,0.25);
+  }
+
+  /* ── Nav Item Glow ── */
+  .nav-item-active {
+    background: linear-gradient(135deg,rgba(163,124,108,0.35) 0%,rgba(163,124,108,0.15) 100%);
+    border: 1px solid rgba(163,124,108,0.4);
+    box-shadow: 0 0 20px rgba(163,124,108,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+    color: #e0cec7;
+  }
+
+  /* ── Glow Ring (SVG progress) ── */
+  .glow-ring-filter {
+    filter: drop-shadow(0 0 6px rgba(163,124,108,0.6));
+  }
+
+  /* ── Shimmer ── */
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .shimmer-text {
+    background: linear-gradient(90deg, #a37c6c 0%, #e0cec7 40%, #d2bab0 60%, #a37c6c 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+  }
+
+  /* ── Custom Scrollbar ── */
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--app-brand-border);
+    border-radius: 99px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(163,124,108,0.5);
+  }
+
+  /* ── Animation delays ── */
+  .animation-delay-2000 { animation-delay: 2s; }
+  .animation-delay-4000 { animation-delay: 4s; }
+}
