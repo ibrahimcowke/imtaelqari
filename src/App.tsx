@@ -1,11 +1,24 @@
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { useReaderStore } from './store/readerStore';
-import { useEffect, useState } from 'react';
-import { DashboardScreen } from './features/dashboard/DashboardScreen';
-import { ReaderScreen } from './features/reader/ReaderScreen';
-import { WelcomeScreen } from './features/welcome/WelcomeScreen';
+import { useEffect, useState, Suspense, lazy } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+
+// Lazy load screen routes for maximum initial load performance
+const DashboardScreen = lazy(() => import('./features/dashboard/DashboardScreen').then(m => ({ default: m.DashboardScreen })));
+const ReaderScreen = lazy(() => import('./features/reader/ReaderScreen').then(m => ({ default: m.ReaderScreen })));
+const WelcomeScreen = lazy(() => import('./features/welcome/WelcomeScreen').then(m => ({ default: m.WelcomeScreen })));
+
+// Ultra lightweight route loader
+const RouteLoader = () => (
+  <div className="min-h-screen flex flex-col items-center justify-center gap-3" style={{ background: 'var(--app-bg)', color: 'var(--app-text)' }}>
+    <div className="w-10 h-10 rounded-2xl animate-pulse shadow-lg flex items-center justify-center"
+      style={{ background: 'var(--app-brand-grad)' }}>
+      <img src="/app-logo.png" alt="تحميل" className="w-8 h-8 rounded-xl object-cover" />
+    </div>
+    <span className="font-arabic text-xs font-semibold opacity-70">جاري التحميل...</span>
+  </div>
+);
 
 function RootRouter() {
   const navigate = useNavigate();
@@ -26,34 +39,36 @@ function RootRouter() {
   };
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          showWelcome ? (
-            <WelcomeScreen onStart={handleStart} onOpenReader={handleOpenReader} />
-          ) : (
-            <DashboardScreen />
-          )
-        }
-      />
-      <Route path="/read" element={<ReaderScreen />} />
-      <Route
-        path="/welcome"
-        element={
-          <WelcomeScreen
-            onStart={() => {
-              localStorage.setItem('imta_welcome_seen', 'true');
-              navigate('/');
-            }}
-            onOpenReader={() => {
-              localStorage.setItem('imta_welcome_seen', 'true');
-              navigate('/read');
-            }}
-          />
-        }
-      />
-    </Routes>
+    <Suspense fallback={<RouteLoader />}>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            showWelcome ? (
+              <WelcomeScreen onStart={handleStart} onOpenReader={handleOpenReader} />
+            ) : (
+              <DashboardScreen />
+            )
+          }
+        />
+        <Route path="/read" element={<ReaderScreen />} />
+        <Route
+          path="/welcome"
+          element={
+            <WelcomeScreen
+              onStart={() => {
+                localStorage.setItem('imta_welcome_seen', 'true');
+                navigate('/');
+              }}
+              onOpenReader={() => {
+                localStorage.setItem('imta_welcome_seen', 'true');
+                navigate('/read');
+              }}
+            />
+          }
+        />
+      </Routes>
+    </Suspense>
   );
 }
 
