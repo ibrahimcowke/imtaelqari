@@ -9,6 +9,7 @@ import {
   AlignJustify, AlignRight, Type,
   Minus, Plus, Palette, RotateCcw, ChevronLeft, Check,
   BarChart3, Award, Clock, TrendingUp, Zap, Flame, Sparkles,
+  Download, Upload,
 } from 'lucide-react';
 import { motion, type Variants } from 'framer-motion';
 import type { ReaderTheme, ReaderWidth, TextAlign } from '../../../types/book';
@@ -59,6 +60,90 @@ export const ProfileTab: React.FC = () => {
   const estMinutes = Math.round(pagesLeft * 1.5);
 
   const [readingOpen, setReadingOpen] = useState(false);
+  const [backupStatus, setBackupStatus] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+
+  const exportFullBackup = async () => {
+    try {
+      const allBookmarks = await db.bookmarks.toArray();
+      const allHighlights = await db.highlights.toArray();
+      const allNotes = await db.notes.toArray();
+      const allQuotes = await db.quotes.toArray();
+
+      const backupData = {
+        version: 1,
+        appName: 'إمتاع القارئ بجمال الكلم وروائع الحكم',
+        exportedAt: new Date().toISOString(),
+        data: {
+          bookmarks: allBookmarks,
+          highlights: allHighlights,
+          notes: allNotes,
+          quotes: allQuotes,
+          currentPage,
+          preferences,
+          streak: localStorage.getItem('reading_streak') || '3',
+        },
+      };
+
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `imta-reader-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      setBackupStatus({ type: 'success', msg: 'تم تصدير النسخة الاحتياطية بنجاح!' });
+      setTimeout(() => setBackupStatus(null), 4000);
+    } catch {
+      setBackupStatus({ type: 'error', msg: 'حدث خطأ أثناء تصدير البيانات.' });
+      setTimeout(() => setBackupStatus(null), 4000);
+    }
+  };
+
+  const handleImportBackup = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const backup = JSON.parse(text);
+
+      if (!backup.data) {
+        throw new Error('Invalid backup file');
+      }
+
+      if (backup.data.bookmarks && Array.isArray(backup.data.bookmarks)) {
+        await db.bookmarks.clear();
+        await db.bookmarks.bulkAdd(backup.data.bookmarks);
+      }
+      if (backup.data.highlights && Array.isArray(backup.data.highlights)) {
+        await db.highlights.clear();
+        await db.highlights.bulkAdd(backup.data.highlights);
+      }
+      if (backup.data.notes && Array.isArray(backup.data.notes)) {
+        await db.notes.clear();
+        await db.notes.bulkAdd(backup.data.notes);
+      }
+      if (backup.data.quotes && Array.isArray(backup.data.quotes)) {
+        await db.quotes.clear();
+        await db.quotes.bulkAdd(backup.data.quotes);
+      }
+      if (backup.data.preferences) {
+        updatePreferences(backup.data.preferences);
+      }
+      if (backup.data.streak) {
+        localStorage.setItem('reading_streak', backup.data.streak);
+      }
+
+      setBackupStatus({ type: 'success', msg: 'تمت استعادة كافة البيانات والنسخ الاحتياطية بنجاح!' });
+      setTimeout(() => setBackupStatus(null), 4000);
+    } catch {
+      setBackupStatus({ type: 'error', msg: 'الملف غير صالح أو تعذر استعادة البيانات.' });
+      setTimeout(() => setBackupStatus(null), 4000);
+    }
+    // reset input
+    e.target.value = '';
+  };
 
   const resetPrefs = () => updatePreferences({
     theme: 'paper', fontSize: 20, fontFamily: 'Noto Naskh Arabic',
@@ -425,6 +510,58 @@ export const ProfileTab: React.FC = () => {
         )}
       </motion.div>
 
+      {/* ── Data Backup & Restore (JSON) ── */}
+      <motion.div variants={itemVariants} className="rounded-3xl p-5 space-y-4" style={{ ...surface }}>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={brandDim}>
+            <Download className="w-4 h-4" style={{ color: 'var(--app-brand)' }} />
+          </div>
+          <div>
+            <h3 className="font-arabic font-bold text-base" style={textPrimary}>النسخ الاحتياطي ومزامنة البيانات</h3>
+            <p className="text-xs font-arabic" style={textMuted}>تصدير واستيراد بياناتك (العلامات، التظليلات، الملاحظات)</p>
+          </div>
+        </div>
+
+        {backupStatus && (
+          <div
+            className="p-3 rounded-2xl text-xs font-arabic font-medium flex items-center gap-2"
+            style={{
+              background: backupStatus.type === 'success' ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.12)',
+              color: backupStatus.type === 'success' ? '#0d8f60' : '#e05f7a',
+              border: backupStatus.type === 'success' ? '1px solid rgba(16,185,129,0.25)' : '1px solid rgba(244,63,94,0.25)',
+            }}
+          >
+            {backupStatus.type === 'success' ? <Check className="w-4 h-4 flex-shrink-0" /> : <RotateCcw className="w-4 h-4 flex-shrink-0" />}
+            <span>{backupStatus.msg}</span>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <button
+            onClick={exportFullBackup}
+            className="flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-xs font-bold transition-all active:scale-95 shadow-sm"
+            style={{ background: 'var(--app-brand-grad)', color: 'white' }}
+          >
+            <Download className="w-4 h-4" />
+            <span>تصدير نسخة احتياطية (JSON)</span>
+          </button>
+
+          <label
+            className="flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+            style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }}
+          >
+            <Upload className="w-4 h-4" />
+            <span>استعادة من ملف احتياطي</span>
+            <input
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={handleImportBackup}
+            />
+          </label>
+        </div>
+      </motion.div>
+
       {/* ── Welcome Screen & Reset Actions ── */}
       <motion.div variants={itemVariants} className="space-y-2.5">
         <button
@@ -450,7 +587,7 @@ export const ProfileTab: React.FC = () => {
         style={{ background: 'var(--app-surface)', border: '1px solid var(--app-surface-border)' }}>
         <p className="text-xs font-arabic" style={textMuted}>إمتاع القارئ بجمال الكلم وروائع الحكم</p>
         <p className="text-[11px] font-arabic mt-0.5" style={{ color: 'var(--app-text-faint)' }}>
-          محمد بن سعد النهاري • النسخة الرقمية
+          محمد بن سعد النهاري • النسخة الرقمية التفاعلية
         </p>
       </motion.div>
     </motion.div>
