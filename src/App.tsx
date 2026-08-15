@@ -3,6 +3,7 @@ import { useReaderStore } from './store/readerStore';
 import { useEffect, useState, Suspense, lazy } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { initCapacitorApp, updateNativeStatusBar } from './lib/capacitor';
 
 // Lazy load screen routes for maximum initial load performance
 const DashboardScreen = lazy(() => import('./features/dashboard/DashboardScreen').then(m => ({ default: m.DashboardScreen })));
@@ -76,12 +77,19 @@ function App() {
   const { preferences } = useReaderStore();
 
   useEffect(() => {
+    initCapacitorApp();
+  }, []);
+
+  useEffect(() => {
     // Apply theme and font to document body
     document.body.className = '';
     document.body.classList.add(`theme-${preferences.theme}`);
     document.body.style.fontFamily = `"${preferences.fontFamily}", "Noto Naskh Arabic", sans-serif`;
     document.documentElement.dir = 'rtl';
     document.documentElement.lang = 'ar';
+
+    // Update Android Native Status Bar
+    updateNativeStatusBar(preferences.theme);
   }, [preferences.theme, preferences.fontFamily]);
 
   return (

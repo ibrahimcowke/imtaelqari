@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">إمتاع القارئ</string>
+    <string name="title_activity_main">إمتاع القارئ</string>
+    <string name="package_name">com.imtaa.alqari</string>
+    <string name="custom_url_scheme">com.imtaa.alqari</string>
+</resources>
