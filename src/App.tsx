@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { useReaderStore } from './store/readerStore';
 import { useEffect, useState, Suspense, lazy } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { initCapacitorApp, updateNativeStatusBar } from './lib/capacitor';
@@ -105,8 +106,12 @@ function App() {
         }}
       >
         <RootRouter />
-        <Analytics />
-        <SpeedInsights />
+        {!Capacitor.isNativePlatform() && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </div>
     </BrowserRouter>
   );

@@ -49,8 +49,12 @@ export const useReaderStore = create<ReaderState>((set) => ({
   toggleReadingAloud: () =>
     set((state) => {
       const isReading = !state.isReadingAloud;
-      if (!isReading) {
-        window.speechSynthesis.cancel();
+      if (!isReading && typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis) {
+        try {
+          window.speechSynthesis.cancel();
+        } catch {
+          // Ignore speech synthesis errors in unsupported environments
+        }
       }
       return { isReadingAloud: isReading };
     }),

@@ -213,31 +213,55 @@ export const ReaderScreen: React.FC = () => {
 
   // Text to speech
   useEffect(() => {
-    if (isReadingAloud) {
-      window.speechSynthesis.cancel();
-      const textToRead = pageData?.display_text || '';
-      if (!textToRead) return;
-      
-      const utterance = new SpeechSynthesisUtterance(textToRead);
-      utterance.lang = 'ar-SA';
-      utterance.rate = preferences.ttsRate;
-      
-      utterance.onend = () => {
-        if (isReadingAloud) {
-          if (currentPage < totalPages) {
-            handleNextPage();
-          } else {
-            toggleReadingAloud();
+    const hasSpeechSynthesis = typeof window !== 'undefined' && 'speechSynthesis' in window && !!window.speechSynthesis;
+
+    if (!hasSpeechSynthesis) {
+      return;
+    }
+
+    try {
+      if (isReadingAloud) {
+        window.speechSynthesis.cancel();
+        const textToRead = pageData?.display_text || '';
+        if (!textToRead) return;
+        
+        if (typeof SpeechSynthesisUtterance === 'undefined') return;
+
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = 'ar-SA';
+        utterance.rate = preferences.ttsRate;
+        
+        utterance.onend = () => {
+          if (isReadingAloud) {
+            if (currentPage < totalPages) {
+              handleNextPage();
+            } else {
+              toggleReadingAloud();
+            }
           }
-        }
-      };
-      
-      window.speechSynthesis.speak(utterance);
-    } else {
-      window.speechSynthesis.cancel();
+        };
+
+        utterance.onerror = () => {
+          // Gracefully ignore TTS playback errors
+        };
+        
+        window.speechSynthesis.speak(utterance);
+      } else {
+        window.speechSynthesis.cancel();
+      }
+    } catch {
+      // Graceful fallback if speech synthesis fails in WebView
     }
     
-    return () => window.speechSynthesis.cancel();
+    return () => {
+      if (hasSpeechSynthesis) {
+        try {
+          window.speechSynthesis.cancel();
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    };
   }, [isReadingAloud, currentPage, preferences.ttsRate, pageData, totalPages, handleNextPage, toggleReadingAloud]);
 
   const toggleBookmark = async (e: React.MouseEvent) => {
