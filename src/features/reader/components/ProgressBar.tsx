@@ -25,7 +25,7 @@ export const ProgressBar: React.FC = () => {
         max={totalPages}
         value={currentPage}
         onChange={handleChange}
-        className="w-full h-1 bg-gray-200 appearance-none cursor-pointer accent-brand-600 absolute top-0 -mt-[2px]"
+        className="w-full h-1 bg-gray-200 appearance-none cursor-pointer accent-brand-600 absolute top-0 -mt-0.5"
         dir="ltr"
         style={{ direction: 'rtl' }}
       />

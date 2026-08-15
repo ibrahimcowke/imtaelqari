@@ -180,7 +180,7 @@ export const ProfileTab: React.FC = () => {
         <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full opacity-10"
           style={{ background: 'radial-gradient(circle, #d2bab0 0%, transparent 70%)' }} />
         <div className="relative z-10 flex items-center gap-5">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0"
             style={{ background: 'linear-gradient(135deg, #a37c6c, #75594e)', boxShadow: '0 4px 20px rgba(163,124,108,0.45)' }}>
             <User className="w-8 h-8 text-white" />
           </div>
@@ -323,7 +323,7 @@ export const ProfileTab: React.FC = () => {
                 title={t.label}
               >
                 {/* Swatch */}
-                <div className="w-10 h-10 rounded-xl relative flex items-center justify-center flex-shrink-0"
+                <div className="w-10 h-10 rounded-xl relative flex items-center justify-center shrink-0"
                   style={{ background: t.bg, boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>
                   <span className="text-base sm:text-lg">{t.icon}</span>
                   {isActive && (
@@ -408,7 +408,7 @@ export const ProfileTab: React.FC = () => {
                         {f.name}
                       </span>
                       {isSelected && (
-                        <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--app-brand)' }}>
+                        <div className="w-4 h-4 rounded-full flex items-center justify-center shrink-0" style={{ background: 'var(--app-brand)' }}>
                           <Check className="w-2.5 h-2.5 text-white" />
                         </div>
                       )}
@@ -499,7 +499,7 @@ export const ProfileTab: React.FC = () => {
               <span className="font-arabic text-sm" style={textPrimary}>إخفاء الأدوات تلقائياً</span>
               <button
                 onClick={() => updatePreferences({ autoHideControls: !preferences.autoHideControls })}
-                className="relative w-12 h-6 rounded-full transition-all duration-300 flex-shrink-0"
+                className="relative w-12 h-6 rounded-full transition-all duration-300 shrink-0"
                 style={{ background: preferences.autoHideControls ? 'linear-gradient(135deg, #a37c6c, #75594e)' : 'var(--app-brand-dim)' }}
               >
                 <span className="absolute top-0.5 transition-all duration-300 w-5 h-5 rounded-full bg-white shadow-md"
@@ -531,7 +531,7 @@ export const ProfileTab: React.FC = () => {
               border: backupStatus.type === 'success' ? '1px solid rgba(16,185,129,0.25)' : '1px solid rgba(244,63,94,0.25)',
             }}
           >
-            {backupStatus.type === 'success' ? <Check className="w-4 h-4 flex-shrink-0" /> : <RotateCcw className="w-4 h-4 flex-shrink-0" />}
+            {backupStatus.type === 'success' ? <Check className="w-4 h-4 shrink-0" /> : <RotateCcw className="w-4 h-4 shrink-0" />}
             <span>{backupStatus.msg}</span>
           </div>
         )}
@@ -611,7 +611,7 @@ const StatTile: React.FC<{ icon: React.ReactNode; label: string; value: number |
       border: '1px solid var(--app-surface-border)',
       boxShadow: '0 2px 12px var(--app-surface-shadow)',
     }}>
-    <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: bg }}>
+    <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: bg }}>
       {React.cloneElement(icon as React.ReactElement<any>, { className: 'w-4 h-4', style: { color } })}
     </div>
     <div className="min-w-0">

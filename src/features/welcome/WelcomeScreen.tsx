@@ -41,9 +41,9 @@ export const WelcomeScreen: React.FC<{
           className="absolute inset-0 bg-cover bg-center opacity-30 scale-105 filter blur-[2px]"
           style={{ backgroundImage: `url('/welcome-hero.jpg')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#060910] via-[#060910]/85 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#060910] via-[#060910]/85 to-transparent" />
         <div
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full opacity-30"
+          className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-137.5 h-137.5 rounded-full opacity-30"
           style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.35) 0%, transparent 70%)', filter: 'blur(90px)' }}
         />
       </div>

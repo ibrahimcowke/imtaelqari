@@ -53,14 +53,14 @@ export const DashboardScreen: React.FC = () => {
       </div>
 
       {/* ── Desktop Sidebar ── */}
-      <aside className="hidden md:flex flex-col w-72 sidebar-dark z-20 relative flex-shrink-0">
+      <aside className="hidden md:flex flex-col w-72 sidebar-dark z-20 relative shrink-0">
         {/* Logo */}
         <div className="px-6 pt-8 pb-6 border-b border-white/5">
           <div className="flex items-center gap-3 mb-1">
             <img
               src="/app-logo.png"
               alt="شعار إمتاع القارئ"
-              className="w-10 h-10 rounded-2xl object-cover shadow-lg border border-white/10 flex-shrink-0"
+              className="w-10 h-10 rounded-2xl object-cover shadow-lg border border-white/10 shrink-0"
               style={{ boxShadow: '0 4px 16px var(--app-brand-glow)' }}
             />
             <div>
@@ -106,7 +106,7 @@ export const DashboardScreen: React.FC = () => {
                 <img
                   src="/app-logo.png"
                   alt="شعار إمتاع القارئ"
-                  className="w-8 h-8 rounded-xl object-cover shadow-md border border-white/10 flex-shrink-0"
+                  className="w-8 h-8 rounded-xl object-cover shadow-md border border-white/10 shrink-0"
                 />
                 <h1 className="text-base font-bold font-arabic" style={{ color: 'var(--app-text)' }}>{TAB_LABELS[activeTab]}</h1>
               </div>
@@ -193,10 +193,10 @@ const SidebarNavItem: React.FC<{ active: boolean; onClick: () => void; icon: Rea
     }`}
   >
     {React.cloneElement(icon as React.ReactElement<any>, {
-      className: `w-4 h-4 flex-shrink-0 ${active ? 'text-current' : 'opacity-60'}`,
+      className: `w-4 h-4 shrink-0 ${active ? 'text-current' : 'opacity-60'}`,
     })}
     <span className="font-arabic">{label}</span>
-    {active && <span className="mr-auto w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: 'var(--app-brand)' }} />}
+    {active && <span className="mr-auto w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--app-brand)' }} />}
   </button>
 );
 

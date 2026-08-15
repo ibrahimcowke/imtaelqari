@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../lib/db';
 import { useReaderStore } from '../../../store/readerStore';
@@ -43,8 +43,8 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
   const [activeFilter, setActiveFilter] = useState<AnnotationFilter>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const bookmarks = useLiveQuery(() => db.bookmarks.orderBy('createdAt').reverse().toArray()) || [];
-  const highlights = useLiveQuery(() => db.highlights.orderBy('createdAt').reverse().toArray()) || [];
+  const bookmarks = useLiveQuery(() => db.bookmarks.orderBy('createdAt').reverse().toArray(), []) ?? [];
+  const highlights = useLiveQuery(() => db.highlights.orderBy('createdAt').reverse().toArray(), []) ?? [];
 
   const handleJump = (page: number) => {
     setCurrentPage(page);
@@ -92,14 +92,14 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
   };
 
   // Filter & Search Logic
-  const filteredBookmarks = useMemo(() => {
+  const filteredBookmarks = (() => {
     if (activeFilter !== 'all' && activeFilter !== 'bookmarks') return [];
     if (!searchQuery.trim()) return bookmarks;
     const q = searchQuery.trim().toLowerCase();
     return bookmarks.filter(b => b.preview.toLowerCase().includes(q) || b.page.toString().includes(q));
-  }, [bookmarks, activeFilter, searchQuery]);
+  })();
 
-  const filteredHighlights = useMemo(() => {
+  const filteredHighlights = (() => {
     if (activeFilter === 'bookmarks') return [];
     let list = highlights;
     if (activeFilter === 'amber' || activeFilter === 'rose' || activeFilter === 'sage') {
@@ -108,7 +108,7 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
     if (!searchQuery.trim()) return list;
     const q = searchQuery.trim().toLowerCase();
     return list.filter(h => h.selectedText.toLowerCase().includes(q) || h.page.toString().includes(q));
-  }, [highlights, activeFilter, searchQuery]);
+  })();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -127,7 +127,7 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
       {/* ── Header with Export ── */}
       <motion.div variants={itemVariants} className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
             style={{ background: 'linear-gradient(135deg, #a37c6c, #75594e)', boxShadow: '0 4px 12px rgba(163,124,108,0.3)' }}>
             <Bookmark className="w-5 h-5 text-white" />
           </div>
@@ -289,7 +289,7 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
                     whileHover={{ y: -2 }}
                   >
                     <div className="flex items-stretch">
-                      <div className="w-1.5 flex-shrink-0 my-3 mr-3 rounded-full" style={{ background: colorInfo.dot }} />
+                      <div className="w-1.5 shrink-0 my-3 mr-3 rounded-full" style={{ background: colorInfo.dot }} />
                       <div className="flex-1 py-3.5 pl-3">
                         <div className="flex items-center justify-between gap-2 mb-1.5">
                           <span className="text-[11px] font-sans font-bold px-2 py-0.5 rounded-lg"

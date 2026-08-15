@@ -262,7 +262,7 @@ export const QuoteCardModal: React.FC<{
 
           {/* Live Canvas Preview */}
           <div className="flex justify-center mb-5">
-            <div className="w-full max-w-[340px] aspect-square rounded-2xl overflow-hidden shadow-2xl border border-black/10">
+            <div className="w-full max-w-85 aspect-square rounded-2xl overflow-hidden shadow-2xl border border-black/10">
               <canvas ref={canvasRef} className="w-full h-full object-contain" />
             </div>
           </div>

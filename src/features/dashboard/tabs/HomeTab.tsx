@@ -226,7 +226,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
 
         <div className="relative z-10 p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
           {/* Progress Ring */}
-          <div className="relative flex-shrink-0 w-36 h-36">
+          <div className="relative shrink-0 w-36 h-36">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
               <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="8" />
               <circle

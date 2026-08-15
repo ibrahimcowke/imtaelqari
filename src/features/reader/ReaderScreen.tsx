@@ -85,7 +85,7 @@ const MobileNavBtn: React.FC<{
     onClick={(e) => { e.stopPropagation(); onClick(); }}
     disabled={disabled}
     whileTap={{ scale: 0.88 }}
-    className="flex items-center justify-center rounded-2xl transition-all disabled:opacity-20 flex-shrink-0"
+    className="flex items-center justify-center rounded-2xl transition-all disabled:opacity-20 shrink-0"
     style={{
       width: 44,
       height: 44,
@@ -112,7 +112,7 @@ const HeaderBtn: React.FC<{
   <button
     onClick={onClick}
     title={label}
-    className="w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200 active:scale-90 flex-shrink-0"
+    className="w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200 active:scale-90 shrink-0"
     style={{
       background: active
         ? (isDark ? 'rgba(163,124,108,0.4)' : 'rgba(163,124,108,0.15)')
@@ -171,10 +171,10 @@ export const ReaderScreen: React.FC = () => {
 
   const pageData = bookDataService.getPage(currentPage);
 
-  const isBookmarked = useLiveQuery(
+  const isBookmarked = (useLiveQuery(
     () => db.bookmarks.where({ page: currentPage }).count(),
     [currentPage]
-  ) ?? 0 > 0;
+  ) ?? 0) > 0;
 
   const pageHighlights = useLiveQuery(
     () => db.highlights.where({ page: currentPage }).toArray(),
@@ -369,7 +369,7 @@ export const ReaderScreen: React.FC = () => {
       >
         <div className="flex items-center justify-between px-3 py-2 gap-2">
           {/* LEFT — back button */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => navigate('/')}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all active:scale-95 font-arabic text-xs font-semibold"
@@ -388,7 +388,7 @@ export const ReaderScreen: React.FC = () => {
           <div className="flex flex-col items-center gap-1 flex-1 min-w-0 overflow-hidden">
             <ReaderModeToggle isDark={isDark} />
             <div
-              className="text-[10px] font-arabic font-medium truncate max-w-[160px] sm:max-w-xs opacity-60"
+              className="text-[10px] font-arabic font-medium truncate max-w-40 sm:max-w-xs opacity-60"
               style={{ color: isDark ? '#e0cec7' : '#75594e' }}
             >
               {pageData.title}
@@ -396,7 +396,7 @@ export const ReaderScreen: React.FC = () => {
           </div>
 
           {/* RIGHT — action icons */}
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             <HeaderBtn
               onClick={(e) => { e.stopPropagation(); setIsSoundModalOpen(true); }}
               icon={<Music className="w-4 h-4" />}

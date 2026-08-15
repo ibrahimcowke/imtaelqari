@@ -29,7 +29,7 @@ export const SettingsSheet: React.FC<{ open: boolean; onOpenChange: (open: boole
             {/* Theme Note */}
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-arabic"
               style={{ background: 'var(--app-brand-dim)', border: '1px solid var(--app-brand-border)', color: 'var(--app-brand)' }}>
-              <Palette className="w-4 h-4 flex-shrink-0" />
+              <Palette className="w-4 h-4 shrink-0" />
               <span>تغيير سمة التطبيق متاح في الملف الشخصي → سمة التطبيق</span>
             </div>
             {/* Typography */}

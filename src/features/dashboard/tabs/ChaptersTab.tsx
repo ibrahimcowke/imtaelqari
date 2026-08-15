@@ -100,7 +100,7 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
       {/* ── Header ── */}
       <motion.div variants={itemVariants} className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
             style={{ background: 'linear-gradient(135deg, #a37c6c, #75594e)', boxShadow: '0 4px 12px rgba(163,124,108,0.3)' }}>
             <BookMarked className="w-5 h-5 text-white" />
           </div>
@@ -208,7 +208,7 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
                   className="flex items-center gap-3 px-4 py-3.5 cursor-pointer"
                 >
                   {/* Chapter number / Status icon */}
-                  <div className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold font-sans"
+                  <div className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold font-sans"
                     style={ch.isCurrent
                       ? { background: 'linear-gradient(135deg, #a37c6c, #75594e)', color: 'white', boxShadow: '0 4px 12px rgba(163,124,108,0.4)' }
                       : ch.isRead
@@ -232,7 +232,7 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
                   </div>
 
                   {/* Actions & Preview Trigger */}
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={(e) => toggleExpand(idx, e)}
                       className="p-1.5 rounded-lg transition-all hover:bg-black/5 active:scale-90"

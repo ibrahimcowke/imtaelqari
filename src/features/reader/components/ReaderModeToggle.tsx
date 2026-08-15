@@ -12,7 +12,7 @@ export const ReaderModeToggle: React.FC<{ isDark?: boolean }> = ({ isDark = fals
         color: isDark ? '#e0cec7' : '#8c6b5d',
       }}
     >
-      <Type className="w-3.5 h-3.5 flex-shrink-0" style={{ color: isDark ? '#d2bab0' : '#a37c6c' }} />
+      <Type className="w-3.5 h-3.5 shrink-0" style={{ color: isDark ? '#d2bab0' : '#a37c6c' }} />
       <span className="text-xs font-medium hidden sm:inline">وضع النص</span>
     </div>
   );
