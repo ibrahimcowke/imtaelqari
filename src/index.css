@@ -23,15 +23,15 @@ body.theme-paper,
   --app-bg:             #fbf6f0;
   --app-bg-2:           #f4ebe2;
   --app-bg-3:           #ecdcd0;
-  --app-surface:        rgba(255, 255, 255, 0.92);
-  --app-surface-border: rgba(184, 150, 133, 0.35);
+  --app-surface:        rgba(255, 255, 255, 0.94);
+  --app-surface-border: rgba(184, 150, 133, 0.4);
   --app-surface-shadow: rgba(140, 95, 75, 0.08);
-  --app-bar:            rgba(251, 246, 240, 0.94);
-  --app-bar-border:     rgba(184, 150, 133, 0.3);
+  --app-bar:            rgba(251, 246, 240, 0.96);
+  --app-bar-border:     rgba(184, 150, 133, 0.35);
   --app-bar-shadow:     rgba(140, 95, 75, 0.08);
-  --app-text:           #1e140f;
-  --app-text-muted:     #5a4135;
-  --app-text-faint:     #876859;
+  --app-text:           #120b07;
+  --app-text-muted:     #432e23;
+  --app-text-faint:     #6e4f3e;
   --app-brand:          #8f5c3d;
   --app-brand-dark:     #683e25;
   --app-brand-grad:     linear-gradient(135deg, #8f5c3d 0%, #683e25 100%);
@@ -42,7 +42,7 @@ body.theme-paper,
   --sidebar-bg:         linear-gradient(180deg, #26160e 0%, #1a0f0a 60%, #100805 100%);
   --sidebar-border:     rgba(184, 150, 133, 0.25);
   --reader-bg:          #fdfbf7;
-  --reader-text:        #1e140f;
+  --reader-text:        #120b07;
 }
 
 /* 2. White Theme (Clean Modern) */
@@ -54,15 +54,15 @@ body.theme-white,
   --app-bg:             #f8fafc;
   --app-bg-2:           #f1f5f9;
   --app-bg-3:           #e2e8f0;
-  --app-surface:        rgba(255, 255, 255, 0.96);
-  --app-surface-border: rgba(203, 213, 225, 0.85);
+  --app-surface:        rgba(255, 255, 255, 0.98);
+  --app-surface-border: rgba(203, 213, 225, 0.9);
   --app-surface-shadow: rgba(15, 23, 42, 0.06);
-  --app-bar:            rgba(255, 255, 255, 0.95);
-  --app-bar-border:     rgba(203, 213, 225, 0.8);
+  --app-bar:            rgba(255, 255, 255, 0.96);
+  --app-bar-border:     rgba(203, 213, 225, 0.85);
   --app-bar-shadow:     rgba(15, 23, 42, 0.05);
-  --app-text:           #09090b;
-  --app-text-muted:     #475569;
-  --app-text-faint:     #64748b;
+  --app-text:           #020617;
+  --app-text-muted:     #1e293b;
+  --app-text-faint:     #475569;
   --app-brand:          #704a37;
   --app-brand-dark:     #4f3122;
   --app-brand-grad:     linear-gradient(135deg, #704a37 0%, #4f3122 100%);
@@ -73,7 +73,7 @@ body.theme-white,
   --sidebar-bg:         linear-gradient(180deg, #1e293b 0%, #0f172a 60%, #020617 100%);
   --sidebar-border:     rgba(255, 255, 255, 0.12);
   --reader-bg:          #ffffff;
-  --reader-text:        #09090b;
+  --reader-text:        #020617;
 }
 
 /* 3. Sage Theme (Calm Herbal Green) */
@@ -85,15 +85,15 @@ body.theme-sage,
   --app-bg:             #e2ebdf;
   --app-bg-2:           #d5e2d1;
   --app-bg-3:           #c7d7c2;
-  --app-surface:        rgba(242, 247, 240, 0.94);
-  --app-surface-border: rgba(148, 179, 142, 0.6);
+  --app-surface:        rgba(242, 247, 240, 0.96);
+  --app-surface-border: rgba(148, 179, 142, 0.7);
   --app-surface-shadow: rgba(25, 55, 25, 0.08);
-  --app-bar:            rgba(240, 246, 238, 0.95);
-  --app-bar-border:     rgba(148, 179, 142, 0.5);
+  --app-bar:            rgba(240, 246, 238, 0.96);
+  --app-bar-border:     rgba(148, 179, 142, 0.6);
   --app-bar-shadow:     rgba(25, 55, 25, 0.07);
-  --app-text:           #0f2214;
-  --app-text-muted:     #2b4834;
-  --app-text-faint:     #4d6f58;
+  --app-text:           #061309;
+  --app-text-muted:     #15341c;
+  --app-text-faint:     #2a5834;
   --app-brand:          #2a6943;
   --app-brand-dark:     #1b482d;
   --app-brand-grad:     linear-gradient(135deg, #2a6943 0%, #1b482d 100%);
@@ -104,7 +104,7 @@ body.theme-sage,
   --sidebar-bg:         linear-gradient(180deg, #102417 0%, #0a180f 60%, #050d08 100%);
   --sidebar-border:     rgba(42, 105, 67, 0.3);
   --reader-bg:          #edf4ea;
-  --reader-text:        #0f2214;
+  --reader-text:        #061309;
 }
 
 /* 4. Sepia Theme (Warm Heritage) */
@@ -116,15 +116,15 @@ body.theme-sepia,
   --app-bg:             #eee5d3;
   --app-bg-2:           #e5dac4;
   --app-bg-3:           #d9ccb2;
-  --app-surface:        rgba(250, 244, 232, 0.94);
-  --app-surface-border: rgba(191, 163, 126, 0.65);
+  --app-surface:        rgba(250, 244, 232, 0.96);
+  --app-surface-border: rgba(191, 163, 126, 0.7);
   --app-surface-shadow: rgba(70, 45, 20, 0.08);
-  --app-bar:            rgba(247, 239, 226, 0.95);
-  --app-bar-border:     rgba(191, 163, 126, 0.5);
+  --app-bar:            rgba(247, 239, 226, 0.96);
+  --app-bar-border:     rgba(191, 163, 126, 0.55);
   --app-bar-shadow:     rgba(70, 45, 20, 0.07);
-  --app-text:           #241710;
-  --app-text-muted:     #543d2f;
-  --app-text-faint:     #7d614f;
+  --app-text:           #170d06;
+  --app-text-muted:     #3d2413;
+  --app-text-faint:     #5e3b23;
   --app-brand:          #854f24;
   --app-brand-dark:     #5e3412;
   --app-brand-grad:     linear-gradient(135deg, #854f24 0%, #5e3412 100%);
@@ -135,7 +135,7 @@ body.theme-sepia,
   --sidebar-bg:         linear-gradient(180deg, #24140a 0%, #170d06 60%, #0c0703 100%);
   --sidebar-border:     rgba(191, 163, 126, 0.25);
   --reader-bg:          #f6efe0;
-  --reader-text:        #241710;
+  --reader-text:        #170d06;
 }
 
 /* 5. Rose Theme (Andalusian Rose) */
@@ -147,15 +147,15 @@ body.theme-rose,
   --app-bg:             #fcf2f0;
   --app-bg-2:           #f5e5e2;
   --app-bg-3:           #edd5d1;
-  --app-surface:        rgba(255, 250, 249, 0.94);
-  --app-surface-border: rgba(224, 182, 177, 0.7);
+  --app-surface:        rgba(255, 250, 249, 0.96);
+  --app-surface-border: rgba(224, 182, 177, 0.75);
   --app-surface-shadow: rgba(140, 50, 55, 0.07);
-  --app-bar:            rgba(255, 247, 245, 0.95);
-  --app-bar-border:     rgba(224, 182, 177, 0.5);
+  --app-bar:            rgba(255, 247, 245, 0.96);
+  --app-bar-border:     rgba(224, 182, 177, 0.55);
   --app-bar-shadow:     rgba(140, 50, 55, 0.06);
-  --app-text:           #241214;
-  --app-text-muted:     #5e3339;
-  --app-text-faint:     #88535a;
+  --app-text:           #1a080b;
+  --app-text-muted:     #451a21;
+  --app-text-faint:     #6e2e38;
   --app-brand:          #ad3b44;
   --app-brand-dark:     #7c1e26;
   --app-brand-grad:     linear-gradient(135deg, #ad3b44 0%, #7c1e26 100%);
@@ -166,7 +166,7 @@ body.theme-rose,
   --sidebar-bg:         linear-gradient(180deg, #2a0f13 0%, #1b080b 60%, #0f0305 100%);
   --sidebar-border:     rgba(224, 182, 177, 0.25);
   --reader-bg:          #fdf6f5;
-  --reader-text:        #241214;
+  --reader-text:        #1a080b;
 }
 
 /* 6. Emerald Theme (Royal Dark Emerald) */

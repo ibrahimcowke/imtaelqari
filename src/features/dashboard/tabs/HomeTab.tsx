@@ -458,7 +458,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                   <h3 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
                     جلسة تركيز وتدبر
                   </h3>
-                  <p className="text-xs font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>
+                  <p className="text-xs font-arabic font-medium mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
                     حدد وقتاً مخصصاً للقراءة الهادئة
                   </p>
                 </div>

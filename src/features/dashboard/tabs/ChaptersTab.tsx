@@ -205,8 +205,8 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
             borderColor: 'var(--app-surface-border)',
           }}
         >
-          <p className="text-sm font-semibold mb-1" style={{ color: 'var(--app-text)' }}>لا توجد فصول مطابقة لبحثك</p>
-          <p className="text-xs opacity-60" style={{ color: 'var(--app-text-muted)' }}>جرب البحث بكلمات أخرى أو اختر فلتراً مختلفاً</p>
+          <p className="text-sm font-bold mb-1" style={{ color: 'var(--app-text)' }}>لا توجد فصول مطابقة لبحثك</p>
+          <p className="text-xs font-medium" style={{ color: 'var(--app-text-muted)' }}>جرب البحث بكلمات أخرى أو اختر فلتراً مختلفاً</p>
         </motion.div>
       ) : (
         <div className="space-y-2.5">
@@ -255,7 +255,7 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
                   {/* Title & Badge */}
                   <div className="flex-1 min-w-0">
                     <h3
-                      className={`font-arabic text-sm leading-snug truncate ${ch.isCurrent ? 'font-bold' : 'font-medium'}`}
+                      className={`font-arabic text-sm leading-snug truncate ${ch.isCurrent ? 'font-bold' : 'font-semibold'}`}
                       style={{ color: 'var(--app-text)' }}
                     >
                       {ch.title}
@@ -271,7 +271,7 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
                   {/* Page Pill & Actions */}
                   <div className="flex items-center gap-2 shrink-0">
                     <span
-                      className="px-2.5 py-1 rounded-xl text-xs font-arabic font-semibold border"
+                      className="px-2.5 py-1 rounded-xl text-xs font-arabic font-bold border"
                       style={{
                         background: 'var(--app-bg-2)',
                         borderColor: 'var(--app-divider)',
@@ -284,7 +284,8 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
                     {ch.preview && (
                       <button
                         onClick={(e) => toggleExpand(idx, e)}
-                        className="p-1.5 rounded-xl transition-all opacity-60 hover:opacity-100 hover:bg-black/5"
+                        className="p-1.5 rounded-xl transition-all hover:bg-black/5"
+                        style={{ color: 'var(--app-text-muted)' }}
                         title={isExpanded ? 'إخفاء المعاينة' : 'معاينة النص'}
                       >
                         <Eye className="w-4 h-4" />
@@ -303,7 +304,7 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="px-4 pb-4 pt-1 border-t text-xs font-arabic leading-relaxed opacity-80"
+                      className="px-4 pb-4 pt-1 border-t text-xs font-arabic leading-relaxed font-medium"
                       style={{ borderColor: 'var(--app-divider)', color: 'var(--app-text)' }}
                     >
                       <p className="bg-black/5 dark:bg-white/5 p-3 rounded-xl">

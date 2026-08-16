@@ -601,7 +601,7 @@ export const ProfileTab: React.FC = () => {
             <h3 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
               النسخ الاحتياطي ومزامنة البيانات
             </h3>
-            <p className="text-xs font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>
+            <p className="text-xs font-arabic font-medium mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
               تصدير واستيراد بياناتك (العلامات المرجعية، التظليلات، الإحصائيات)
             </p>
           </div>
@@ -651,7 +651,7 @@ export const ProfileTab: React.FC = () => {
       <motion.div variants={itemVariants} className="space-y-3">
         <button
           onClick={() => navigate('/welcome')}
-          className="w-full flex items-center justify-center gap-2.5 rounded-2xl px-5 py-3.5 font-arabic text-sm font-semibold transition-all active:scale-95 app-surface"
+          className="w-full flex items-center justify-center gap-2.5 rounded-2xl px-5 py-3.5 font-arabic text-sm font-bold transition-all active:scale-95 app-surface"
           style={{ color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }}
         >
           <Sparkles className="w-4 h-4" />
@@ -660,7 +660,7 @@ export const ProfileTab: React.FC = () => {
 
         <button
           onClick={resetPrefs}
-          className="w-full flex items-center justify-center gap-2.5 rounded-2xl px-5 py-3.5 font-arabic text-sm font-semibold transition-all active:scale-95"
+          className="w-full flex items-center justify-center gap-2.5 rounded-2xl px-5 py-3.5 font-arabic text-sm font-bold transition-all active:scale-95"
           style={{ background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)', color: '#e05f7a' }}
         >
           <RotateCcw className="w-4 h-4" />
@@ -673,10 +673,10 @@ export const ProfileTab: React.FC = () => {
         variants={itemVariants}
         className="app-surface rounded-2xl px-5 py-4 text-center"
       >
-        <p className="text-xs font-arabic font-semibold" style={{ color: 'var(--app-text)' }}>
+        <p className="text-xs font-arabic font-bold" style={{ color: 'var(--app-text)' }}>
           إمتاع القارئ بجمال الكلم وروائع الحكم
         </p>
-        <p className="text-[11px] font-arabic mt-0.5 opacity-60" style={{ color: 'var(--app-text-muted)' }}>
+        <p className="text-[11px] font-arabic mt-0.5 font-medium" style={{ color: 'var(--app-text-muted)' }}>
           محمد بن سعد النهاري • تصميم رقمي فاخر
         </p>
       </motion.div>
@@ -703,7 +703,7 @@ const StatTile: React.FC<{ icon: React.ReactNode; label: string; value: number |
     </div>
     <div className="min-w-0">
       <div className="text-lg font-bold font-sans" style={{ color: 'var(--app-text)' }}>{value}</div>
-      <div className="text-[11px] font-arabic truncate opacity-70" style={{ color: 'var(--app-text-muted)' }}>{label}</div>
+      <div className="text-[11px] font-arabic truncate font-medium" style={{ color: 'var(--app-text-muted)' }}>{label}</div>
     </div>
   </div>
 );
@@ -718,7 +718,7 @@ const AchievementBadge: React.FC<{ emoji: string; label: string; unlocked: boole
   >
     <span className={`text-2xl transition-all ${unlocked ? 'scale-110' : 'grayscale opacity-30'}`}>{emoji}</span>
     <span
-      className={`text-[10px] font-arabic leading-tight ${unlocked ? 'font-bold' : 'font-medium opacity-50'}`}
+      className={`text-[10px] font-arabic leading-tight ${unlocked ? 'font-bold' : 'font-medium'}`}
       style={{ color: unlocked ? 'var(--app-brand)' : 'var(--app-text-muted)' }}
     >
       {label}
