@@ -161,7 +161,7 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
               <h2 className="text-xl font-bold font-arabic" style={{ color: 'var(--app-text)' }}>
                 الملاحظات والفوائد المحفوظة
               </h2>
-              <p className="text-xs font-arabic opacity-70 mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
+              <p className="text-xs font-arabic mt-0.5 font-medium" style={{ color: 'var(--app-text-muted)' }}>
                 {totalCount} فائدة محفوظة ({bookmarks.length} علامة مرجعية • {highlights.length} تظليل ملون)
               </p>
             </div>
@@ -391,7 +391,7 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
           <h4 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
             {totalCount === 0 ? 'لا توجد علامات أو نصوص مظللة حتى الآن' : 'لا توجد نتائج مطابقة للبحث'}
           </h4>
-          <p className="font-arabic text-xs opacity-70 max-w-sm" style={{ color: 'var(--app-text-muted)' }}>
+          <p className="font-arabic text-xs max-w-sm font-medium" style={{ color: 'var(--app-text-muted)' }}>
             {totalCount === 0
               ? 'أثناء قراءتك للكتاب، يمكنك تحديد أي نص وتظليله أو حفظ الصفحة في العلامات المرجعية لتعود إليها في أي وقت.'
               : 'جرب البحث بكلمات أخرى أو تصفية فئات الألوان المختلفة.'

@@ -95,11 +95,11 @@ export const DashboardScreen: React.FC = () => {
             <div className="min-w-0">
               <h1 className="text-base font-bold font-arabic leading-tight text-white flex items-center gap-1.5 truncate">
                 إمتاع القارئ
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-white/10 text-amber-300 border border-white/10">
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-white/15 text-amber-300 border border-white/20">
                   كتاب
                 </span>
               </h1>
-              <p className="text-[11px] font-arabic tracking-wide mt-1 text-white/60 truncate">
+              <p className="text-xs font-arabic tracking-wide mt-1 text-white/85 truncate">
                 بجمال الكلم وروائع الحكم
               </p>
             </div>
@@ -110,8 +110,7 @@ export const DashboardScreen: React.FC = () => {
         <nav className="flex-1 px-3.5 py-5 space-y-1.5 overflow-y-auto custom-scrollbar">
           <div className="flex items-center justify-between px-3 mb-2">
             <span
-              className="text-[10px] font-sans font-bold uppercase tracking-widest opacity-60"
-              style={{ color: 'var(--app-brand)' }}
+              className="text-[10px] font-sans font-bold uppercase tracking-widest text-amber-300/90"
             >
               أقسام التطبيق
             </span>
@@ -126,23 +125,23 @@ export const DashboardScreen: React.FC = () => {
                 onClick={() => setActiveTab(tab)}
                 className={`w-full flex items-center justify-between px-3.5 py-3 rounded-2xl transition-all duration-200 font-arabic text-sm relative group border ${
                   active
-                    ? 'bg-white/10 border-white/15 text-white font-bold shadow-lg'
-                    : 'border-transparent text-white/65 hover:text-white hover:bg-white/5'
+                    ? 'bg-white/15 border-white/20 text-white font-bold shadow-lg'
+                    : 'border-transparent text-white/85 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${
                       active
-                        ? 'bg-white/15 text-amber-300 shadow'
-                        : 'bg-white/5 text-white/70 group-hover:bg-white/10 group-hover:text-white'
+                        ? 'bg-white/20 text-amber-300 shadow'
+                        : 'bg-white/10 text-white group-hover:bg-white/20'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="text-right">
-                    <span className="block leading-tight">{TAB_LABELS[tab].label}</span>
-                    <span className="text-[10px] font-normal text-white/40 block mt-0.5">
+                    <span className="block leading-tight font-bold">{TAB_LABELS[tab].label}</span>
+                    <span className="text-[11px] font-medium text-white/70 block mt-0.5">
                       {TAB_LABELS[tab].desc}
                     </span>
                   </div>
@@ -161,70 +160,69 @@ export const DashboardScreen: React.FC = () => {
           })}
 
           {/* Quick Reader Tools Section */}
-          <div className="pt-4 border-t border-white/5 mt-4 space-y-1">
+          <div className="pt-4 border-t border-white/10 mt-4 space-y-1">
             <span
-              className="text-[10px] font-sans font-bold uppercase tracking-widest px-3 mb-2.5 block opacity-60"
-              style={{ color: 'var(--app-brand)' }}
+              className="text-[10px] font-sans font-bold uppercase tracking-widest px-3 mb-2.5 block text-amber-300/90"
             >
               أدوات القارئ
             </span>
 
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/65 hover:text-white hover:bg-white/5 transition-all text-xs font-arabic border border-transparent hover:border-white/5"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
             >
               <div className="flex items-center gap-2.5">
-                <Search className="w-4 h-4 text-sky-400 opacity-80" />
-                <span>البحث الذكي في الكتاب</span>
+                <Search className="w-4 h-4 text-sky-300" />
+                <span className="font-medium">البحث الذكي في الكتاب</span>
               </div>
-              <kbd className="px-1.5 py-0.5 text-[9px] font-mono bg-white/10 rounded border border-white/10 text-white/60">
+              <kbd className="px-1.5 py-0.5 text-[9px] font-mono bg-white/15 rounded border border-white/20 text-white">
                 ⌘K
               </kbd>
             </button>
 
             <button
               onClick={() => setIsSoundOpen(true)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/65 hover:text-white hover:bg-white/5 transition-all text-xs font-arabic border border-transparent hover:border-white/5"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
             >
               <div className="flex items-center gap-2.5">
-                <Music className="w-4 h-4 text-amber-400 opacity-80" />
-                <span>أصوات التركيز والطبيعة</span>
+                <Music className="w-4 h-4 text-amber-300" />
+                <span className="font-medium">أصوات التركيز والطبيعة</span>
               </div>
-              <span className="w-2 h-2 rounded-full bg-amber-400/80 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
             </button>
 
             <button
               onClick={() => setIsDictOpen(true)}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/65 hover:text-white hover:bg-white/5 transition-all text-xs font-arabic border border-transparent hover:border-white/5"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
             >
-              <BookMarked className="w-4 h-4 text-emerald-400 opacity-80" />
-              <span>المعجم اللغوي التراثي</span>
+              <BookMarked className="w-4 h-4 text-emerald-300" />
+              <span className="font-medium">المعجم اللغوي التراثي</span>
             </button>
 
             <button
               onClick={() => setIsTopicsOpen(true)}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/65 hover:text-white hover:bg-white/5 transition-all text-xs font-arabic border border-transparent hover:border-white/5"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
             >
-              <Layers className="w-4 h-4 text-purple-400 opacity-80" />
-              <span>التصفح الموضوعي</span>
+              <Layers className="w-4 h-4 text-purple-300" />
+              <span className="font-medium">التصفح الموضوعي</span>
             </button>
           </div>
         </nav>
 
         {/* Bottom Author & Book Signature Card */}
-        <div className="p-4 border-t border-white/5">
+        <div className="p-4 border-t border-white/10">
           <div
             className="flex items-center justify-between p-3 rounded-2xl border"
             style={{
-              background: 'rgba(255,255,255,0.04)',
-              borderColor: 'rgba(255,255,255,0.08)',
+              background: 'rgba(255,255,255,0.06)',
+              borderColor: 'rgba(255,255,255,0.12)',
             }}
           >
             <div className="flex flex-col">
-              <span className="text-[11px] font-arabic font-bold text-white/90">محمد بن سعد النهاري</span>
-              <span className="text-[9px] font-arabic text-white/40">جامع ومؤلف الكتاب</span>
+              <span className="text-xs font-arabic font-bold text-white">محمد بن سعد النهاري</span>
+              <span className="text-[10px] font-arabic text-white/75">جامع ومؤلف الكتاب</span>
             </div>
-            <div className="w-7 h-7 rounded-xl flex items-center justify-center bg-white/10 text-amber-300 border border-white/10">
+            <div className="w-7 h-7 rounded-xl flex items-center justify-center bg-white/15 text-amber-300 border border-white/20">
               <Sparkles className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -327,7 +325,7 @@ export const DashboardScreen: React.FC = () => {
                 <h1 className="text-sm font-bold font-arabic leading-none" style={{ color: 'var(--app-text)' }}>
                   {TAB_LABELS[activeTab].label}
                 </h1>
-                <p className="text-[10px] font-arabic opacity-50 mt-1">كتاب إمتاع القارئ</p>
+                <p className="text-[10px] font-arabic font-medium mt-1" style={{ color: 'var(--app-text-muted)' }}>كتاب إمتاع القارئ</p>
               </div>
             </div>
 

@@ -253,12 +253,12 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
             </h2>
 
             {/* Current Chapter Preview */}
-            <p className="text-amber-100/75 font-arabic text-xs sm:text-sm mb-6 flex items-center justify-center md:justify-start gap-2 flex-wrap">
-              <span className="font-semibold text-white/90">
+            <p className="text-amber-100 font-arabic text-xs sm:text-sm mb-6 flex items-center justify-center md:justify-start gap-2 flex-wrap">
+              <span className="font-bold text-white">
                 {currentPageData?.title ? currentPageData.title : `صفحة ${currentPage}`}
               </span>
-              <span className="opacity-40">•</span>
-              <span>ص {currentPage} من {totalPages} صفحة</span>
+              <span className="opacity-60">•</span>
+              <span className="text-white/90 font-medium">ص {currentPage} من {totalPages} صفحة</span>
             </p>
 
             {/* Action Buttons */}
@@ -278,10 +278,10 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
 
               <button
                 onClick={handleRandomPage}
-                className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl font-arabic text-xs font-bold transition-all duration-300 active:scale-95 hover:bg-white/15 text-white/90 border"
+                className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl font-arabic text-xs font-bold transition-all duration-300 active:scale-95 hover:bg-white/15 text-white border"
                 style={{
-                  background: 'rgba(255,255,255,0.08)',
-                  borderColor: 'rgba(255,255,255,0.18)',
+                  background: 'rgba(255,255,255,0.1)',
+                  borderColor: 'rgba(255,255,255,0.22)',
                 }}
                 title="اقرأ صفحة أو حكمة عشوائية من الكتاب"
               >
@@ -299,7 +299,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                 cy="60"
                 r={radius}
                 fill="none"
-                stroke="rgba(255,255,255,0.1)"
+                stroke="rgba(255,255,255,0.15)"
                 strokeWidth="7"
               />
               <circle
@@ -326,7 +326,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
               <span className="text-3xl font-bold font-sans text-white tracking-tight">
                 {progress}%
               </span>
-              <span className="text-[10px] text-amber-200/80 font-arabic font-medium">
+              <span className="text-xs text-amber-200 font-arabic font-bold">
                 مكتمل
               </span>
             </div>
@@ -357,7 +357,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                   <h3 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
                     سلسلة القراءة اليومية
                   </h3>
-                  <p className="text-xs font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>
+                  <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
                     ثبت عادة القراءة والتدبر اليومي
                   </p>
                 </div>
@@ -367,7 +367,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                 <span className="text-2xl font-bold font-sans text-amber-500">
                   {streak}
                 </span>
-                <span className="text-xs font-arabic mr-1 opacity-70" style={{ color: 'var(--app-text-muted)' }}>
+                <span className="text-xs font-arabic mr-1 font-semibold" style={{ color: 'var(--app-text-muted)' }}>
                   أيام
                 </span>
               </div>
@@ -380,48 +380,55 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                 return (
                   <div
                     key={day}
-                    className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all border"
+                    className={`flex flex-col items-center gap-1.5 p-2 rounded-2xl border transition-all ${
+                      isDone
+                        ? 'border-amber-500/30'
+                        : 'border-transparent'
+                    }`}
                     style={{
-                      background: isDone ? 'var(--app-brand-dim)' : 'transparent',
-                      borderColor: isDone ? 'var(--app-brand-border)' : 'var(--app-divider)',
+                      background: isDone
+                        ? 'rgba(245, 158, 11, 0.12)'
+                        : 'var(--app-bg-2)',
                     }}
                   >
-                    <span className="text-[9px] font-arabic truncate opacity-70">{day}</span>
                     <div
-                      className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm"
+                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                        isDone ? 'bg-amber-500 text-white' : ''
+                      }`}
                       style={{
-                        background: isDone ? 'var(--app-brand)' : 'var(--app-bg-2)',
-                        color: isDone ? 'white' : 'var(--app-text-faint)',
+                        background: !isDone ? 'var(--app-divider)' : undefined,
+                        color: !isDone ? 'var(--app-text-muted)' : undefined,
                       }}
                     >
-                      {isDone ? <Check className="w-3 h-3" /> : idx + 1}
+                      {isDone ? '✓' : idx + 1}
                     </div>
+                    <span className="text-[10px] font-arabic font-medium truncate" style={{ color: isDone ? 'var(--app-text)' : 'var(--app-text-muted)' }}>{day}</span>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Interactive Check-in Button */}
+          {/* Check-in CTA Button */}
           <button
             onClick={handleCheckIn}
             disabled={checkedToday}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-xs font-bold transition-all active:scale-95 disabled:opacity-80 border shadow-md"
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-xs font-bold transition-all active:scale-95 border shadow-md"
             style={
               checkedToday
-                ? { background: 'rgba(16,185,129,0.12)', color: '#0d8f60', borderColor: 'rgba(16,185,129,0.3)' }
-                : { background: 'var(--app-brand-grad)', color: 'white', borderColor: 'transparent', boxShadow: '0 4px 16px var(--app-brand-glow)' }
+                ? { background: 'rgba(16, 185, 129, 0.15)', color: '#0d8f60', borderColor: 'rgba(16, 185, 129, 0.3)' }
+                : { background: 'var(--app-brand-grad)', color: 'white', borderColor: 'transparent', boxShadow: '0 4px 14px var(--app-brand-glow)' }
             }
           >
             {checkedToday ? (
               <>
                 <Check className="w-4 h-4" />
-                <span>أحسنت! تم تسجيل قراءة اليوم بنجاح 🎉</span>
+                <span>أحسنت! أتممت قراءة اليوم</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4" />
-                <span>سجّل إنجاز قراءة اليوم (+1)</span>
+                <Flame className="w-4 h-4" />
+                <span>تسجيل ورد اليوم في السلسلة</span>
               </>
             )}
           </button>

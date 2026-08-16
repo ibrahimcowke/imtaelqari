@@ -122,7 +122,7 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
               <h2 className="text-xl font-bold font-arabic" style={{ color: 'var(--app-text)' }}>
                 فهرس فصول وأبواب الكتاب
               </h2>
-              <p className="text-xs font-arabic opacity-70 mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
+              <p className="text-xs font-arabic mt-0.5 font-medium" style={{ color: 'var(--app-text-muted)' }}>
                 {chapters.length} فصلاً ومبحثاً • تم قراءة {readCount} من {chapters.length}
               </p>
             </div>
@@ -133,7 +133,7 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
               <div className="text-sm font-bold font-sans" style={{ color: 'var(--app-brand)' }}>
                 {readPercent}%
               </div>
-              <div className="text-[10px] font-arabic opacity-60">نسبة الإنجاز</div>
+              <div className="text-[10px] font-arabic font-semibold" style={{ color: 'var(--app-text-muted)' }}>نسبة الإنجاز</div>
             </div>
             <div className="w-20 h-2.5 rounded-full overflow-hidden bg-black/10 dark:bg-white/10 border" style={{ borderColor: 'var(--app-divider)' }}>
               <div

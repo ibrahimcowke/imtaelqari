@@ -183,23 +183,23 @@ export const ProfileTab: React.FC = () => {
             <h2 className="text-xl md:text-2xl font-bold font-arabic text-white mb-0.5">
               الملف القرائي
             </h2>
-            <p className="text-brand-300/80 text-xs md:text-sm font-arabic">
+            <p className="text-amber-100 text-xs md:text-sm font-arabic font-medium">
               إمتاع القارئ بجمال الكلم وروائع الحكم
             </p>
             <div
               className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm"
-              style={{ background: 'rgba(163,124,108,0.35)', border: '1px solid rgba(163,124,108,0.5)' }}
+              style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}
             >
-              <TrendingUp className="w-3.5 h-3.5" />
+              <TrendingUp className="w-3.5 h-3.5 text-amber-300" />
               <span>{progress}% مكتمل من الكتاب</span>
             </div>
           </div>
         </div>
 
         <div className="relative z-10 mt-6">
-          <div className="flex justify-between text-xs text-brand-200/80 mb-2 font-sans">
-            <span>تقدم القراءة الكلي</span>
-            <span>صفحة {currentPage} من {totalPages}</span>
+          <div className="flex justify-between text-xs text-amber-200 mb-2 font-sans font-bold">
+            <span>تقدم القراءة الإجمالي</span>
+            <span>{currentPage} / {totalPages} صفحة</span>
           </div>
           <div className="h-2.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
             <motion.div
@@ -253,7 +253,7 @@ export const ProfileTab: React.FC = () => {
               <h3 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
                 سجل النشاط ومعدل القراءة
               </h3>
-              <p className="text-[11px] font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>
+              <p className="text-[11px] font-arabic mt-0.5 font-medium" style={{ color: 'var(--app-text-muted)' }}>
                 خريطة تفاعل القراءة لآخر 5 أسابيع
               </p>
             </div>
@@ -286,7 +286,7 @@ export const ProfileTab: React.FC = () => {
               );
             })}
           </div>
-          <div className="flex justify-between items-center text-[10px] font-arabic mt-3 px-1 opacity-70" style={{ color: 'var(--app-text-muted)' }}>
+          <div className="flex justify-between items-center text-[10px] font-arabic mt-3 px-1 font-semibold" style={{ color: 'var(--app-text-muted)' }}>
             <span>منذ 5 أسابيع</span>
             <div className="flex items-center gap-1.5">
               <span>أقل</span>
@@ -313,7 +313,7 @@ export const ProfileTab: React.FC = () => {
             <h3 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
               سمة التطبيق وألوان القراءة
             </h3>
-            <p className="text-[11px] font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>
+            <p className="text-[11px] font-arabic mt-0.5 font-medium" style={{ color: 'var(--app-text-muted)' }}>
               تطبق الألوان بتناغم كامل على الواجهة والقراءة
             </p>
           </div>
@@ -343,7 +343,7 @@ export const ProfileTab: React.FC = () => {
                   <div className="text-xs font-arabic font-bold truncate" style={{ color: 'var(--app-text)' }}>
                     {t.label}
                   </div>
-                  <div className="text-[10px] font-arabic opacity-60">
+                  <div className="text-[10px] font-arabic font-medium" style={{ color: isActive ? 'var(--app-brand)' : 'var(--app-text-muted)' }}>
                     {isActive ? 'نشط الآن' : 'تطبيق'}
                   </div>
                 </div>
@@ -371,7 +371,7 @@ export const ProfileTab: React.FC = () => {
             <h3 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
               الخطوط وخصائص العرض
             </h3>
-            <p className="text-[11px] font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>
+            <p className="text-[11px] font-arabic mt-0.5 font-medium" style={{ color: 'var(--app-text-muted)' }}>
               تحكم كامل بحجم ونوع الخط ومحاذاة النصوص
             </p>
           </div>
