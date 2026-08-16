@@ -3,7 +3,7 @@ import {
   ArrowRight, Settings, Bookmark,
   List, Volume2, VolumeX, PanelRightOpen,
   Music, Sparkles, BookMarked, MoreVertical,
-  BookOpen, ChevronDown
+  BookOpen, ChevronDown, Trophy, Layers, Mic, Image as ImageIcon, Lightbulb
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import * as Popover from '@radix-ui/react-popover';
@@ -23,6 +23,11 @@ export interface ReaderHeaderProps {
   onOpenQuoteStudio: () => void;
   onOpenSoundModal: () => void;
   onOpenDictModal: () => void;
+  onOpenCompanion: () => void;
+  onOpenManuscript: () => void;
+  onOpenVoiceStudio: () => void;
+  onOpenKhatma: () => void;
+  onOpenFlashcards: () => void;
 }
 
 export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
@@ -40,6 +45,11 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
   onOpenQuoteStudio,
   onOpenSoundModal,
   onOpenDictModal,
+  onOpenCompanion,
+  onOpenManuscript,
+  onOpenVoiceStudio,
+  onOpenKhatma,
+  onOpenFlashcards,
 }) => {
   const navigate = useNavigate();
   const [isToolsOpen, setIsToolsOpen] = useState(false);
@@ -151,12 +161,48 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
               label="المعجم اللغوي التراثي"
             />
 
+            {/* AI Heritage Companion */}
+            <HeaderIconButton
+              onClick={onOpenCompanion}
+              icon={<Lightbulb className="w-4 h-4 text-amber-500" />}
+              label="الشارح التراثي والمعاني"
+              highlight
+            />
+
+            {/* Manuscript Comparison */}
+            <HeaderIconButton
+              onClick={onOpenManuscript}
+              icon={<ImageIcon className="w-4 h-4 text-teal-500" />}
+              label="مطابقة المخطوطة الأصلية"
+            />
+
+            {/* Voice Studio */}
+            <HeaderIconButton
+              onClick={onOpenVoiceStudio}
+              icon={<Mic className="w-4 h-4 text-rose-500" />}
+              label="استوديو التسجيل الصوتي"
+            />
+
             {/* Quote Card Studio */}
             <HeaderIconButton
               onClick={onOpenQuoteStudio}
               icon={<Sparkles className="w-4 h-4 text-amber-500" />}
               label="استوديو بطاقات الاقتباسات"
               highlight
+            />
+
+            {/* Khatma & Challenges */}
+            <HeaderIconButton
+              onClick={onOpenKhatma}
+              icon={<Trophy className="w-4 h-4 text-amber-500" />}
+              label="الختمات وتحديات القراءة"
+            />
+
+            {/* Flashcards */}
+            <HeaderIconButton
+              onClick={onOpenFlashcards}
+              icon={<Layers className="w-4 h-4 text-purple-500" />}
+              label="بطاقات المراجعة والحفظ"
             />
 
             {/* Notes / Annotations */}
@@ -255,7 +301,7 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
 
               <Popover.Portal>
                 <Popover.Content
-                  className="z-50 w-64 rounded-2xl p-2 shadow-2xl border backdrop-blur-xl animate-fade-in focus:outline-none"
+                  className="z-50 w-64 rounded-2xl p-2 shadow-2xl border backdrop-blur-xl animate-fade-in focus:outline-none max-h-[85vh] overflow-y-auto custom-scrollbar"
                   style={{
                     background: 'var(--app-surface)',
                     borderColor: 'var(--app-surface-border)',
@@ -271,6 +317,33 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
 
                   <div className="space-y-1">
                     <MobileMenuItem
+                      icon={<Lightbulb className="w-4 h-4 text-amber-500" />}
+                      label="الشارح التراثي والمعاني"
+                      badge="ذكي"
+                      onClick={() => { setIsToolsOpen(false); onOpenCompanion(); }}
+                    />
+                    <MobileMenuItem
+                      icon={<ImageIcon className="w-4 h-4 text-teal-500" />}
+                      label="مطابقة المخطوطة الأصلية"
+                      onClick={() => { setIsToolsOpen(false); onOpenManuscript(); }}
+                    />
+                    <MobileMenuItem
+                      icon={<Mic className="w-4 h-4 text-rose-500" />}
+                      label="استوديو التسجيل الصوتي"
+                      onClick={() => { setIsToolsOpen(false); onOpenVoiceStudio(); }}
+                    />
+                    <MobileMenuItem
+                      icon={<Trophy className="w-4 h-4 text-amber-500" />}
+                      label="الختمات وتحديات القراءة"
+                      badge="أوراد"
+                      onClick={() => { setIsToolsOpen(false); onOpenKhatma(); }}
+                    />
+                    <MobileMenuItem
+                      icon={<Layers className="w-4 h-4 text-purple-500" />}
+                      label="بطاقات المراجعة والحفظ"
+                      onClick={() => { setIsToolsOpen(false); onOpenFlashcards(); }}
+                    />
+                    <MobileMenuItem
                       icon={<List className="w-4 h-4 text-sky-500" />}
                       label="فهرس الكتاب الكامل"
                       onClick={() => { setIsToolsOpen(false); onOpenTOC(); }}
@@ -278,7 +351,7 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
                     <MobileMenuItem
                       icon={<Sparkles className="w-4 h-4 text-amber-500" />}
                       label="استوديو بطاقات الاقتباسات"
-                      badge="جديد"
+                      badge="HD"
                       onClick={() => { setIsToolsOpen(false); onOpenQuoteStudio(); }}
                     />
                     <MobileMenuItem

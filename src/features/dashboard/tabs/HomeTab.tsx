@@ -6,7 +6,7 @@ import {
   BookOpen, Dices, Copy, Check, Share2, Star,
   Flame, Play, Pause, RotateCcw, Sparkles,
   Music, BookMarked, Layers, Clock,
-  ChevronLeft, Bell
+  ChevronLeft, Bell, Trophy, Lightbulb, Mic
 } from 'lucide-react';
 import { motion, type Variants } from 'framer-motion';
 import { QuoteCardModal } from '../../quote-studio/QuoteCardModal';
@@ -14,6 +14,10 @@ import { AmbientSoundModal } from '../../audio/AmbientSoundModal';
 import { ArabicDictionaryModal } from '../../dictionary/ArabicDictionaryModal';
 import { TopicsModal } from '../../topics/TopicsModal';
 import { ReminderModal } from '../../reminders/ReminderModal';
+import { KhatmaModal } from '../../khatma/KhatmaModal';
+import { FlashcardsModal } from '../../flashcards/FlashcardsModal';
+import { AIHeritageCompanionModal } from '../../companion/AIHeritageCompanionModal';
+import { VoiceStudioModal } from '../../voice-studio/VoiceStudioModal';
 import {
   calculateStreak,
   checkInToday,
@@ -91,6 +95,10 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
   const [isDictModalOpen, setIsDictModalOpen] = useState(false);
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(false);
   const [isReminderOpen, setIsReminderOpen] = useState(false);
+  const [isKhatmaOpen, setIsKhatmaOpen] = useState(false);
+  const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
+  const [isCompanionOpen, setIsCompanionOpen] = useState(false);
+  const [isVoiceStudioOpen, setIsVoiceStudioOpen] = useState(false);
 
   // Focus Timer State
   const [timerDuration, setTimerDuration] = useState(15);
@@ -731,26 +739,118 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
       {/* ══════════════════════════════════════════════════
           4. DISCOVERY TILES (أدوات الاستكشاف المتقدمة)
           ══════════════════════════════════════════════════ */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Ambient Sounds */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+        {/* Reading Khatmas */}
         <motion.div
           variants={itemVariants}
-          onClick={() => setIsSoundModalOpen(true)}
-          className="rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
+          onClick={() => setIsKhatmaOpen(true)}
+          className="rounded-2xl p-4 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
           style={{
             background: 'var(--app-surface)',
             borderColor: 'var(--app-surface-border)',
           }}
         >
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0 shadow-sm">
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0 shadow-sm">
+            <Trophy className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
+              ختمات القراءة والأوراد
+            </h4>
+            <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
+              أوراد يومية وتحديات إتمام الكتاب
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Flashcards & Quiz */}
+        <motion.div
+          variants={itemVariants}
+          onClick={() => setIsFlashcardsOpen(true)}
+          className="rounded-2xl p-4 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
+          style={{
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+          }}
+        >
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-purple-500/10 text-purple-500 border border-purple-500/20 shrink-0 shadow-sm">
+            <Layers className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
+              بطاقات المراجعة والحفظ
+            </h4>
+            <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
+              بطاقات تفاعلية لتثبيت الحكم والفوائد
+            </p>
+          </div>
+        </motion.div>
+
+        {/* AI Heritage Companion */}
+        <motion.div
+          variants={itemVariants}
+          onClick={() => setIsCompanionOpen(true)}
+          className="rounded-2xl p-4 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
+          style={{
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+          }}
+        >
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-sky-500/10 text-sky-500 border border-sky-500/20 shrink-0 shadow-sm">
+            <Lightbulb className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
+              الشارح التراثي والمعاني
+            </h4>
+            <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
+              تفسير الألفاظ والفوائد البلاغية
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Voice Studio */}
+        <motion.div
+          variants={itemVariants}
+          onClick={() => setIsVoiceStudioOpen(true)}
+          className="rounded-2xl p-4 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
+          style={{
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+          }}
+        >
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-rose-500/10 text-rose-500 border border-rose-500/20 shrink-0 shadow-sm">
+            <Mic className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
+              استوديو التسجيل الصوتي
+            </h4>
+            <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
+              سجّل قراءتك العذبة ومشاركتها
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Ambient Sounds */}
+        <motion.div
+          variants={itemVariants}
+          onClick={() => setIsSoundModalOpen(true)}
+          className="rounded-2xl p-4 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
+          style={{
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+          }}
+        >
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-teal-500/10 text-teal-500 border border-teal-500/20 shrink-0 shadow-sm">
             <Music className="w-5 h-5" />
           </div>
           <div>
             <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
-              أصوات التركيز
+              أصوات التركيز والطبيعة
             </h4>
             <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
-              مطر، هدوء، وبيئة قراءة هادئة
+              مطر، هدوء، ومكتبة تراثية
             </p>
           </div>
         </motion.div>
@@ -759,13 +859,13 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
         <motion.div
           variants={itemVariants}
           onClick={() => setIsDictModalOpen(true)}
-          className="rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
+          className="rounded-2xl p-4 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
           style={{
             background: 'var(--app-surface)',
             borderColor: 'var(--app-surface-border)',
           }}
         >
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0 shadow-sm">
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0 shadow-sm">
             <BookMarked className="w-5 h-5" />
           </div>
           <div>
@@ -774,29 +874,6 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
             </h4>
             <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
               شرح غريب الألفاظ والمفردات
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Topics */}
-        <motion.div
-          variants={itemVariants}
-          onClick={() => setIsTopicsModalOpen(true)}
-          className="rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
-          style={{
-            background: 'var(--app-surface)',
-            borderColor: 'var(--app-surface-border)',
-          }}
-        >
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-purple-500/10 text-purple-500 border border-purple-500/20 shrink-0 shadow-sm">
-            <Layers className="w-5 h-5" />
-          </div>
-          <div>
-            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
-              التصفح الموضوعي
-            </h4>
-            <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
-              أبواب وموضوعات وحكم الكتاب
             </p>
           </div>
         </motion.div>
@@ -826,6 +903,32 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
       <ReminderModal
         open={isReminderOpen}
         onOpenChange={setIsReminderOpen}
+      />
+      <KhatmaModal
+        open={isKhatmaOpen}
+        onOpenChange={setIsKhatmaOpen}
+        onNavigateToPage={(p) => {
+          setCurrentPage(p);
+          onNavigate();
+        }}
+      />
+      <FlashcardsModal
+        open={isFlashcardsOpen}
+        onOpenChange={setIsFlashcardsOpen}
+        onNavigateToPage={(p) => {
+          setCurrentPage(p);
+          onNavigate();
+        }}
+      />
+      <AIHeritageCompanionModal
+        open={isCompanionOpen}
+        onOpenChange={setIsCompanionOpen}
+        pageNumber={currentPage}
+      />
+      <VoiceStudioModal
+        open={isVoiceStudioOpen}
+        onOpenChange={setIsVoiceStudioOpen}
+        pageNumber={currentPage}
       />
     </motion.div>
   );

@@ -8,7 +8,10 @@ import type {
   TextCorrection,
   ReadingSession,
   ReadingProgress,
-  ReaderPreferences
+  ReaderPreferences,
+  KhatmaPlan,
+  FlashcardItem,
+  VoiceRecordingItem,
 } from '../types/book';
 
 export class AppDatabase extends Dexie {
@@ -20,6 +23,9 @@ export class AppDatabase extends Dexie {
   sessions!: Table<ReadingSession, string>;
   progress!: Table<ReadingProgress, number>; // Primary key is page
   preferences!: Table<ReaderPreferences, string>;
+  khatmas!: Table<KhatmaPlan, string>;
+  flashcards!: Table<FlashcardItem, string>;
+  recordings!: Table<VoiceRecordingItem, string>;
 
   constructor() {
     super('ImtaaAlQariReaderDB');
@@ -31,8 +37,14 @@ export class AppDatabase extends Dexie {
       quotes: 'id, page, createdAt',
       corrections: 'id, page, blockId, verified, updatedAt',
       sessions: 'id, date',
-      progress: 'page, updatedAt', // Single entry per page, or we could just store a generic key
-      preferences: 'id' // 'default' will be the key
+      progress: 'page, updatedAt',
+      preferences: 'id'
+    });
+
+    this.version(2).stores({
+      khatmas: 'id, isCompleted, startDate, targetDate',
+      flashcards: 'id, page, category, isMastered, difficulty',
+      recordings: 'id, page, createdAt'
     });
   }
 }

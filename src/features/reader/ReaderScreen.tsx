@@ -11,6 +11,11 @@ import { HighlightPopover } from './components/HighlightPopover';
 import { QuoteCardModal } from '../quote-studio/QuoteCardModal';
 import { AmbientSoundModal } from '../audio/AmbientSoundModal';
 import { ArabicDictionaryModal } from '../dictionary/ArabicDictionaryModal';
+import { AIHeritageCompanionModal } from '../companion/AIHeritageCompanionModal';
+import { ManuscriptModal } from './components/ManuscriptModal';
+import { VoiceStudioModal } from '../voice-studio/VoiceStudioModal';
+import { KhatmaModal } from '../khatma/KhatmaModal';
+import { FlashcardsModal } from '../flashcards/FlashcardsModal';
 import { db } from '../../lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
@@ -125,6 +130,11 @@ export const ReaderScreen: React.FC = () => {
   const [quoteStudioInitialText, setQuoteStudioInitialText] = useState<string>('');
   const [isSoundModalOpen, setIsSoundModalOpen] = useState(false);
   const [isDictModalOpen, setIsDictModalOpen] = useState(false);
+  const [isCompanionOpen, setIsCompanionOpen] = useState(false);
+  const [isManuscriptOpen, setIsManuscriptOpen] = useState(false);
+  const [isVoiceStudioOpen, setIsVoiceStudioOpen] = useState(false);
+  const [isKhatmaOpen, setIsKhatmaOpen] = useState(false);
+  const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
   const [slideDir, setSlideDir] = useState<-1 | 1>(-1); // -1: Next, 1: Prev
   const totalPages = bookDataService.getPages().length;
 
@@ -362,6 +372,11 @@ export const ReaderScreen: React.FC = () => {
         }}
         onOpenSoundModal={() => setIsSoundModalOpen(true)}
         onOpenDictModal={() => setIsDictModalOpen(true)}
+        onOpenCompanion={() => setIsCompanionOpen(true)}
+        onOpenManuscript={() => setIsManuscriptOpen(true)}
+        onOpenVoiceStudio={() => setIsVoiceStudioOpen(true)}
+        onOpenKhatma={() => setIsKhatmaOpen(true)}
+        onOpenFlashcards={() => setIsFlashcardsOpen(true)}
       />
 
       {/* ── Left & Right Edge Tap Zones ── */}
@@ -535,6 +550,31 @@ export const ReaderScreen: React.FC = () => {
       <ArabicDictionaryModal
         open={isDictModalOpen}
         onOpenChange={setIsDictModalOpen}
+      />
+      <AIHeritageCompanionModal
+        open={isCompanionOpen}
+        onOpenChange={setIsCompanionOpen}
+        pageNumber={currentPage}
+      />
+      <ManuscriptModal
+        open={isManuscriptOpen}
+        onOpenChange={setIsManuscriptOpen}
+        pageNumber={currentPage}
+      />
+      <VoiceStudioModal
+        open={isVoiceStudioOpen}
+        onOpenChange={setIsVoiceStudioOpen}
+        pageNumber={currentPage}
+      />
+      <KhatmaModal
+        open={isKhatmaOpen}
+        onOpenChange={setIsKhatmaOpen}
+        onNavigateToPage={setCurrentPage}
+      />
+      <FlashcardsModal
+        open={isFlashcardsOpen}
+        onOpenChange={setIsFlashcardsOpen}
+        onNavigateToPage={setCurrentPage}
       />
     </div>
   );

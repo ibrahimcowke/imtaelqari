@@ -126,3 +126,49 @@ export interface ReaderPreferences {
   ttsRate: number;
   autoHideControls: boolean;
 }
+
+export interface KhatmaPlan {
+  id: string;
+  title: string;
+  targetDays: number;
+  startPage: number;
+  endPage: number;
+  currentPage: number;
+  startDate: string;
+  targetDate: string;
+  isCompleted: boolean;
+  dailyGoalPages: number;
+  lastReadDate?: string;
+}
+
+export interface FlashcardItem {
+  id: string;
+  page: number;
+  category: 'wisdom' | 'poem' | 'vocabulary' | 'concept';
+  front: string; // Question / Term / Prompt
+  back: string;  // Answer / Meaning / Explanation
+  difficulty?: 'easy' | 'medium' | 'hard';
+  reviewedCount: number;
+  lastReviewedAt?: string;
+  isMastered: boolean;
+}
+
+export interface VoiceRecordingItem {
+  id: string;
+  page: number;
+  title: string;
+  passageText: string;
+  audioBlobUrl?: string;
+  audioBase64?: string;
+  durationSeconds: number;
+  createdAt: string;
+}
+
+export interface HeritageInsight {
+  term: string;
+  root?: string;
+  meaning: string;
+  literaryContext?: string;
+  benefit?: string;
+}
+
