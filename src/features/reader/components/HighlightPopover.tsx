@@ -22,7 +22,6 @@ export const HighlightPopover: React.FC = () => {
     const handleSelection = () => {
       const activeSelection = window.getSelection();
       if (!activeSelection || activeSelection.isCollapsed) {
-        // Delay hiding slightly to prevent flickering when clicking options
         setTimeout(() => setSelection(null), 100);
         return;
       }
@@ -36,7 +35,6 @@ export const HighlightPopover: React.FC = () => {
         return;
       }
 
-      // Find the closest block container
       let container = range.commonAncestorContainer as HTMLElement;
       if (container.nodeType === Node.TEXT_NODE) {
         container = container.parentElement!;
@@ -46,12 +44,11 @@ export const HighlightPopover: React.FC = () => {
       if (!blockElement) return;
 
       const blockId = blockElement.getAttribute('data-block-id')!;
-      
+
       setSelection({
         text,
         rect,
         blockId,
-        // Approximate offsets for now. Native exact offset mapping requires complex DOM traversal.
         startOffset: range.startOffset,
         endOffset: range.endOffset,
       });
@@ -60,7 +57,7 @@ export const HighlightPopover: React.FC = () => {
 
     document.addEventListener('mouseup', handleSelection);
     document.addEventListener('touchend', handleSelection);
-    
+
     return () => {
       document.removeEventListener('mouseup', handleSelection);
       document.removeEventListener('touchend', handleSelection);
@@ -69,7 +66,7 @@ export const HighlightPopover: React.FC = () => {
 
   const handleHighlight = async (color: HighlightColor) => {
     if (!selection) return;
-    
+
     try {
       await db.highlights.add({
         id: crypto.randomUUID(),
@@ -101,33 +98,40 @@ export const HighlightPopover: React.FC = () => {
   if (!selection) return null;
 
   return (
-    <div 
+    <div
       ref={popoverRef}
-      className="fixed z-50 bg-gray-900 text-white shadow-xl rounded-lg p-2 flex items-center gap-3 animate-fade-in"
+      className="fixed z-50 rounded-2xl p-2 flex items-center gap-3 shadow-2xl animate-fade-in select-none"
       style={{
-        top: Math.max(10, selection.rect.top - 60) + 'px',
-        left: Math.max(10, selection.rect.left + (selection.rect.width / 2) - 100) + 'px',
+        top: Math.max(12, selection.rect.top - 54) + 'px',
+        left: Math.max(12, Math.min(window.innerWidth - 220, selection.rect.left + (selection.rect.width / 2) - 100)) + 'px',
+        background: 'rgba(20, 20, 20, 0.92)',
+        color: '#ffffff',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255,255,255,0.15)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       }}
-      onMouseDown={(e) => e.stopPropagation()} // prevent dismissing selection
+      onMouseDown={(e) => e.stopPropagation()}
     >
-      <div className="flex gap-2 border-l border-gray-700 pl-3">
-        {(['amber', 'rose', 'sage', 'blue-gray'] as HighlightColor[]).map(color => (
+      <div className="flex items-center gap-1.5 border-l border-white/20 pl-2.5">
+        {[
+          { color: 'amber' as HighlightColor, bg: 'bg-amber-400', title: 'تظليل أصفر' },
+          { color: 'rose' as HighlightColor, bg: 'bg-rose-400', title: 'تظليل أحمر' },
+          { color: 'sage' as HighlightColor, bg: 'bg-teal-400', title: 'تظليل أخضر' },
+          { color: 'blue-gray' as HighlightColor, bg: 'bg-slate-400', title: 'تظليل رمادي' },
+        ].map(c => (
           <button
-            key={color}
-            onClick={() => handleHighlight(color)}
-            className={`w-6 h-6 rounded-full hover:scale-110 transition-transform ${
-              color === 'amber' ? 'bg-amber-300' :
-              color === 'rose' ? 'bg-rose-300' :
-              color === 'sage' ? 'bg-teal-300' : 'bg-slate-300'
-            }`}
+            key={c.color}
+            onClick={() => handleHighlight(c.color)}
+            className={`w-6 h-6 rounded-full ${c.bg} transition-all hover:scale-125 active:scale-95 shadow-sm`}
+            title={c.title}
           />
         ))}
       </div>
-      <button 
+      <button
         onClick={handleCopy}
-        className="flex items-center gap-1 text-sm hover:text-gray-300 pr-1"
+        className="flex items-center gap-1.5 px-2 py-1 rounded-xl text-xs font-arabic hover:bg-white/10 transition-colors"
       >
-        {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+        {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 opacity-80" />}
         <span>{copied ? 'تم النسخ' : 'نسخ'}</span>
       </button>
     </div>

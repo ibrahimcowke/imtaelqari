@@ -3,11 +3,12 @@ import { bookDataService } from '../../../data/service';
 import { useReaderStore } from '../../../store/readerStore';
 import { db } from '../../../lib/db';
 import {
-  Clock, BookOpen, Zap, Dices, Copy,
-  Check, Share2, Star, Flame, Play, Pause, RotateCcw,
-  Sparkles, Compass, ArrowRight, Music, BookMarked, Layers,
+  BookOpen, Dices, Copy, Check, Share2, Star,
+  Flame, Play, Pause, RotateCcw, Sparkles,
+  Music, BookMarked, Layers, Clock,
+  ChevronLeft
 } from 'lucide-react';
-import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { QuoteCardModal } from '../../quote-studio/QuoteCardModal';
 import { AmbientSoundModal } from '../../audio/AmbientSoundModal';
 import { ArabicDictionaryModal } from '../../dictionary/ArabicDictionaryModal';
@@ -63,13 +64,14 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
   const totalPages = bookDataService.getPages().length;
   const progress = Math.round((currentPage / totalPages) * 100);
   const book = bookDataService.getBookInfo();
+  const currentPageData = bookDataService.getPage(currentPage);
 
   // Quote State
   const [quoteIdx, setQuoteIdx] = useState(0);
   const [copied, setCopied] = useState(false);
   const [savedStar, setSavedStar] = useState(false);
 
-  // Daily Streak State (persisted in localStorage)
+  // Daily Streak State
   const [streak, setStreak] = useState(() => {
     return parseInt(localStorage.getItem('reading_streak') || '3', 10);
   });
@@ -79,11 +81,11 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
   });
 
   // Focus Timer State
-  const [timerDuration, setTimerDuration] = useState(10); // in minutes
-  const [timeLeft, setTimeLeft] = useState(10 * 60);
+  const [timerDuration, setTimerDuration] = useState(15); // in minutes
+  const [timeLeft, setTimeLeft] = useState(15 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
 
-  // New Feature Modals
+  // Feature Modals
   const [isCardStudioOpen, setIsCardStudioOpen] = useState(false);
   const [isSoundModalOpen, setIsSoundModalOpen] = useState(false);
   const [isDictModalOpen, setIsDictModalOpen] = useState(false);
@@ -184,19 +186,18 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    show: { opacity: 1, transition: { staggerChildren: 0.08 } }
   };
   const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 22 } }
+    hidden: { opacity: 0, y: 16 },
+    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
   };
 
   // SVG circle math
-  const radius = 54;
+  const radius = 52;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (progress / 100) * circumference;
 
-  // Format seconds
   const formatTimer = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -208,30 +209,82 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
 
-      {/* ── 1. Interactive Hero Card ── */}
+      {/* ══════════════════════════════════════════════════
+          1. LUXURY HERO BANNER & READING SHOWCASE
+          ══════════════════════════════════════════════════ */}
       <motion.div
         variants={itemVariants}
-        className="relative overflow-hidden rounded-3xl group"
+        className="relative overflow-hidden rounded-3xl group p-6 md:p-8"
         style={{
-          background: 'linear-gradient(135deg, #2a1c16 0%, #3d2822 40%, #4e3328 100%)',
-          boxShadow: '0 8px 48px rgba(42,28,22,0.35), 0 2px 8px rgba(0,0,0,0.1)',
-          border: '1px solid rgba(163,124,108,0.2)',
+          background: 'linear-gradient(135deg, #2a1c16 0%, #3d2822 45%, #4e3328 100%)',
+          boxShadow: '0 12px 48px rgba(42,28,22,0.4), 0 2px 8px rgba(0,0,0,0.1)',
+          border: '1px solid rgba(163,124,108,0.25)',
         }}
       >
-        {/* Decorative orbs */}
-        <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full opacity-20 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #a37c6c 0%, transparent 70%)' }} />
-        <div className="absolute -bottom-20 -left-10 w-56 h-56 rounded-full opacity-10 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #d2bab0 0%, transparent 70%)' }} />
+        {/* Glow Spheres */}
+        <div
+          className="absolute -top-16 -right-16 w-64 h-64 rounded-full opacity-25 group-hover:opacity-40 transition-opacity duration-700 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, #a37c6c 0%, transparent 70%)' }}
+        />
+        <div
+          className="absolute -bottom-20 -left-10 w-56 h-56 rounded-full opacity-15 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, #d2bab0 0%, transparent 70%)' }}
+        />
 
-        <div className="relative z-10 p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
-          {/* Progress Ring */}
-          <div className="relative shrink-0 w-36 h-36">
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Left / Info Side */}
+          <div className="flex-1 text-center md:text-right">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-arabic font-semibold mb-3"
+              style={{ background: 'rgba(163,124,108,0.25)', border: '1px solid rgba(163,124,108,0.4)', color: '#e0cec7' }}>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>متابعة القراءة والتدبر</span>
+            </div>
+
+            <h2 className="text-2xl md:text-3xl font-bold font-arabic text-white mb-2 leading-snug">
+              {book.title}
+            </h2>
+            <p className="text-brand-300/80 font-arabic text-xs md:text-sm mb-5 flex items-center justify-center md:justify-start gap-2">
+              <span>{currentPageData?.title ? currentPageData.title : `صفحة ${currentPage}`}</span>
+              <span className="opacity-40">•</span>
+              <span>صفحة {currentPage} من {totalPages}</span>
+            </p>
+
+            <div className="flex items-center justify-center md:justify-start gap-3 flex-wrap">
+              <button
+                onClick={onNavigate}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-arabic text-sm font-bold transition-all duration-300 active:scale-95 text-white shadow-xl hover:brightness-110"
+                style={{
+                  background: 'linear-gradient(135deg, #a37c6c, #75594e)',
+                  boxShadow: '0 6px 20px rgba(163,124,108,0.45)',
+                }}
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>استئناف القراءة</span>
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={handleRandomPage}
+                className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl font-arabic text-xs font-semibold transition-all duration-300 active:scale-95 hover:bg-white/10 text-white/90"
+                style={{
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                }}
+                title="اقرأ صفحة عشوائية من الكتاب"
+              >
+                <Dices className="w-4 h-4 text-brand-300" />
+                <span>درة عشوائية</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right / Circular Progress Ring */}
+          <div className="relative shrink-0 w-36 h-36 flex items-center justify-center">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="8" />
+              <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
               <circle
                 cx="60" cy="60" r={radius} fill="none"
-                stroke="url(#progressGrad)"
+                stroke="url(#heroProgressGrad)"
                 strokeWidth="8"
                 strokeDasharray={circumference}
                 strokeDashoffset={offset}
@@ -240,466 +293,331 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                 style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
               />
               <defs>
-                <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#e0cec7" />
+                <linearGradient id="heroProgressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#f5ede8" />
                   <stop offset="100%" stopColor="#a37c6c" />
                 </linearGradient>
               </defs>
             </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-3xl font-bold font-sans text-white">{progress}%</span>
-              <span className="text-[10px] text-brand-300/70 font-sans uppercase tracking-wider mt-0.5">مكتمل</span>
-            </div>
-          </div>
-
-          {/* Text & Interactive CTA Buttons */}
-          <div className="flex-1 text-center md:text-right">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-sans font-semibold uppercase tracking-wider mb-2"
-              style={{ background: 'rgba(163,124,108,0.25)', border: '1px solid rgba(163,124,108,0.4)', color: '#d2bab0' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-              متابعة القراءة
-            </span>
-            <h2 className="text-2xl md:text-3xl font-bold font-arabic text-white mb-1.5 leading-snug">{book.title}</h2>
-            <p className="text-brand-400/80 text-sm mb-4">الصفحة {currentPage} من {totalPages}</p>
-
-            <div className="flex items-center justify-center md:justify-start gap-2.5 flex-wrap">
-              <button
-                onClick={onNavigate}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-arabic text-sm font-semibold transition-all duration-300 active:scale-95 shadow-lg"
-                style={{
-                  background: 'linear-gradient(135deg, #a37c6c, #75594e)',
-                  color: 'white',
-                  boxShadow: '0 4px 16px rgba(163,124,108,0.4)',
-                }}
-              >
-                <BookOpen className="w-4 h-4" />
-                استئناف القراءة
-              </button>
-
-              <button
-                onClick={handleRandomPage}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-arabic text-xs font-semibold transition-all duration-300 active:scale-95 hover:bg-white/10"
-                style={{
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#e0cec7',
-                }}
-                title="اقرأ صفحة عشوائية من الكتاب"
-              >
-                <Dices className="w-4 h-4 text-brand-300 animate-spin-slow" />
-                صفحة عشوائية
-              </button>
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+              <span className="text-3xl font-bold font-sans text-white tracking-tight">{progress}%</span>
+              <span className="text-[10px] text-brand-200/70 font-arabic font-medium">مكتمل</span>
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* ── 2. Interactive Daily Streak & Habit Tracker ── */}
-      <motion.div
-        variants={itemVariants}
-        className="rounded-3xl p-5 md:p-6"
-        style={{
-          background: 'var(--app-surface)',
-          border: '1px solid var(--app-surface-border)',
-          boxShadow: '0 2px 16px var(--app-surface-shadow)',
-        }}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
-              style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}>
-              <Flame className="w-5 h-5 fill-current animate-bounce" />
-            </div>
-            <div>
-              <h3 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
-                سلسلة القراءة اليومية
-              </h3>
-              <p className="text-xs font-arabic" style={{ color: 'var(--app-text-muted)' }}>
-                حافظ على عادة القراءة يومياً
-              </p>
-            </div>
-          </div>
-
-          <div className="text-left">
-            <span className="text-2xl font-bold font-sans" style={{ color: '#f59e0b' }}>
-              {streak}
-            </span>
-            <span className="text-xs font-arabic mr-1" style={{ color: 'var(--app-text-muted)' }}>أيام</span>
-          </div>
-        </div>
-
-        {/* 7-Day Checklist */}
-        <div className="grid grid-cols-7 gap-2 mb-4">
-          {DAYS_AR.map((day, idx) => {
-            const isDone = idx < (streak % 7 || 7);
-            return (
-              <div
-                key={day}
-                className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all"
-                style={{
-                  background: isDone ? 'var(--app-brand-dim)' : 'rgba(0,0,0,0.02)',
-                  border: isDone ? '1px solid var(--app-brand-border)' : '1px dashed rgba(128,128,128,0.15)',
-                }}
-              >
-                <span className="text-[10px] font-arabic truncate" style={{ color: 'var(--app-text-muted)' }}>{day}</span>
-                <div
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                  style={{
-                    background: isDone ? 'var(--app-brand)' : 'transparent',
-                    color: isDone ? 'white' : 'var(--app-text-faint)',
-                  }}
-                >
-                  {isDone ? <Check className="w-3.5 h-3.5" /> : idx + 1}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Interactive Check-in Button */}
-        <button
-          onClick={handleCheckIn}
-          disabled={checkedToday}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-sm font-bold transition-all active:scale-95 disabled:opacity-60"
-          style={checkedToday
-            ? { background: 'rgba(16,185,129,0.12)', color: '#0d8f60', border: '1px solid rgba(16,185,129,0.25)' }
-            : { background: 'linear-gradient(135deg, #a37c6c, #75594e)', color: 'white', boxShadow: '0 4px 16px rgba(163,124,108,0.3)' }
-          }
+      {/* ══════════════════════════════════════════════════
+          2. BENTO GRID: STREAK & FOCUS TIMER
+          ══════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Daily Streak Tracker */}
+        <motion.div
+          variants={itemVariants}
+          className="app-surface rounded-3xl p-6 flex flex-col justify-between"
         >
-          {checkedToday ? (
-            <>
-              <Check className="w-4 h-4" />
-              أحسنت! تم تسجيل قراءة اليوم 🎉
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-4 h-4" />
-              سجّل إنجاز قراءة اليوم (+1)
-            </>
-          )}
-        </button>
-      </motion.div>
-
-      {/* ── 3. Interactive Quote / Wisdom of the Day Card ── */}
-      <motion.div
-        variants={itemVariants}
-        className="relative overflow-hidden rounded-3xl p-6 md:p-7"
-        style={{
-          background: 'var(--app-surface)',
-          backdropFilter: 'blur(24px)',
-          border: '1px solid var(--app-surface-border)',
-          boxShadow: '0 4px 24px var(--app-surface-shadow)',
-        }}
-      >
-        {/* Accent Bar */}
-        <div className="absolute right-0 top-8 bottom-8 w-1 rounded-full"
-          style={{ background: 'linear-gradient(180deg, #e0cec7 0%, var(--app-brand) 50%, #e0cec7 100%)' }} />
-
-        <div className="pr-4">
-          {/* Card Header with Interactive Shuffle */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, #a37c6c, #75594e)' }}>
-                <span className="text-white text-xs font-bold font-sans">«</span>
-              </div>
-              <span className="text-xs font-sans font-bold uppercase tracking-widest"
-                style={{ color: 'var(--app-brand)' }}>
-                حكمة مختارة ({quoteIdx + 1}/{CURATED_WISDOMS.length})
-              </span>
-            </div>
-
-            <button
-              onClick={nextQuote}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl font-arabic text-xs font-medium transition-all active:scale-90"
-              style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }}
-              title="حكمة أخرى"
-            >
-              <Dices className="w-3.5 h-3.5" />
-              حكمة أخرى
-            </button>
-          </div>
-
-          {/* Animated Quote Text */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={quoteIdx}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-            >
-              <p className="font-arabic text-lg md:text-xl leading-loose font-medium mb-3" style={{ color: 'var(--app-text)' }}>
-                «{currentWisdom.text}»
-              </p>
-              <div className="flex items-center justify-between text-xs font-arabic pt-2 border-t"
-                style={{ borderColor: 'var(--app-divider)', color: 'var(--app-text-muted)' }}>
-                <span>— {currentWisdom.source} (ص {currentWisdom.page})</span>
-
-                {/* Quote Action Buttons */}
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setIsCardStudioOpen(true)}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-arabic font-bold transition-all active:scale-95 shadow-sm"
-                    style={{ background: 'var(--app-brand-grad)', color: 'white' }}
-                    title="تصميم بطاقة اقتباس للنشر والمشاركة"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>تصميم بطاقة</span>
-                  </button>
-                  <button
-                    onClick={copyQuote}
-                    className="p-2 rounded-lg transition-all hover:bg-black/5 active:scale-90"
-                    style={{ color: copied ? '#0d8f60' : 'var(--app-brand)' }}
-                    title="نسخ الحكمة"
-                  >
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  </button>
-                  <button
-                    onClick={shareQuote}
-                    className="p-2 rounded-lg transition-all hover:bg-black/5 active:scale-90"
-                    style={{ color: 'var(--app-brand)' }}
-                    title="مشاركة الحكمة"
-                  >
-                    <Share2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={saveQuoteToDb}
-                    className="p-2 rounded-lg transition-all hover:bg-black/5 active:scale-90"
-                    style={{ color: savedStar ? '#f59e0b' : 'var(--app-brand)' }}
-                    title="حفظ في المفضلة"
-                  >
-                    <Star className={`w-4 h-4 ${savedStar ? 'fill-current' : ''}`} />
-                  </button>
-                  <button
-                    onClick={() => jumpToQuotePage(currentWisdom.page)}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-arabic font-bold transition-all active:scale-95 mr-1"
-                    style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)' }}
-                    title="الانتقال لصفحة الحكمة في الكتاب"
-                  >
-                    <span>فتح الصفحة</span>
-                    <ArrowRight className="w-3 h-3 rotate-180" />
-                  </button>
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                  <Flame className="w-5 h-5 fill-current" />
+                </div>
+                <div>
+                  <h3 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
+                    سلسلة القراءة اليومية
+                  </h3>
+                  <p className="text-xs font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>
+                    حافظ على عادة القراءة اليومية
+                  </p>
                 </div>
               </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </motion.div>
 
-      {/* ── 4. Interactive Focus Timer (جلسة قراءة مركّزة) ── */}
-      <motion.div
-        variants={itemVariants}
-        className="rounded-3xl p-5 md:p-6"
-        style={{
-          background: 'var(--app-surface)',
-          border: '1px solid var(--app-surface-border)',
-          boxShadow: '0 2px 16px var(--app-surface-shadow)',
-        }}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
-              style={{ background: 'rgba(124,92,191,0.12)', color: '#7c5cbf' }}>
-              <Clock className="w-5 h-5" />
+              <div className="text-left">
+                <span className="text-2xl font-bold font-sans text-amber-500">
+                  {streak}
+                </span>
+                <span className="text-xs font-arabic mr-1 opacity-70">أيام</span>
+              </div>
             </div>
-            <div>
-              <h3 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
-                جلسة قراءة مركّزة
-              </h3>
-              <p className="text-xs font-arabic" style={{ color: 'var(--app-text-muted)' }}>
-                اضبط وقتاً مخصصاً وتخلص من المشتتات
-              </p>
+
+            {/* 7-Day Checklist */}
+            <div className="grid grid-cols-7 gap-1.5 mb-4">
+              {DAYS_AR.map((day, idx) => {
+                const isDone = idx < (streak % 7 || 7);
+                return (
+                  <div
+                    key={day}
+                    className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all"
+                    style={{
+                      background: isDone ? 'var(--app-brand-dim)' : 'rgba(0,0,0,0.02)',
+                      border: isDone ? '1px solid var(--app-brand-border)' : '1px dashed rgba(128,128,128,0.15)',
+                    }}
+                  >
+                    <span className="text-[9px] font-arabic truncate opacity-70">{day}</span>
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                      style={{
+                        background: isDone ? 'var(--app-brand)' : 'transparent',
+                        color: isDone ? 'white' : 'var(--app-text-faint)',
+                      }}
+                    >
+                      {isDone ? <Check className="w-3 h-3" /> : idx + 1}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          <div className="text-2xl font-mono font-bold" style={{ color: timerRunning ? '#7c5cbf' : 'var(--app-text)' }}>
-            {formatTimer(timeLeft)}
-          </div>
-        </div>
-
-        {/* Time Preset Buttons */}
-        <div className="flex gap-2 mb-4">
-          {[5, 10, 15, 25].map((mins) => (
-            <button
-              key={mins}
-              onClick={() => selectTimerPreset(mins)}
-              className="flex-1 py-2 rounded-xl text-xs font-arabic font-bold transition-all active:scale-95"
-              style={timerDuration === mins
-                ? { background: 'linear-gradient(135deg, #7c5cbf, #5b3d9c)', color: 'white', boxShadow: '0 4px 12px rgba(124,92,191,0.3)' }
-                : { background: 'var(--app-brand-dim)', color: 'var(--app-brand)' }
-              }
-            >
-              {mins} دقائق
-            </button>
-          ))}
-        </div>
-
-        {/* Timer Action Controls */}
-        <div className="flex gap-2">
+          {/* Interactive Check-in Button */}
           <button
-            onClick={toggleTimer}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-sm font-bold transition-all active:scale-95"
-            style={{
-              background: timerRunning ? 'rgba(244,63,94,0.12)' : 'linear-gradient(135deg, #7c5cbf, #5b3d9c)',
-              color: timerRunning ? '#e05f7a' : 'white',
-              border: timerRunning ? '1px solid rgba(244,63,94,0.25)' : 'none',
-              boxShadow: timerRunning ? 'none' : '0 4px 16px rgba(124,92,191,0.35)',
-            }}
+            onClick={handleCheckIn}
+            disabled={checkedToday}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-xs font-bold transition-all active:scale-95 disabled:opacity-65"
+            style={checkedToday
+              ? { background: 'rgba(16,185,129,0.12)', color: '#0d8f60', border: '1px solid rgba(16,185,129,0.25)' }
+              : { background: 'var(--app-brand-grad)', color: 'white', boxShadow: '0 4px 16px var(--app-brand-glow)' }
+            }
           >
-            {timerRunning ? (
+            {checkedToday ? (
               <>
-                <Pause className="w-4 h-4" />
-                إيقاف مؤقت
+                <Check className="w-4 h-4" />
+                <span>أحسنت! تم تسجيل قراءة اليوم 🎉</span>
               </>
             ) : (
               <>
-                <Play className="w-4 h-4 fill-current" />
-                بدء المؤقت والقراءة
+                <Sparkles className="w-4 h-4" />
+                <span>سجّل إنجاز قراءة اليوم (+1)</span>
               </>
             )}
           </button>
+        </motion.div>
 
-          <button
-            onClick={resetTimer}
-            className="w-12 h-12 flex items-center justify-center rounded-2xl transition-all active:scale-95"
-            style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)' }}
-            title="إعادة ضبط المؤقت"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
+        {/* Focus Timer & Ambient Companion */}
+        <motion.div
+          variants={itemVariants}
+          className="app-surface rounded-3xl p-6 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-sky-500/10 text-sky-500 border border-sky-500/20">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
+                    جلسة تركيز وتدبر
+                  </h3>
+                  <p className="text-xs font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>
+                    حدد وقتاً مخصصاً للقراءة الهادئة
+                  </p>
+                </div>
+              </div>
 
-          <button
-            onClick={onNavigate}
-            className="px-4 flex items-center justify-center gap-1.5 rounded-2xl font-arabic text-xs font-bold transition-all active:scale-95"
-            style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }}
-            title="انتقل للقارئ مباشرة"
-          >
-            <BookOpen className="w-4 h-4" />
-            فتح القارئ
-          </button>
+              {/* Ambient Sound Trigger */}
+              <button
+                onClick={() => setIsSoundModalOpen(true)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90"
+                style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }}
+                title="تشغيل أصوات الطبيعة"
+              >
+                <Music className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Presets & Digital Display */}
+            <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 p-3.5 rounded-2xl mb-4">
+              <div className="flex gap-1.5">
+                {[10, 15, 25].map((mins) => (
+                  <button
+                    key={mins}
+                    onClick={() => selectTimerPreset(mins)}
+                    className={`px-2.5 py-1 rounded-xl text-xs font-arabic font-semibold transition-all ${
+                      timerDuration === mins && !timerRunning
+                        ? 'bg-brand-600 text-white shadow-sm'
+                        : 'opacity-70 hover:opacity-100'
+                    }`}
+                    style={timerDuration === mins && !timerRunning ? { background: 'var(--app-brand)' } : {}}
+                  >
+                    {mins} د
+                  </button>
+                ))}
+              </div>
+
+              <div className="font-mono text-2xl font-bold tracking-wider" style={{ color: 'var(--app-text)' }}>
+                {formatTimer(timeLeft)}
+              </div>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTimer}
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-xs font-bold text-white transition-all active:scale-95 shadow-md"
+              style={{ background: 'var(--app-brand-grad)', boxShadow: '0 4px 16px var(--app-brand-glow)' }}
+            >
+              {timerRunning ? (
+                <>
+                  <Pause className="w-4 h-4" />
+                  <span>إيقاف مؤقت</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  <span>بدء جلسة القراءة</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={resetTimer}
+              className="w-11 h-11 rounded-2xl flex items-center justify-center transition-all active:scale-90 bg-black/5 dark:bg-white/5 opacity-70 hover:opacity-100"
+              title="إعادة ضبط"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════
+          3. WISDOM OF THE DAY (حكمة اليوم)
+          ══════════════════════════════════════════════════ */}
+      <motion.div
+        variants={itemVariants}
+        className="app-surface rounded-3xl p-6 md:p-7 relative overflow-hidden"
+      >
+        {/* Accent Bar */}
+        <div
+          className="absolute right-0 top-6 bottom-6 w-1.5 rounded-full"
+          style={{ background: 'var(--app-brand-grad)' }}
+        />
+
+        <div className="pr-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">✨</span>
+              <span className="font-arabic font-bold text-sm" style={{ color: 'var(--app-brand)' }}>
+                درر من الكتاب ({quoteIdx + 1}/{CURATED_WISDOMS.length})
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={nextQuote}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl font-arabic text-xs font-medium transition-all active:scale-90 bg-black/5 dark:bg-white/5 hover:opacity-100"
+                style={{ color: 'var(--app-text-muted)' }}
+              >
+                <Dices className="w-3.5 h-3.5" />
+                <span>حكمة أخرى</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Quote Text */}
+          <blockquote className="font-arabic text-base md:text-lg leading-relaxed mb-4 text-justify font-medium" style={{ color: 'var(--app-text)' }}>
+            «{currentWisdom.text}»
+          </blockquote>
+
+          <div className="flex items-center justify-between pt-3 border-t border-black/5 dark:border-white/5">
+            <button
+              onClick={() => jumpToQuotePage(currentWisdom.page)}
+              className="text-xs font-arabic opacity-70 hover:opacity-100 transition-opacity flex items-center gap-1 underline underline-offset-4"
+              style={{ color: 'var(--app-brand)' }}
+            >
+              <span>— {currentWisdom.source} (ص {currentWisdom.page})</span>
+            </button>
+
+            <div className="flex items-center gap-1">
+              <button
+                onClick={copyQuote}
+                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90 bg-black/5 dark:bg-white/5"
+                title="نسخ الحكمة"
+              >
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+
+              <button
+                onClick={shareQuote}
+                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90 bg-black/5 dark:bg-white/5"
+                title="مشاركة"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={saveQuoteToDb}
+                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90 bg-black/5 dark:bg-white/5"
+                title="حفظ في المفضلة"
+              >
+                <Star className={`w-3.5 h-3.5 ${savedStar ? 'text-amber-500 fill-current' : ''}`} />
+              </button>
+
+              <button
+                onClick={() => setIsCardStudioOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-arabic text-xs font-semibold transition-all active:scale-90 text-white shadow-sm"
+                style={{ background: 'var(--app-brand-grad)' }}
+              >
+                <Sparkles className="w-3 h-3" />
+                <span>تصميم بطاقة</span>
+              </button>
+            </div>
+          </div>
         </div>
       </motion.div>
 
-      {/* ── 5. Advanced Literary & Reading Tools Grid ── */}
-      <motion.div variants={itemVariants} className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4" style={{ color: 'var(--app-brand)' }} />
-          <h3 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text-muted)' }}>أدوات القراءة المتقدمة</h3>
-        </div>
+      {/* ══════════════════════════════════════════════════
+          4. QUICK DISCOVERY TOOLS GRID
+          ══════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Ambient Sounds */}
+        <motion.div
+          variants={itemVariants}
+          onClick={() => setIsSoundModalOpen(true)}
+          className="app-surface app-surface-hover rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5"
+        >
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0">
+            <Music className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>أصوات التركيز</h4>
+            <p className="text-[11px] font-arabic opacity-60">مطر، قهوة، وطبيعة</p>
+          </div>
+        </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <button
-            onClick={() => setIsCardStudioOpen(true)}
-            className="p-4 rounded-2xl text-right transition-all flex flex-col justify-between group active:scale-95 shadow-sm"
-            style={{
-              background: 'var(--app-surface)',
-              border: '1px solid var(--app-surface-border)',
-              boxShadow: '0 2px 12px var(--app-surface-shadow)',
-            }}
-          >
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2 shadow-sm"
-              style={{ background: 'var(--app-brand-grad)', color: 'white' }}>
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <div>
-              <h4 className="font-arabic font-bold text-xs mb-0.5" style={{ color: 'var(--app-text)' }}>استوديو البطاقات</h4>
-              <p className="text-[10px] font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>تصميم صور ونشر</p>
-            </div>
-          </button>
+        {/* Dictionary */}
+        <motion.div
+          variants={itemVariants}
+          onClick={() => setIsDictModalOpen(true)}
+          className="app-surface app-surface-hover rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5"
+        >
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0">
+            <BookMarked className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>المعجم اللغوي</h4>
+            <p className="text-[11px] font-arabic opacity-60">شرح غريب الألفاظ</p>
+          </div>
+        </motion.div>
 
-          <button
-            onClick={() => setIsSoundModalOpen(true)}
-            className="p-4 rounded-2xl text-right transition-all flex flex-col justify-between group active:scale-95 shadow-sm"
-            style={{
-              background: 'var(--app-surface)',
-              border: '1px solid var(--app-surface-border)',
-              boxShadow: '0 2px 12px var(--app-surface-shadow)',
-            }}
-          >
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2 shadow-sm"
-              style={{ background: 'var(--app-brand-grad)', color: 'white' }}>
-              <Music className="w-4 h-4" />
-            </div>
-            <div>
-              <h4 className="font-arabic font-bold text-xs mb-0.5" style={{ color: 'var(--app-text)' }}>أصوات التركيز</h4>
-              <p className="text-[10px] font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>مطر وهدوء طبيعي</p>
-            </div>
-          </button>
+        {/* Topics */}
+        <motion.div
+          variants={itemVariants}
+          onClick={() => setIsTopicsModalOpen(true)}
+          className="app-surface app-surface-hover rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5"
+        >
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-sky-500/10 text-sky-500 border border-sky-500/20 shrink-0">
+            <Layers className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>التصفح الموضوعي</h4>
+            <p className="text-[11px] font-arabic opacity-60">أبواب وموضوعات الكتاب</p>
+          </div>
+        </motion.div>
+      </div>
 
-          <button
-            onClick={() => setIsDictModalOpen(true)}
-            className="p-4 rounded-2xl text-right transition-all flex flex-col justify-between group active:scale-95 shadow-sm"
-            style={{
-              background: 'var(--app-surface)',
-              border: '1px solid var(--app-surface-border)',
-              boxShadow: '0 2px 12px var(--app-surface-shadow)',
-            }}
-          >
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2 shadow-sm"
-              style={{ background: 'var(--app-brand-grad)', color: 'white' }}>
-              <BookMarked className="w-4 h-4" />
-            </div>
-            <div>
-              <h4 className="font-arabic font-bold text-xs mb-0.5" style={{ color: 'var(--app-text)' }}>المعجم اللغوي</h4>
-              <p className="text-[10px] font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>شرح وجذور الكلمات</p>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setIsTopicsModalOpen(true)}
-            className="p-4 rounded-2xl text-right transition-all flex flex-col justify-between group active:scale-95 shadow-sm"
-            style={{
-              background: 'var(--app-surface)',
-              border: '1px solid var(--app-surface-border)',
-              boxShadow: '0 2px 12px var(--app-surface-shadow)',
-            }}
-          >
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2 shadow-sm"
-              style={{ background: 'var(--app-brand-grad)', color: 'white' }}>
-              <Layers className="w-4 h-4" />
-            </div>
-            <div>
-              <h4 className="font-arabic font-bold text-xs mb-0.5" style={{ color: 'var(--app-text)' }}>التصفح الموضوعي</h4>
-              <p className="text-[10px] font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>حسب موضوعات الحياة</p>
-            </div>
-          </button>
-        </div>
-      </motion.div>
-
-      {/* ── 6. Stat Cards Grid ── */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
-        <StatCard
-          icon={<BookOpen />}
-          label="الصفحات المقروءة"
-          value={currentPage.toString()}
-          color="#a37c6c"
-          bg="rgba(163,124,108,0.12)"
-        />
-        <StatCard
-          icon={<Clock />}
-          label="الوقت المتبقي للكتاب"
-          value={`${Math.round((totalPages - currentPage) * 1.5)} دق`}
-          color="#7c5cbf"
-          bg="rgba(139,92,246,0.12)"
-        />
-        <StatCard
-          icon={<Zap />}
-          label="الصفحات المتبقية"
-          value={(totalPages - currentPage).toString()}
-          color="#b07d1a"
-          bg="rgba(245,158,11,0.12)"
-        />
-        <StatCard
-          icon={<Compass />}
-          label="إجمالي صفحات الكتاب"
-          value={totalPages.toString()}
-          color="#0d8f60"
-          bg="rgba(16,185,129,0.12)"
-        />
-      </motion.div>
-
-      {/* ── Feature Modals ── */}
+      {/* Modals */}
       <QuoteCardModal
         open={isCardStudioOpen}
         onOpenChange={setIsCardStudioOpen}
@@ -707,47 +625,19 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
         sourceText={currentWisdom.source}
         pageNumber={currentWisdom.page}
       />
-
       <AmbientSoundModal
         open={isSoundModalOpen}
         onOpenChange={setIsSoundModalOpen}
       />
-
       <ArabicDictionaryModal
         open={isDictModalOpen}
         onOpenChange={setIsDictModalOpen}
       />
-
       <TopicsModal
         open={isTopicsModalOpen}
         onOpenChange={setIsTopicsModalOpen}
         onNavigate={onNavigate}
       />
-
     </motion.div>
   );
 };
-
-const StatCard: React.FC<{
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  color: string;
-  bg: string;
-}> = ({ icon, label, value, color, bg }) => (
-  <div
-    className="rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1"
-    style={{
-      background: 'var(--app-surface)',
-      backdropFilter: 'blur(16px)',
-      border: '1px solid var(--app-surface-border)',
-      boxShadow: '0 2px 16px var(--app-surface-shadow)',
-    }}
-  >
-    <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-3" style={{ background: bg }}>
-      {React.cloneElement(icon as React.ReactElement<any>, { className: 'w-4 h-4', style: { color } })}
-    </div>
-    <div className="text-2xl font-bold font-sans mb-0.5" style={{ color: 'var(--app-text)' }}>{value}</div>
-    <div className="text-xs font-arabic" style={{ color: 'var(--app-text-muted)' }}>{label}</div>
-  </div>
-);

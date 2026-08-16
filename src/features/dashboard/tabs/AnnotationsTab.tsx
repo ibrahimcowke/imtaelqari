@@ -4,32 +4,32 @@ import { db } from '../../../lib/db';
 import { useReaderStore } from '../../../store/readerStore';
 import {
   Bookmark, Highlighter, Trash2, FileX, Search,
-  Copy, Check, Download,
+  Copy, Check, Download
 } from 'lucide-react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 
 const COLOR_MAP: Record<string, { border: string; bg: string; label: string; dot: string }> = {
   amber: {
     border: 'rgba(245,158,11,0.4)',
-    bg: 'rgba(245,158,11,0.08)',
+    bg: 'rgba(245,158,11,0.12)',
     label: 'أصفر',
     dot: '#f59e0b',
   },
   rose: {
     border: 'rgba(244,63,94,0.4)',
-    bg: 'rgba(244,63,94,0.08)',
+    bg: 'rgba(244,63,94,0.12)',
     label: 'أحمر',
     dot: '#f43f5e',
   },
   sage: {
     border: 'rgba(20,184,166,0.4)',
-    bg: 'rgba(20,184,166,0.08)',
+    bg: 'rgba(20,184,166,0.12)',
     label: 'أخضر',
     dot: '#14b8a6',
   },
   slate: {
     border: 'rgba(100,116,139,0.3)',
-    bg: 'rgba(100,116,139,0.06)',
+    bg: 'rgba(100,116,139,0.1)',
     label: 'رمادي',
     dot: '#64748b',
   },
@@ -69,7 +69,7 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
   };
 
   const exportAll = () => {
-    let content = `# ملاحظات وفوائد من كتاب إمتاع القارئ بجمال الكلم وروائع الحكم\n\n`;
+    let content = `# فوائد وملاحظات من كتاب إمتاع القارئ بجمال الكلم وروائع الحكم\n\n`;
     content += `تاريخ التصدير: ${new Date().toLocaleDateString('ar-SA')}\n\n`;
     
     content += `## العلامات المرجعية (${bookmarks.length})\n`;
@@ -77,7 +77,7 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
       content += `- ص ${bm.page}: ${bm.preview}\n`;
     });
 
-    content += `\n## التظليلات (${highlights.length})\n`;
+    content += `\n## التظليلات الملونة (${highlights.length})\n`;
     highlights.forEach(hl => {
       content += `- ص ${hl.page} [${hl.color}]: «${hl.selectedText}»\n`;
     });
@@ -86,7 +86,7 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `إمتاع_القارئ_ملاحظات_${Date.now()}.md`;
+    a.download = `إمتاع_القارئ_فوائد_${Date.now()}.md`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -112,7 +112,7 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.06 } },
+    show: { opacity: 1, transition: { staggerChildren: 0.05 } },
   };
   const itemVariants: Variants = {
     hidden: { opacity: 0, y: 12 },
@@ -122,57 +122,69 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
   const totalCount = bookmarks.length + highlights.length;
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
+    <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-5">
 
-      {/* ── Header with Export ── */}
-      <motion.div variants={itemVariants} className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
-            style={{ background: 'linear-gradient(135deg, #a37c6c, #75594e)', boxShadow: '0 4px 12px rgba(163,124,108,0.3)' }}>
-            <Bookmark className="w-5 h-5 text-white" />
+      {/* ── 1. Top Section Header ── */}
+      <motion.div
+        variants={itemVariants}
+        className="app-surface rounded-3xl p-5 md:p-6"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg text-white"
+              style={{
+                background: 'var(--app-brand-grad)',
+                boxShadow: '0 4px 16px var(--app-brand-glow)',
+              }}
+            >
+              <Bookmark className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold font-arabic" style={{ color: 'var(--app-text)' }}>
+                الملاحظات والفوائد المحفوظة
+              </h2>
+              <p className="text-xs font-arabic opacity-70 mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
+                {totalCount} فائدة محفوظة ({bookmarks.length} علامة مرجعية • {highlights.length} تظليل ملون)
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-xl font-bold font-arabic" style={{ color: 'var(--app-text)' }}>ملاحظاتي وتظليلاتي</h2>
-            <p className="text-xs font-arabic" style={{ color: 'var(--app-text-muted)' }}>
-              {totalCount} عنصر محفوظ ({bookmarks.length} علامة • {highlights.length} تظليل)
-            </p>
-          </div>
+
+          {totalCount > 0 && (
+            <button
+              onClick={exportAll}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl font-arabic text-xs font-bold transition-all active:scale-95 text-white shadow-md self-start sm:self-center"
+              style={{
+                background: 'var(--app-brand-grad)',
+                boxShadow: '0 4px 12px var(--app-brand-glow)',
+              }}
+              title="تصدير الفوائد كملف Markdown"
+            >
+              <Download className="w-4 h-4" />
+              <span>تصدير الكل (Markdown)</span>
+            </button>
+          )}
         </div>
-
-        {totalCount > 0 && (
-          <button
-            onClick={exportAll}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-arabic text-xs font-bold transition-all active:scale-95 shadow-sm"
-            style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }}
-            title="تصدير الملاحظات كملف Markdown"
-          >
-            <Download className="w-3.5 h-3.5" />
-            تصدير الكل
-          </button>
-        )}
       </motion.div>
 
-      {/* ── Search & Filter Controls ── */}
-      <motion.div variants={itemVariants} className="space-y-2.5">
+      {/* ── 2. Search & Filter Controls ── */}
+      <motion.div variants={itemVariants} className="space-y-3">
         <div className="relative">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="ابحث في نصوص الملاحظات والتظليلات..."
-            className="w-full pl-4 pr-10 py-3 rounded-2xl font-arabic text-sm outline-none transition-all"
+            placeholder="ابحث في نصوص الفوائد والتظليلات والعلامات..."
+            className="w-full pl-4 pr-11 py-3.5 rounded-2xl font-arabic text-sm outline-none transition-all app-surface"
             style={{
-              background: 'var(--app-surface)',
-              border: '1px solid var(--app-surface-border)',
               color: 'var(--app-text)',
-              boxShadow: '0 2px 8px var(--app-surface-shadow)',
             }}
           />
-          <Search className="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 opacity-50" />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 px-1.5 py-0.5"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold px-2 py-0.5 rounded-full bg-black/10 dark:bg-white/10 opacity-70 hover:opacity-100"
             >
               ✕
             </button>
@@ -191,10 +203,10 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
             <button
               key={f.id}
               onClick={() => setActiveFilter(f.id)}
-              className="px-3 py-1.5 rounded-xl font-arabic text-xs font-semibold whitespace-nowrap transition-all active:scale-95"
+              className="px-3.5 py-2 rounded-2xl font-arabic text-xs font-semibold whitespace-nowrap transition-all active:scale-95"
               style={activeFilter === f.id
-                ? { background: 'linear-gradient(135deg, #a37c6c, #75594e)', color: 'white', boxShadow: '0 2px 8px rgba(163,124,108,0.3)' }
-                : { background: 'var(--app-brand-dim)', color: 'var(--app-brand)' }
+                ? { background: 'var(--app-brand-grad)', color: 'white', boxShadow: '0 4px 12px var(--app-brand-glow)' }
+                : { background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }
               }
             >
               {f.label}
@@ -203,12 +215,12 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
         </div>
       </motion.div>
 
-      {/* ── Bookmarks Section ── */}
+      {/* ── 3. Bookmarks Section ── */}
       {filteredBookmarks.length > 0 && (
         <section className="space-y-3">
-          <h3 className="font-arabic font-bold text-sm flex items-center gap-2" style={{ color: 'var(--app-text-muted)' }}>
+          <h3 className="font-arabic font-bold text-sm flex items-center gap-2" style={{ color: 'var(--app-text)' }}>
             <Bookmark className="w-4 h-4 text-brand-600" />
-            العلامات المرجعية ({filteredBookmarks.length})
+            <span>العلامات المرجعية ({filteredBookmarks.length})</span>
           </h3>
 
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
@@ -220,23 +232,19 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
                   layout
                   exit={{ opacity: 0, scale: 0.9 }}
                   onClick={() => handleJump(bm.page)}
-                  className="rounded-2xl p-4 cursor-pointer group relative overflow-hidden transition-all"
-                  style={{
-                    background: 'var(--app-surface)',
-                    border: '1px solid var(--app-surface-border)',
-                    boxShadow: '0 2px 12px var(--app-surface-shadow)',
-                  }}
-                  whileHover={{ y: -2 }}
+                  className="rounded-2xl p-4 cursor-pointer group relative overflow-hidden transition-all app-surface app-surface-hover"
                 >
                   <div className="flex justify-between items-start mb-2.5">
-                    <span className="text-xs font-bold font-sans px-2.5 py-0.5 rounded-lg"
-                      style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)' }}>
+                    <span
+                      className="text-xs font-bold font-sans px-2.5 py-0.5 rounded-xl"
+                      style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }}
+                    >
                       ص {bm.page}
                     </span>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={(e) => copyText(bm.preview, bm.id, e)}
-                        className="p-1 rounded-lg hover:bg-black/5"
+                        className="p-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:opacity-100 transition-all"
                         style={{ color: copiedId === bm.id ? '#0d8f60' : 'var(--app-brand)' }}
                         title="نسخ"
                       >
@@ -244,14 +252,14 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
                       </button>
                       <button
                         onClick={(e) => deleteBookmark(bm.id, e)}
-                        className="p-1 rounded-lg text-rose-500 hover:bg-rose-50"
+                        className="p-1.5 rounded-xl text-rose-500 bg-rose-500/10 hover:bg-rose-500/20 transition-all"
                         title="حذف"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
-                  <p className="font-arabic text-sm leading-relaxed line-clamp-3" style={{ color: 'var(--app-text)' }}>
+                  <p className="font-arabic text-sm leading-relaxed line-clamp-3 font-medium" style={{ color: 'var(--app-text)' }}>
                     {bm.preview}
                   </p>
                 </motion.div>
@@ -261,12 +269,12 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
         </section>
       )}
 
-      {/* ── Highlights Section ── */}
+      {/* ── 4. Highlights Section ── */}
       {filteredHighlights.length > 0 && (
         <section className="space-y-3">
-          <h3 className="font-arabic font-bold text-sm flex items-center gap-2" style={{ color: 'var(--app-text-muted)' }}>
-            <Highlighter className="w-4 h-4 text-amber-600" />
-            التظليلات ({filteredHighlights.length})
+          <h3 className="font-arabic font-bold text-sm flex items-center gap-2" style={{ color: 'var(--app-text)' }}>
+            <Highlighter className="w-4 h-4 text-amber-500" />
+            <span>التظليلات الملونة ({filteredHighlights.length})</span>
           </h3>
 
           <div className="space-y-2.5">
@@ -280,45 +288,41 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
                     layout
                     exit={{ opacity: 0, scale: 0.95 }}
                     onClick={() => handleJump(hl.page)}
-                    className="rounded-2xl cursor-pointer group relative overflow-hidden transition-all"
+                    className="rounded-2xl cursor-pointer group relative overflow-hidden transition-all app-surface app-surface-hover"
                     style={{
-                      background: 'var(--app-surface)',
-                      border: `1px solid ${colorInfo.border}`,
-                      boxShadow: '0 2px 12px var(--app-surface-shadow)',
+                      borderRight: `4px solid ${colorInfo.dot}`,
                     }}
-                    whileHover={{ y: -2 }}
                   >
-                    <div className="flex items-stretch">
-                      <div className="w-1.5 shrink-0 my-3 mr-3 rounded-full" style={{ background: colorInfo.dot }} />
-                      <div className="flex-1 py-3.5 pl-3">
-                        <div className="flex items-center justify-between gap-2 mb-1.5">
-                          <span className="text-[11px] font-sans font-bold px-2 py-0.5 rounded-lg"
-                            style={{ background: colorInfo.bg, color: colorInfo.dot }}>
-                            {colorInfo.label} • ص {hl.page}
-                          </span>
+                    <div className="p-4">
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span
+                          className="text-[11px] font-sans font-bold px-2.5 py-0.5 rounded-xl"
+                          style={{ background: colorInfo.bg, color: colorInfo.dot, border: `1px solid ${colorInfo.border}` }}
+                        >
+                          {colorInfo.label} • ص {hl.page}
+                        </span>
 
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={(e) => copyText(hl.selectedText, hl.id, e)}
-                              className="p-1 rounded-lg hover:bg-black/5"
-                              style={{ color: copiedId === hl.id ? '#0d8f60' : 'var(--app-brand)' }}
-                              title="نسخ النص"
-                            >
-                              {copiedId === hl.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                            </button>
-                            <button
-                              onClick={(e) => deleteHighlight(hl.id, e)}
-                              className="p-1 rounded-lg text-rose-500 hover:bg-rose-50"
-                              title="حذف"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => copyText(hl.selectedText, hl.id, e)}
+                            className="p-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:opacity-100 transition-all"
+                            style={{ color: copiedId === hl.id ? '#0d8f60' : 'var(--app-brand)' }}
+                            title="نسخ النص"
+                          >
+                            {copiedId === hl.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                          </button>
+                          <button
+                            onClick={(e) => deleteHighlight(hl.id, e)}
+                            className="p-1.5 rounded-xl text-rose-500 bg-rose-500/10 hover:bg-rose-500/20 transition-all"
+                            title="حذف"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
-                        <p className="font-arabic leading-relaxed text-sm font-medium" style={{ color: 'var(--app-text)' }}>
-                          «{hl.selectedText}»
-                        </p>
                       </div>
+                      <p className="font-arabic leading-relaxed text-sm font-medium" style={{ color: 'var(--app-text)' }}>
+                        «{hl.selectedText}»
+                      </p>
                     </div>
                   </motion.div>
                 );
@@ -330,12 +334,21 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
 
       {/* Empty State */}
       {filteredBookmarks.length === 0 && filteredHighlights.length === 0 && (
-        <motion.div variants={itemVariants}
-          className="rounded-3xl p-10 text-center flex flex-col items-center gap-3"
-          style={{ background: 'var(--app-surface)', border: '1px dashed var(--app-surface-border)' }}>
-          <FileX className="w-8 h-8 text-gray-300" />
-          <p className="font-arabic text-sm" style={{ color: 'var(--app-text-muted)' }}>
-            {totalCount === 0 ? 'لا توجد علامات مرجعية أو نصوص مظللة حتى الآن' : 'لا توجد عناصر مطابقة لبحثك'}
+        <motion.div
+          variants={itemVariants}
+          className="app-surface rounded-3xl p-12 text-center flex flex-col items-center gap-3"
+        >
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-black/5 dark:bg-white/5 opacity-60">
+            <FileX className="w-7 h-7" />
+          </div>
+          <h4 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
+            {totalCount === 0 ? 'لا توجد علامات أو نصوص مظللة حتى الآن' : 'لا توجد نتائج مطابقة للبحث'}
+          </h4>
+          <p className="font-arabic text-xs opacity-70 max-w-sm" style={{ color: 'var(--app-text-muted)' }}>
+            {totalCount === 0
+              ? 'أثناء قراءتك للكتاب، يمكنك تحديد أي نص وتظليله أو حفظ الصفحة في العلامات المرجعية لتعود إليها في أي وقت.'
+              : 'جرب البحث بكلمات أخرى أو تصفية فئات الألوان المختلفة.'
+            }
           </p>
         </motion.div>
       )}
