@@ -223,7 +223,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
       >
         {/* Subtle Luxury Gradient Overlay */}
         <div
-          className="absolute inset-0 bg-gradient-to-tr from-black/50 via-transparent to-amber-500/10 pointer-events-none"
+          className="absolute inset-0 bg-linear-to-tr from-black/50 via-transparent to-amber-500/10 pointer-events-none"
         />
 
         {/* Ornate Islamic Background Watermark Glows */}

@@ -164,7 +164,7 @@ export const ProfileTab: React.FC = () => {
         }}
       >
         <div
-          className="absolute inset-0 bg-gradient-to-tr from-black/50 via-transparent to-amber-500/10 pointer-events-none"
+          className="absolute inset-0 bg-linear-to-tr from-black/50 via-transparent to-amber-500/10 pointer-events-none"
         />
         <div
           className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-25 pointer-events-none"
