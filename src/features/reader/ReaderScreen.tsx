@@ -318,7 +318,7 @@ export const ReaderScreen: React.FC = () => {
     <div
       className="h-screen flex flex-col reader-container relative overflow-hidden select-text"
       style={{
-        fontFamily: preferences.fontFamily,
+        fontFamily: `"${preferences.fontFamily}", var(--app-font-family), "Noto Naskh Arabic", sans-serif`,
         fontSize: `${preferences.fontSize}px`,
         lineHeight: preferences.lineHeight,
         letterSpacing: preferences.letterSpacing === 'tight' ? '-0.5px' : preferences.letterSpacing === 'loose' ? '1px' : 'normal',

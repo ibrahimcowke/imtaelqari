@@ -5,8 +5,16 @@
    HARMONIZED THEMES, ICONS & TYPOGRAPHY SYSTEM
    ════════════════════════════════════════════════════════ */
 
+:root {
+  --app-font-family: "Noto Naskh Arabic", sans-serif;
+}
+
 :root,
-body.theme-paper {
+:root.theme-paper,
+html.theme-paper,
+body.theme-paper,
+.theme-paper,
+[data-theme="paper"] {
   --app-bg:             #fdf8f6;
   --app-bg-2:           #f5ede8;
   --app-bg-3:           #ede0d8;
@@ -32,7 +40,11 @@ body.theme-paper {
   --reader-text:        #1a1a1a;
 }
 
-body.theme-white {
+:root.theme-white,
+html.theme-white,
+body.theme-white,
+.theme-white,
+[data-theme="white"] {
   --app-bg:             #f8f8f8;
   --app-bg-2:           #f0f0f0;
   --app-bg-3:           #e8e8e8;
@@ -58,7 +70,11 @@ body.theme-white {
   --reader-text:        #111111;
 }
 
-body.theme-sage {
+:root.theme-sage,
+html.theme-sage,
+body.theme-sage,
+.theme-sage,
+[data-theme="sage"] {
   --app-bg:             #dce4d5;
   --app-bg-2:           #d0dac8;
   --app-bg-3:           #c4d0bb;
@@ -84,7 +100,11 @@ body.theme-sage {
   --reader-text:        #1a2a1a;
 }
 
-body.theme-sepia {
+:root.theme-sepia,
+html.theme-sepia,
+body.theme-sepia,
+.theme-sepia,
+[data-theme="sepia"] {
   --app-bg:             #ede4d0;
   --app-bg-2:           #e5d9c0;
   --app-bg-3:           #ddd0b0;
@@ -110,7 +130,11 @@ body.theme-sepia {
   --reader-text:        #3b2f2f;
 }
 
-body.theme-rose {
+:root.theme-rose,
+html.theme-rose,
+body.theme-rose,
+.theme-rose,
+[data-theme="rose"] {
   --app-bg:             #fbf4f2;
   --app-bg-2:           #f5e8e5;
   --app-bg-3:           #eedcd8;
@@ -136,7 +160,11 @@ body.theme-rose {
   --reader-text:        #332022;
 }
 
-body.theme-emerald {
+:root.theme-emerald,
+html.theme-emerald,
+body.theme-emerald,
+.theme-emerald,
+[data-theme="emerald"] {
   --app-bg:             #07140f;
   --app-bg-2:           #0c1f17;
   --app-bg-3:           #122b20;
@@ -162,7 +190,11 @@ body.theme-emerald {
   --reader-text:        #e2f3ea;
 }
 
-body.theme-midnight {
+:root.theme-midnight,
+html.theme-midnight,
+body.theme-midnight,
+.theme-midnight,
+[data-theme="midnight"] {
   --app-bg:             #060c17;
   --app-bg-2:           #0c1424;
   --app-bg-3:           #141d33;
@@ -188,7 +220,11 @@ body.theme-midnight {
   --reader-text:        #e2e8f0;
 }
 
-body.theme-coffee {
+:root.theme-coffee,
+html.theme-coffee,
+body.theme-coffee,
+.theme-coffee,
+[data-theme="coffee"] {
   --app-bg:             #120c09;
   --app-bg-2:           #1b120e;
   --app-bg-3:           #241914;
@@ -214,7 +250,11 @@ body.theme-coffee {
   --reader-text:        #ede0d4;
 }
 
-body.theme-slate {
+:root.theme-slate,
+html.theme-slate,
+body.theme-slate,
+.theme-slate,
+[data-theme="slate"] {
   --app-bg:             #0d1014;
   --app-bg-2:           #13171e;
   --app-bg-3:           #1b212b;
@@ -240,7 +280,11 @@ body.theme-slate {
   --reader-text:        #e6edf3;
 }
 
-body.theme-dark {
+:root.theme-dark,
+html.theme-dark,
+body.theme-dark,
+.theme-dark,
+[data-theme="dark"] {
   --app-bg:             #0a0a0a;
   --app-bg-2:           #121212;
   --app-bg-3:           #1a1a1a;
@@ -269,6 +313,7 @@ body.theme-dark {
 @layer base {
   body {
     @apply antialiased selection:bg-brand-500 selection:text-white;
+    font-family: var(--app-font-family, 'Noto Naskh Arabic', sans-serif);
     background: var(--app-bg);
     color: var(--app-text);
     transition: background 0.35s ease, color 0.35s ease;

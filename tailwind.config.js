@@ -8,7 +8,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Inter"', 'sans-serif'], // For UI elements
-        arabic: ['"Noto Naskh Arabic"', '"Amiri"', 'serif'], // For Book content
+        arabic: ['var(--app-font-family, "Noto Naskh Arabic")', '"Noto Naskh Arabic"', '"Amiri"', 'serif'], // Dynamic Arabic font
       },
       colors: {
         reader: {

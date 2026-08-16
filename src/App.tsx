@@ -82,10 +82,15 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Apply theme and font to document body
-    document.body.className = '';
-    document.body.classList.add(`theme-${preferences.theme}`);
-    document.body.style.fontFamily = `"${preferences.fontFamily}", "Noto Naskh Arabic", sans-serif`;
+    // Apply theme and dynamic font variable across document root & body
+    const themeClass = `theme-${preferences.theme}`;
+    document.documentElement.className = themeClass;
+    document.body.className = themeClass;
+    document.documentElement.setAttribute('data-theme', preferences.theme);
+
+    const fontValue = `"${preferences.fontFamily}", "Noto Naskh Arabic", "Amiri", sans-serif`;
+    document.documentElement.style.setProperty('--app-font-family', fontValue);
+    document.body.style.fontFamily = fontValue;
     document.documentElement.dir = 'rtl';
     document.documentElement.lang = 'ar';
 
@@ -101,7 +106,7 @@ function App() {
         style={{
           background: 'var(--app-bg)',
           color: 'var(--app-text)',
-          fontFamily: `"${preferences.fontFamily}", "Noto Naskh Arabic", sans-serif`,
+          fontFamily: 'var(--app-font-family)',
           transition: 'background 0.35s ease, color 0.35s ease',
         }}
       >
