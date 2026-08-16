@@ -81,7 +81,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
   });
 
   // Focus Timer State
-  const [timerDuration, setTimerDuration] = useState(15); // in minutes
+  const [timerDuration, setTimerDuration] = useState(15);
   const [timeLeft, setTimeLeft] = useState(15 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
 
@@ -91,7 +91,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
   const [isDictModalOpen, setIsDictModalOpen] = useState(false);
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(false);
 
-  // Countdown effect
+  // Countdown Timer Effect
   useEffect(() => {
     let interval: any = null;
     if (timerRunning && timeLeft > 0) {
@@ -194,7 +194,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
   };
 
   // SVG circle math
-  const radius = 52;
+  const radius = 50;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (progress / 100) * circumference;
 
@@ -210,124 +210,155 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
 
       {/* ══════════════════════════════════════════════════
-          1. LUXURY HERO BANNER & READING SHOWCASE
+          1. LUXURY HERO BANNER (ISLAMIC & LITERARY SHOWCASE)
           ══════════════════════════════════════════════════ */}
       <motion.div
         variants={itemVariants}
-        className="relative overflow-hidden rounded-3xl group p-6 md:p-8"
+        className="relative overflow-hidden rounded-3xl group p-6 sm:p-8 md:p-10 border shadow-2xl transition-all duration-300"
         style={{
-          background: 'linear-gradient(135deg, #2a1c16 0%, #3d2822 45%, #4e3328 100%)',
-          boxShadow: '0 12px 48px rgba(42,28,22,0.4), 0 2px 8px rgba(0,0,0,0.1)',
-          border: '1px solid rgba(163,124,108,0.25)',
+          background: 'linear-gradient(135deg, var(--sidebar-bg) 0%, rgba(30,20,15,0.95) 100%)',
+          borderColor: 'var(--app-brand-border)',
+          color: 'white',
         }}
       >
-        {/* Glow Spheres */}
+        {/* Ornate Islamic Background Watermark */}
         <div
-          className="absolute -top-16 -right-16 w-64 h-64 rounded-full opacity-25 group-hover:opacity-40 transition-opacity duration-700 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #a37c6c 0%, transparent 70%)' }}
+          className="absolute -top-12 -left-12 w-64 h-64 rounded-full opacity-20 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--app-brand-glow) 0%, transparent 70%)' }}
         />
         <div
-          className="absolute -bottom-20 -left-10 w-56 h-56 rounded-full opacity-15 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #d2bab0 0%, transparent 70%)' }}
+          className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full opacity-15 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, #f59e0b 0%, transparent 70%)' }}
         />
 
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Left / Info Side */}
+          {/* Information & Reading Status */}
           <div className="flex-1 text-center md:text-right">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-arabic font-semibold mb-3"
-              style={{ background: 'rgba(163,124,108,0.25)', border: '1px solid rgba(163,124,108,0.4)', color: '#e0cec7' }}>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>متابعة القراءة والتدبر</span>
+            {/* Top pill badge */}
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-arabic font-bold mb-3 border shadow-sm"
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                borderColor: 'rgba(255, 255, 255, 0.15)',
+                color: '#fde68a',
+              }}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>محراب القراءة والتدبر</span>
             </div>
 
-            <h2 className="text-2xl md:text-3xl font-bold font-arabic text-white mb-2 leading-snug">
+            {/* Book Title */}
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-arabic text-white mb-2 leading-tight">
               {book.title}
             </h2>
-            <p className="text-brand-300/80 font-arabic text-xs md:text-sm mb-5 flex items-center justify-center md:justify-start gap-2">
-              <span>{currentPageData?.title ? currentPageData.title : `صفحة ${currentPage}`}</span>
+
+            {/* Current Chapter Preview */}
+            <p className="text-amber-100/75 font-arabic text-xs sm:text-sm mb-6 flex items-center justify-center md:justify-start gap-2 flex-wrap">
+              <span className="font-semibold text-white/90">
+                {currentPageData?.title ? currentPageData.title : `صفحة ${currentPage}`}
+              </span>
               <span className="opacity-40">•</span>
-              <span>صفحة {currentPage} من {totalPages}</span>
+              <span>ص {currentPage} من {totalPages} صفحة</span>
             </p>
 
+            {/* Action Buttons */}
             <div className="flex items-center justify-center md:justify-start gap-3 flex-wrap">
               <button
                 onClick={onNavigate}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-arabic text-sm font-bold transition-all duration-300 active:scale-95 text-white shadow-xl hover:brightness-110"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-arabic text-sm font-bold transition-all duration-300 active:scale-95 text-white shadow-xl hover:brightness-110 group"
                 style={{
-                  background: 'linear-gradient(135deg, #a37c6c, #75594e)',
-                  boxShadow: '0 6px 20px rgba(163,124,108,0.45)',
+                  background: 'var(--app-brand-grad)',
+                  boxShadow: '0 6px 24px var(--app-brand-glow)',
                 }}
               >
                 <BookOpen className="w-4 h-4" />
                 <span>استئناف القراءة</span>
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
               </button>
 
               <button
                 onClick={handleRandomPage}
-                className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl font-arabic text-xs font-semibold transition-all duration-300 active:scale-95 hover:bg-white/10 text-white/90"
+                className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl font-arabic text-xs font-bold transition-all duration-300 active:scale-95 hover:bg-white/15 text-white/90 border"
                 style={{
                   background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.15)',
+                  borderColor: 'rgba(255,255,255,0.18)',
                 }}
-                title="اقرأ صفحة عشوائية من الكتاب"
+                title="اقرأ صفحة أو حكمة عشوائية من الكتاب"
               >
-                <Dices className="w-4 h-4 text-brand-300" />
+                <Dices className="w-4 h-4 text-amber-300" />
                 <span>درة عشوائية</span>
               </button>
             </div>
           </div>
 
-          {/* Right / Circular Progress Ring */}
+          {/* Progress Circular Gauge */}
           <div className="relative shrink-0 w-36 h-36 flex items-center justify-center">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
               <circle
-                cx="60" cy="60" r={radius} fill="none"
-                stroke="url(#heroProgressGrad)"
-                strokeWidth="8"
+                cx="60"
+                cy="60"
+                r={radius}
+                fill="none"
+                stroke="rgba(255,255,255,0.1)"
+                strokeWidth="7"
+              />
+              <circle
+                cx="60"
+                cy="60"
+                r={radius}
+                fill="none"
+                stroke="url(#heroProgressGradient)"
+                strokeWidth="7"
                 strokeDasharray={circumference}
                 strokeDashoffset={offset}
                 strokeLinecap="round"
-                className="glow-ring-filter"
                 style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
               />
               <defs>
-                <linearGradient id="heroProgressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#f5ede8" />
-                  <stop offset="100%" stopColor="#a37c6c" />
+                <linearGradient id="heroProgressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#fbbf24" />
+                  <stop offset="100%" stopColor="#f59e0b" />
                 </linearGradient>
               </defs>
             </svg>
+
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span className="text-3xl font-bold font-sans text-white tracking-tight">{progress}%</span>
-              <span className="text-[10px] text-brand-200/70 font-arabic font-medium">مكتمل</span>
+              <span className="text-3xl font-bold font-sans text-white tracking-tight">
+                {progress}%
+              </span>
+              <span className="text-[10px] text-amber-200/80 font-arabic font-medium">
+                مكتمل
+              </span>
             </div>
           </div>
         </div>
       </motion.div>
 
       {/* ══════════════════════════════════════════════════
-          2. BENTO GRID: STREAK & FOCUS TIMER
+          2. BENTO GRID: DAILY STREAK & FOCUS TIMER
           ══════════════════════════════════════════════════ */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Daily Streak Tracker */}
         <motion.div
           variants={itemVariants}
-          className="app-surface rounded-3xl p-6 flex flex-col justify-between"
+          className="rounded-3xl p-6 flex flex-col justify-between border shadow-sm transition-all"
+          style={{
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+          }}
         >
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                  <Flame className="w-5 h-5 fill-current" />
+                <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-amber-500/10 text-amber-500 border border-amber-500/20 shadow-sm">
+                  <Flame className="w-5 h-5 fill-current animate-pulse" />
                 </div>
                 <div>
                   <h3 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
                     سلسلة القراءة اليومية
                   </h3>
                   <p className="text-xs font-arabic opacity-70" style={{ color: 'var(--app-text-muted)' }}>
-                    حافظ على عادة القراءة اليومية
+                    ثبت عادة القراءة والتدبر اليومي
                   </p>
                 </div>
               </div>
@@ -336,7 +367,9 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                 <span className="text-2xl font-bold font-sans text-amber-500">
                   {streak}
                 </span>
-                <span className="text-xs font-arabic mr-1 opacity-70">أيام</span>
+                <span className="text-xs font-arabic mr-1 opacity-70" style={{ color: 'var(--app-text-muted)' }}>
+                  أيام
+                </span>
               </div>
             </div>
 
@@ -347,17 +380,17 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                 return (
                   <div
                     key={day}
-                    className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all"
+                    className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all border"
                     style={{
-                      background: isDone ? 'var(--app-brand-dim)' : 'rgba(0,0,0,0.02)',
-                      border: isDone ? '1px solid var(--app-brand-border)' : '1px dashed rgba(128,128,128,0.15)',
+                      background: isDone ? 'var(--app-brand-dim)' : 'transparent',
+                      borderColor: isDone ? 'var(--app-brand-border)' : 'var(--app-divider)',
                     }}
                   >
                     <span className="text-[9px] font-arabic truncate opacity-70">{day}</span>
                     <div
-                      className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                      className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm"
                       style={{
-                        background: isDone ? 'var(--app-brand)' : 'transparent',
+                        background: isDone ? 'var(--app-brand)' : 'var(--app-bg-2)',
                         color: isDone ? 'white' : 'var(--app-text-faint)',
                       }}
                     >
@@ -373,16 +406,17 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
           <button
             onClick={handleCheckIn}
             disabled={checkedToday}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-xs font-bold transition-all active:scale-95 disabled:opacity-65"
-            style={checkedToday
-              ? { background: 'rgba(16,185,129,0.12)', color: '#0d8f60', border: '1px solid rgba(16,185,129,0.25)' }
-              : { background: 'var(--app-brand-grad)', color: 'white', boxShadow: '0 4px 16px var(--app-brand-glow)' }
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-xs font-bold transition-all active:scale-95 disabled:opacity-80 border shadow-md"
+            style={
+              checkedToday
+                ? { background: 'rgba(16,185,129,0.12)', color: '#0d8f60', borderColor: 'rgba(16,185,129,0.3)' }
+                : { background: 'var(--app-brand-grad)', color: 'white', borderColor: 'transparent', boxShadow: '0 4px 16px var(--app-brand-glow)' }
             }
           >
             {checkedToday ? (
               <>
                 <Check className="w-4 h-4" />
-                <span>أحسنت! تم تسجيل قراءة اليوم 🎉</span>
+                <span>أحسنت! تم تسجيل قراءة اليوم بنجاح 🎉</span>
               </>
             ) : (
               <>
@@ -396,12 +430,16 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
         {/* Focus Timer & Ambient Companion */}
         <motion.div
           variants={itemVariants}
-          className="app-surface rounded-3xl p-6 flex flex-col justify-between"
+          className="rounded-3xl p-6 flex flex-col justify-between border shadow-sm transition-all"
+          style={{
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+          }}
         >
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-sky-500/10 text-sky-500 border border-sky-500/20">
+                <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-sky-500/10 text-sky-500 border border-sky-500/20 shadow-sm">
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
@@ -414,30 +452,40 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                 </div>
               </div>
 
-              {/* Ambient Sound Trigger */}
+              {/* Ambient Sound Quick Trigger */}
               <button
                 onClick={() => setIsSoundModalOpen(true)}
-                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90"
-                style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }}
-                title="تشغيل أصوات الطبيعة"
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90 border"
+                style={{
+                  background: 'var(--app-brand-dim)',
+                  color: 'var(--app-brand)',
+                  borderColor: 'var(--app-brand-border)',
+                }}
+                title="أصوات الطبيعة والتركيز"
               >
                 <Music className="w-4 h-4" />
               </button>
             </div>
 
             {/* Presets & Digital Display */}
-            <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 p-3.5 rounded-2xl mb-4">
+            <div
+              className="flex items-center justify-between p-3.5 rounded-2xl mb-4 border"
+              style={{
+                background: 'var(--app-bg-2)',
+                borderColor: 'var(--app-divider)',
+              }}
+            >
               <div className="flex gap-1.5">
-                {[10, 15, 25].map((mins) => (
+                {[10, 15, 25, 45].map((mins) => (
                   <button
                     key={mins}
                     onClick={() => selectTimerPreset(mins)}
-                    className={`px-2.5 py-1 rounded-xl text-xs font-arabic font-semibold transition-all ${
+                    className="px-2.5 py-1 rounded-xl text-xs font-arabic font-semibold transition-all border"
+                    style={
                       timerDuration === mins && !timerRunning
-                        ? 'bg-brand-600 text-white shadow-sm'
-                        : 'opacity-70 hover:opacity-100'
-                    }`}
-                    style={timerDuration === mins && !timerRunning ? { background: 'var(--app-brand)' } : {}}
+                        ? { background: 'var(--app-brand-grad)', color: 'white', borderColor: 'transparent', fontWeight: 'bold' }
+                        : { background: 'transparent', borderColor: 'transparent', color: 'var(--app-text-muted)' }
+                    }
                   >
                     {mins} د
                   </button>
@@ -455,7 +503,10 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
             <button
               onClick={toggleTimer}
               className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-xs font-bold text-white transition-all active:scale-95 shadow-md"
-              style={{ background: 'var(--app-brand-grad)', boxShadow: '0 4px 16px var(--app-brand-glow)' }}
+              style={{
+                background: 'var(--app-brand-grad)',
+                boxShadow: '0 4px 16px var(--app-brand-glow)',
+              }}
             >
               {timerRunning ? (
                 <>
@@ -472,8 +523,13 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
 
             <button
               onClick={resetTimer}
-              className="w-11 h-11 rounded-2xl flex items-center justify-center transition-all active:scale-90 bg-black/5 dark:bg-white/5 opacity-70 hover:opacity-100"
-              title="إعادة ضبط"
+              className="w-11 h-11 rounded-2xl flex items-center justify-center transition-all active:scale-90 border opacity-70 hover:opacity-100"
+              style={{
+                background: 'var(--app-brand-dim)',
+                borderColor: 'var(--app-brand-border)',
+                color: 'var(--app-brand)',
+              }}
+              title="إعادة ضبط المؤقت"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -482,13 +538,17 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
       </div>
 
       {/* ══════════════════════════════════════════════════
-          3. WISDOM OF THE DAY (حكمة اليوم)
+          3. ILLUMINATED WISDOM OF THE DAY (درة من الكتاب)
           ══════════════════════════════════════════════════ */}
       <motion.div
         variants={itemVariants}
-        className="app-surface rounded-3xl p-6 md:p-7 relative overflow-hidden"
+        className="rounded-3xl p-6 sm:p-7 relative overflow-hidden border shadow-md transition-all"
+        style={{
+          background: 'var(--app-surface)',
+          borderColor: 'var(--app-surface-border)',
+        }}
       >
-        {/* Accent Bar */}
+        {/* Right Gold Accent Bar */}
         <div
           className="absolute right-0 top-6 bottom-6 w-1.5 rounded-full"
           style={{ background: 'var(--app-brand-grad)' }}
@@ -497,42 +557,56 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
         <div className="pr-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <span className="text-lg">✨</span>
+              <span className="text-xl">📜</span>
               <span className="font-arabic font-bold text-sm" style={{ color: 'var(--app-brand)' }}>
-                درر من الكتاب ({quoteIdx + 1}/{CURATED_WISDOMS.length})
+                درر من الكتاب ({quoteIdx + 1} من {CURATED_WISDOMS.length})
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={nextQuote}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl font-arabic text-xs font-medium transition-all active:scale-90 bg-black/5 dark:bg-white/5 hover:opacity-100"
-                style={{ color: 'var(--app-text-muted)' }}
-              >
-                <Dices className="w-3.5 h-3.5" />
-                <span>حكمة أخرى</span>
-              </button>
-            </div>
+            <button
+              onClick={nextQuote}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl font-arabic text-xs font-medium transition-all active:scale-90 border"
+              style={{
+                background: 'var(--app-brand-dim)',
+                borderColor: 'var(--app-brand-border)',
+                color: 'var(--app-brand)',
+              }}
+            >
+              <Dices className="w-3.5 h-3.5" />
+              <span>حكمة أخرى</span>
+            </button>
           </div>
 
           {/* Quote Text */}
-          <blockquote className="font-arabic text-base md:text-lg leading-relaxed mb-4 text-justify font-medium" style={{ color: 'var(--app-text)' }}>
+          <blockquote
+            className="font-arabic text-base sm:text-lg leading-relaxed mb-5 text-justify font-medium"
+            style={{ color: 'var(--app-text)' }}
+          >
             «{currentWisdom.text}»
           </blockquote>
 
-          <div className="flex items-center justify-between pt-3 border-t border-black/5 dark:border-white/5">
+          {/* Footer Actions */}
+          <div
+            className="flex items-center justify-between pt-4 border-t flex-wrap gap-2"
+            style={{ borderColor: 'var(--app-divider)' }}
+          >
             <button
               onClick={() => jumpToQuotePage(currentWisdom.page)}
-              className="text-xs font-arabic opacity-70 hover:opacity-100 transition-opacity flex items-center gap-1 underline underline-offset-4"
+              className="text-xs font-arabic font-semibold opacity-75 hover:opacity-100 transition-opacity flex items-center gap-1 underline underline-offset-4"
               style={{ color: 'var(--app-brand)' }}
             >
               <span>— {currentWisdom.source} (ص {currentWisdom.page})</span>
             </button>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={copyQuote}
-                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90 bg-black/5 dark:bg-white/5"
+                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90 border"
+                style={{
+                  background: 'var(--app-bg-2)',
+                  borderColor: 'var(--app-divider)',
+                  color: 'var(--app-text)',
+                }}
                 title="نسخ الحكمة"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
@@ -540,7 +614,12 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
 
               <button
                 onClick={shareQuote}
-                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90 bg-black/5 dark:bg-white/5"
+                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90 border"
+                style={{
+                  background: 'var(--app-bg-2)',
+                  borderColor: 'var(--app-divider)',
+                  color: 'var(--app-text)',
+                }}
                 title="مشاركة"
               >
                 <Share2 className="w-3.5 h-3.5" />
@@ -548,18 +627,23 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
 
               <button
                 onClick={saveQuoteToDb}
-                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90 bg-black/5 dark:bg-white/5"
+                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90 border"
+                style={{
+                  background: 'var(--app-bg-2)',
+                  borderColor: 'var(--app-divider)',
+                  color: savedStar ? '#f59e0b' : 'var(--app-text)',
+                }}
                 title="حفظ في المفضلة"
               >
-                <Star className={`w-3.5 h-3.5 ${savedStar ? 'text-amber-500 fill-current' : ''}`} />
+                <Star className={`w-3.5 h-3.5 ${savedStar ? 'fill-current' : ''}`} />
               </button>
 
               <button
                 onClick={() => setIsCardStudioOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-arabic text-xs font-semibold transition-all active:scale-90 text-white shadow-sm"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-arabic text-xs font-bold transition-all active:scale-90 text-white shadow-md"
                 style={{ background: 'var(--app-brand-grad)' }}
               >
-                <Sparkles className="w-3 h-3" />
+                <Sparkles className="w-3.5 h-3.5" />
                 <span>تصميم بطاقة</span>
               </button>
             </div>
@@ -568,36 +652,52 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
       </motion.div>
 
       {/* ══════════════════════════════════════════════════
-          4. QUICK DISCOVERY TOOLS GRID
+          4. DISCOVERY TILES (أدوات الاستكشاف المتقدمة)
           ══════════════════════════════════════════════════ */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Ambient Sounds */}
         <motion.div
           variants={itemVariants}
           onClick={() => setIsSoundModalOpen(true)}
-          className="app-surface app-surface-hover rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5"
+          className="rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
+          style={{
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+          }}
         >
-          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0 shadow-sm">
             <Music className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>أصوات التركيز</h4>
-            <p className="text-[11px] font-arabic opacity-60">مطر، قهوة، وطبيعة</p>
+            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
+              أصوات التركيز
+            </h4>
+            <p className="text-[11px] font-arabic opacity-60 mt-0.5">
+              مطر، هدوء، وبيئة قراءة هادئة
+            </p>
           </div>
         </motion.div>
 
-        {/* Dictionary */}
+        {/* Lexicon */}
         <motion.div
           variants={itemVariants}
           onClick={() => setIsDictModalOpen(true)}
-          className="app-surface app-surface-hover rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5"
+          className="rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
+          style={{
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+          }}
         >
-          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0 shadow-sm">
             <BookMarked className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>المعجم اللغوي</h4>
-            <p className="text-[11px] font-arabic opacity-60">شرح غريب الألفاظ</p>
+            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
+              المعجم اللغوي
+            </h4>
+            <p className="text-[11px] font-arabic opacity-60 mt-0.5">
+              شرح غريب الألفاظ والمفردات
+            </p>
           </div>
         </motion.div>
 
@@ -605,14 +705,22 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
         <motion.div
           variants={itemVariants}
           onClick={() => setIsTopicsModalOpen(true)}
-          className="app-surface app-surface-hover rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5"
+          className="rounded-2xl p-4.5 cursor-pointer flex items-center gap-3.5 border shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-98"
+          style={{
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+          }}
         >
-          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-sky-500/10 text-sky-500 border border-sky-500/20 shrink-0">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-purple-500/10 text-purple-500 border border-purple-500/20 shrink-0 shadow-sm">
             <Layers className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>التصفح الموضوعي</h4>
-            <p className="text-[11px] font-arabic opacity-60">أبواب وموضوعات الكتاب</p>
+            <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
+              التصفح الموضوعي
+            </h4>
+            <p className="text-[11px] font-arabic opacity-60 mt-0.5">
+              أبواب وموضوعات وحكم الكتاب
+            </p>
           </div>
         </motion.div>
       </div>

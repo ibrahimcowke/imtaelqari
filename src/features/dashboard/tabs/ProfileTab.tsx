@@ -156,11 +156,11 @@ export const ProfileTab: React.FC = () => {
       {/* ── 1. Profile Hero ── */}
       <motion.div
         variants={itemVariants}
-        className="relative overflow-hidden rounded-3xl p-6 md:p-7"
+        className="relative overflow-hidden rounded-3xl p-6 md:p-7 border shadow-2xl transition-all"
         style={{
-          background: 'linear-gradient(135deg, #2a1c16 0%, #3d2822 45%, #4e3328 100%)',
-          border: '1px solid rgba(163,124,108,0.25)',
-          boxShadow: '0 12px 48px rgba(42,28,22,0.35)',
+          background: 'linear-gradient(135deg, var(--sidebar-bg) 0%, rgba(30,20,15,0.95) 100%)',
+          borderColor: 'var(--app-brand-border)',
+          color: 'white',
         }}
       >
         <div

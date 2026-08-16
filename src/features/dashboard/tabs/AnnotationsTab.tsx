@@ -4,9 +4,10 @@ import { db } from '../../../lib/db';
 import { useReaderStore } from '../../../store/readerStore';
 import {
   Bookmark, Highlighter, Trash2, FileX, Search,
-  Copy, Check, Download
+  Copy, Check, Download, Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { QuoteCardModal } from '../../quote-studio/QuoteCardModal';
 
 const COLOR_MAP: Record<string, { border: string; bg: string; label: string; dot: string }> = {
   amber: {
@@ -43,6 +44,11 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
   const [activeFilter, setActiveFilter] = useState<AnnotationFilter>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  // Quote Studio Modal state
+  const [selectedQuoteText, setSelectedQuoteText] = useState('');
+  const [selectedQuotePage, setSelectedQuotePage] = useState<number | undefined>(undefined);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+
   const bookmarks = useLiveQuery(() => db.bookmarks.orderBy('createdAt').reverse().toArray(), []) ?? [];
   const highlights = useLiveQuery(() => db.highlights.orderBy('createdAt').reverse().toArray(), []) ?? [];
 
@@ -68,17 +74,24 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const openInQuoteStudio = (text: string, page: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedQuoteText(text);
+    setSelectedQuotePage(page);
+    setIsQuoteModalOpen(true);
+  };
+
   const exportAll = () => {
     let content = `# فوائد وملاحظات من كتاب إمتاع القارئ بجمال الكلم وروائع الحكم\n\n`;
     content += `تاريخ التصدير: ${new Date().toLocaleDateString('ar-SA')}\n\n`;
-    
+
     content += `## العلامات المرجعية (${bookmarks.length})\n`;
-    bookmarks.forEach(bm => {
+    bookmarks.forEach((bm) => {
       content += `- ص ${bm.page}: ${bm.preview}\n`;
     });
 
     content += `\n## التظليلات الملونة (${highlights.length})\n`;
-    highlights.forEach(hl => {
+    highlights.forEach((hl) => {
       content += `- ص ${hl.page} [${hl.color}]: «${hl.selectedText}»\n`;
     });
 
@@ -96,18 +109,18 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
     if (activeFilter !== 'all' && activeFilter !== 'bookmarks') return [];
     if (!searchQuery.trim()) return bookmarks;
     const q = searchQuery.trim().toLowerCase();
-    return bookmarks.filter(b => b.preview.toLowerCase().includes(q) || b.page.toString().includes(q));
+    return bookmarks.filter((b) => b.preview.toLowerCase().includes(q) || b.page.toString().includes(q));
   })();
 
   const filteredHighlights = (() => {
     if (activeFilter === 'bookmarks') return [];
     let list = highlights;
     if (activeFilter === 'amber' || activeFilter === 'rose' || activeFilter === 'sage') {
-      list = list.filter(h => h.color === activeFilter);
+      list = list.filter((h) => h.color === activeFilter);
     }
     if (!searchQuery.trim()) return list;
     const q = searchQuery.trim().toLowerCase();
-    return list.filter(h => h.selectedText.toLowerCase().includes(q) || h.page.toString().includes(q));
+    return list.filter((h) => h.selectedText.toLowerCase().includes(q) || h.page.toString().includes(q));
   })();
 
   const containerVariants: Variants = {
@@ -122,12 +135,16 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
   const totalCount = bookmarks.length + highlights.length;
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-5">
+    <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-5" dir="rtl">
 
       {/* ── 1. Top Section Header ── */}
       <motion.div
         variants={itemVariants}
-        className="app-surface rounded-3xl p-5 md:p-6"
+        className="rounded-3xl p-5 md:p-6 border shadow-sm transition-all"
+        style={{
+          background: 'var(--app-surface)',
+          borderColor: 'var(--app-surface-border)',
+        }}
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
@@ -175,8 +192,10 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="ابحث في نصوص الفوائد والتظليلات والعلامات..."
-            className="w-full pl-4 pr-11 py-3.5 rounded-2xl font-arabic text-sm outline-none transition-all app-surface"
+            className="w-full pl-4 pr-11 py-3.5 rounded-2xl font-arabic text-sm outline-none transition-all border shadow-sm"
             style={{
+              background: 'var(--app-surface)',
+              borderColor: 'var(--app-surface-border)',
               color: 'var(--app-text)',
             }}
           />
@@ -203,10 +222,11 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
             <button
               key={f.id}
               onClick={() => setActiveFilter(f.id)}
-              className="px-3.5 py-2 rounded-2xl font-arabic text-xs font-semibold whitespace-nowrap transition-all active:scale-95"
-              style={activeFilter === f.id
-                ? { background: 'var(--app-brand-grad)', color: 'white', boxShadow: '0 4px 12px var(--app-brand-glow)' }
-                : { background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }
+              className="px-3.5 py-2 rounded-2xl font-arabic text-xs font-semibold whitespace-nowrap transition-all active:scale-95 border"
+              style={
+                activeFilter === f.id
+                  ? { background: 'var(--app-brand-grad)', color: 'white', borderColor: 'transparent', boxShadow: '0 4px 12px var(--app-brand-glow)' }
+                  : { background: 'var(--app-brand-dim)', color: 'var(--app-brand)', borderColor: 'var(--app-brand-border)' }
               }
             >
               {f.label}
@@ -219,7 +239,7 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
       {filteredBookmarks.length > 0 && (
         <section className="space-y-3">
           <h3 className="font-arabic font-bold text-sm flex items-center gap-2" style={{ color: 'var(--app-text)' }}>
-            <Bookmark className="w-4 h-4 text-brand-600" />
+            <Bookmark className="w-4 h-4" style={{ color: 'var(--app-brand)' }} />
             <span>العلامات المرجعية ({filteredBookmarks.length})</span>
           </h3>
 
@@ -232,27 +252,40 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
                   layout
                   exit={{ opacity: 0, scale: 0.9 }}
                   onClick={() => handleJump(bm.page)}
-                  className="rounded-2xl p-4 cursor-pointer group relative overflow-hidden transition-all app-surface app-surface-hover"
+                  className="rounded-2xl p-4 cursor-pointer group relative overflow-hidden transition-all border shadow-sm"
+                  style={{
+                    background: 'var(--app-surface)',
+                    borderColor: 'var(--app-surface-border)',
+                  }}
                 >
                   <div className="flex justify-between items-start mb-2.5">
                     <span
-                      className="text-xs font-bold font-sans px-2.5 py-0.5 rounded-xl"
-                      style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }}
+                      className="text-xs font-bold font-sans px-2.5 py-0.5 rounded-xl border"
+                      style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)', borderColor: 'var(--app-brand-border)' }}
                     >
                       ص {bm.page}
                     </span>
+
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
+                        onClick={(e) => openInQuoteStudio(bm.preview, bm.page, e)}
+                        className="p-1.5 rounded-xl border transition-all"
+                        style={{ background: 'var(--app-bg-2)', borderColor: 'var(--app-divider)', color: 'var(--app-brand)' }}
+                        title="تصميم بطاقة اقتباس"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                      </button>
+                      <button
                         onClick={(e) => copyText(bm.preview, bm.id, e)}
-                        className="p-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:opacity-100 transition-all"
-                        style={{ color: copiedId === bm.id ? '#0d8f60' : 'var(--app-brand)' }}
+                        className="p-1.5 rounded-xl border transition-all"
+                        style={{ background: 'var(--app-bg-2)', borderColor: 'var(--app-divider)', color: copiedId === bm.id ? '#0d8f60' : 'var(--app-brand)' }}
                         title="نسخ"
                       >
                         {copiedId === bm.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                       </button>
                       <button
                         onClick={(e) => deleteBookmark(bm.id, e)}
-                        className="p-1.5 rounded-xl text-rose-500 bg-rose-500/10 hover:bg-rose-500/20 transition-all"
+                        className="p-1.5 rounded-xl text-rose-500 bg-rose-500/10 hover:bg-rose-500/20 transition-all border border-rose-500/20"
                         title="حذف"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -288,8 +321,10 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
                     layout
                     exit={{ opacity: 0, scale: 0.95 }}
                     onClick={() => handleJump(hl.page)}
-                    className="rounded-2xl cursor-pointer group relative overflow-hidden transition-all app-surface app-surface-hover"
+                    className="rounded-2xl cursor-pointer group relative overflow-hidden transition-all border shadow-sm"
                     style={{
+                      background: 'var(--app-surface)',
+                      borderColor: 'var(--app-surface-border)',
                       borderRight: `4px solid ${colorInfo.dot}`,
                     }}
                   >
@@ -304,16 +339,24 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
 
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
+                            onClick={(e) => openInQuoteStudio(hl.selectedText, hl.page, e)}
+                            className="p-1.5 rounded-xl border transition-all"
+                            style={{ background: 'var(--app-bg-2)', borderColor: 'var(--app-divider)', color: 'var(--app-brand)' }}
+                            title="تصميم بطاقة اقتباس"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                          </button>
+                          <button
                             onClick={(e) => copyText(hl.selectedText, hl.id, e)}
-                            className="p-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:opacity-100 transition-all"
-                            style={{ color: copiedId === hl.id ? '#0d8f60' : 'var(--app-brand)' }}
+                            className="p-1.5 rounded-xl border transition-all"
+                            style={{ background: 'var(--app-bg-2)', borderColor: 'var(--app-divider)', color: copiedId === hl.id ? '#0d8f60' : 'var(--app-brand)' }}
                             title="نسخ النص"
                           >
                             {copiedId === hl.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                           </button>
                           <button
                             onClick={(e) => deleteHighlight(hl.id, e)}
-                            className="p-1.5 rounded-xl text-rose-500 bg-rose-500/10 hover:bg-rose-500/20 transition-all"
+                            className="p-1.5 rounded-xl text-rose-500 bg-rose-500/10 hover:bg-rose-500/20 transition-all border border-rose-500/20"
                             title="حذف"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -336,7 +379,11 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
       {filteredBookmarks.length === 0 && filteredHighlights.length === 0 && (
         <motion.div
           variants={itemVariants}
-          className="app-surface rounded-3xl p-12 text-center flex flex-col items-center gap-3"
+          className="rounded-3xl p-12 text-center flex flex-col items-center gap-3 border shadow-sm"
+          style={{
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+          }}
         >
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-black/5 dark:bg-white/5 opacity-60">
             <FileX className="w-7 h-7" />
@@ -353,6 +400,14 @@ export const AnnotationsTab: React.FC<{ onNavigate: () => void }> = ({ onNavigat
         </motion.div>
       )}
 
+      {/* Quote Card Studio Modal for saved highlights & bookmarks */}
+      <QuoteCardModal
+        open={isQuoteModalOpen}
+        onOpenChange={setIsQuoteModalOpen}
+        quoteText={selectedQuoteText}
+        sourceText="كتاب إمتاع القارئ"
+        pageNumber={selectedQuotePage}
+      />
     </motion.div>
   );
 };

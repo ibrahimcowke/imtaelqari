@@ -3,7 +3,7 @@ import { bookDataService, normalizeArabic } from '../../../data/service';
 import { useReaderStore } from '../../../store/readerStore';
 import {
   ChevronLeft, BookMarked, Search, CheckCircle2,
-  BookOpen, Eye
+  Eye
 } from 'lucide-react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 
@@ -19,9 +19,9 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
     const pages = bookDataService.getPages();
     const result: { title: string; page: number; isCurrent: boolean; isRead: boolean; preview: string }[] = [];
 
-    pages.forEach(p => {
-      const headingBlock = p.blocks.find(b => b.type === 'heading');
-      const paragraphBlock = p.blocks.find(b => b.type === 'paragraph' || b.type === 'quote');
+    pages.forEach((p) => {
+      const headingBlock = p.blocks.find((b) => b.type === 'heading');
+      const paragraphBlock = p.blocks.find((b) => b.type === 'paragraph' || b.type === 'quote');
       const preview = paragraphBlock?.text || p.display_text.substring(0, 120) || '';
 
       if (headingBlock) {
@@ -96,12 +96,16 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
   const readPercent = Math.round((readCount / (chapters.length || 1)) * 100);
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-5">
+    <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-5" dir="rtl">
 
       {/* ── 1. Top Section Header ── */}
       <motion.div
         variants={itemVariants}
-        className="app-surface rounded-3xl p-5 md:p-6"
+        className="rounded-3xl p-5 md:p-6 border shadow-sm transition-all"
+        style={{
+          background: 'var(--app-surface)',
+          borderColor: 'var(--app-surface-border)',
+        }}
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
@@ -131,7 +135,7 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
               </div>
               <div className="text-[10px] font-arabic opacity-60">نسبة الإنجاز</div>
             </div>
-            <div className="w-16 h-2 rounded-full overflow-hidden bg-black/10 dark:bg-white/10">
+            <div className="w-20 h-2.5 rounded-full overflow-hidden bg-black/10 dark:bg-white/10 border" style={{ borderColor: 'var(--app-divider)' }}>
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{ width: `${readPercent}%`, background: 'var(--app-brand-grad)' }}
@@ -150,8 +154,10 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="ابحث في عناوين الفصول، النصوص، أو أرقام الصفحات..."
-            className="w-full pl-4 pr-11 py-3.5 rounded-2xl font-arabic text-sm outline-none transition-all app-surface"
+            className="w-full pl-4 pr-11 py-3.5 rounded-2xl font-arabic text-sm outline-none transition-all border shadow-sm"
             style={{
+              background: 'var(--app-surface)',
+              borderColor: 'var(--app-surface-border)',
               color: 'var(--app-text)',
             }}
           />
@@ -176,10 +182,11 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
             <button
               key={f.id}
               onClick={() => setActiveFilter(f.id)}
-              className="flex-1 py-2 rounded-2xl font-arabic text-xs font-semibold transition-all active:scale-95 text-center"
-              style={activeFilter === f.id
-                ? { background: 'var(--app-brand-grad)', color: 'white', boxShadow: '0 4px 12px var(--app-brand-glow)' }
-                : { background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }
+              className="flex-1 py-2 rounded-2xl font-arabic text-xs font-semibold transition-all active:scale-95 text-center border"
+              style={
+                activeFilter === f.id
+                  ? { background: 'var(--app-brand-grad)', color: 'white', borderColor: 'transparent', boxShadow: '0 4px 12px var(--app-brand-glow)' }
+                  : { background: 'var(--app-brand-dim)', color: 'var(--app-brand)', borderColor: 'var(--app-brand-border)' }
               }
             >
               {f.label}
@@ -192,7 +199,11 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
       {filteredChapters.length === 0 ? (
         <motion.div
           variants={itemVariants}
-          className="app-surface rounded-3xl p-12 text-center font-arabic"
+          className="rounded-3xl p-12 text-center font-arabic border shadow-sm"
+          style={{
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+          }}
         >
           <p className="text-sm font-semibold mb-1" style={{ color: 'var(--app-text)' }}>لا توجد فصول مطابقة لبحثك</p>
           <p className="text-xs opacity-60" style={{ color: 'var(--app-text-muted)' }}>جرب البحث بكلمات أخرى أو اختر فلتراً مختلفاً</p>
@@ -205,12 +216,15 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
               <motion.div
                 key={idx}
                 variants={itemVariants}
-                className="w-full text-right group relative overflow-hidden rounded-2xl transition-all app-surface app-surface-hover"
-                style={ch.isCurrent ? {
-                  background: 'var(--app-brand-dim)',
-                  borderColor: 'var(--app-brand-border)',
-                  boxShadow: '0 4px 20px var(--app-brand-glow)',
-                } : {}}
+                className="w-full text-right group relative overflow-hidden rounded-2xl transition-all border shadow-sm"
+                style={{
+                  background: ch.isCurrent
+                    ? 'var(--app-brand-dim)'
+                    : 'var(--app-surface)',
+                  borderColor: ch.isCurrent
+                    ? 'var(--app-brand)'
+                    : 'var(--app-surface-border)',
+                }}
               >
                 {/* Active Indicator Bar */}
                 {ch.isCurrent && (
@@ -226,10 +240,11 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
                 >
                   {/* Chapter number or Read Checkmark */}
                   <div
-                    className="shrink-0 w-9 h-9 rounded-2xl flex items-center justify-center text-xs font-bold font-sans"
-                    style={ch.isCurrent
-                      ? { background: 'var(--app-brand-grad)', color: 'white', boxShadow: '0 4px 12px var(--app-brand-glow)' }
-                      : ch.isRead
+                    className="shrink-0 w-9 h-9 rounded-2xl flex items-center justify-center text-xs font-bold font-sans shadow-sm"
+                    style={
+                      ch.isCurrent
+                        ? { background: 'var(--app-brand-grad)', color: 'white', boxShadow: '0 4px 12px var(--app-brand-glow)' }
+                        : ch.isRead
                         ? { background: 'rgba(16,185,129,0.12)', color: '#0d8f60', border: '1px solid rgba(16,185,129,0.25)' }
                         : { background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }
                     }
@@ -246,51 +261,61 @@ export const ChaptersTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }
                       {ch.title}
                     </h3>
                     {ch.isCurrent && (
-                      <span className="text-[10px] font-arabic font-semibold text-brand-600 flex items-center gap-1 mt-0.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-                        الفصل الحالي الذي تقرأه
+                      <span className="text-[10px] font-arabic font-semibold flex items-center gap-1 mt-0.5" style={{ color: 'var(--app-brand)' }}>
+                        <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--app-brand)' }} />
+                        موقعك الحالي في القراءة
                       </span>
                     )}
                   </div>
 
-                  {/* Actions & Preview Trigger */}
+                  {/* Page Pill & Actions */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={(e) => toggleExpand(idx, e)}
-                      className="p-2 rounded-xl transition-all bg-black/5 dark:bg-white/5 hover:opacity-100 active:scale-90"
-                      style={{ color: 'var(--app-brand)' }}
-                      title="معاينة محتوى الفصل"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                    </button>
                     <span
-                      className="text-xs font-sans font-semibold px-2.5 py-1 rounded-xl"
-                      style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)', border: '1px solid var(--app-brand-border)' }}
+                      className="px-2.5 py-1 rounded-xl text-xs font-arabic font-semibold border"
+                      style={{
+                        background: 'var(--app-bg-2)',
+                        borderColor: 'var(--app-divider)',
+                        color: 'var(--app-text-muted)',
+                      }}
                     >
                       ص {ch.page}
                     </span>
+
+                    {ch.preview && (
+                      <button
+                        onClick={(e) => toggleExpand(idx, e)}
+                        className="p-1.5 rounded-xl transition-all opacity-60 hover:opacity-100 hover:bg-black/5"
+                        title={isExpanded ? 'إخفاء المعاينة' : 'معاينة النص'}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    )}
+
                     <ChevronLeft className="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:-translate-x-0.5 transition-all" />
                   </div>
                 </div>
 
-                {/* Expandable Preview Snippet */}
+                {/* Expanded Excerpt Preview */}
                 <AnimatePresence>
                   {isExpanded && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="px-5 pb-4 pt-2 border-t text-xs font-arabic leading-relaxed"
-                      style={{ borderColor: 'var(--app-divider)', color: 'var(--app-text-muted)' }}
+                      transition={{ duration: 0.2 }}
+                      className="px-4 pb-4 pt-1 border-t text-xs font-arabic leading-relaxed opacity-80"
+                      style={{ borderColor: 'var(--app-divider)', color: 'var(--app-text)' }}
                     >
-                      <p className="mb-3 italic opacity-90">«{ch.preview}...»</p>
+                      <p className="bg-black/5 dark:bg-white/5 p-3 rounded-xl">
+                        «{ch.preview}»
+                      </p>
                       <button
                         onClick={() => handleJump(ch.page)}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-arabic text-xs font-bold text-white shadow-sm transition-all active:scale-95"
-                        style={{ background: 'var(--app-brand-grad)' }}
+                        className="mt-2 text-xs font-bold font-arabic flex items-center gap-1 hover:underline"
+                        style={{ color: 'var(--app-brand)' }}
                       >
-                        <BookOpen className="w-3.5 h-3.5" />
-                        <span>الانتقال لقراءة هذا الفصل</span>
+                        <span>فتح هذه الصفحة في القارئ</span>
+                        <ChevronLeft className="w-3 h-3" />
                       </button>
                     </motion.div>
                   )}
