@@ -1,15 +1,9 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useReaderStore } from '../../store/readerStore';
 import { bookDataService } from '../../data/service';
-import {
-  ArrowRight, Settings, Bookmark,
-  List, ChevronLeft, ChevronRight,
-  Volume2, VolumeX, PanelRightOpen,
-  Music, Sparkles, BookMarked
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SettingsSheet } from './components/SettingsSheet';
-import { ReaderModeToggle } from './components/ReaderModeToggle';
+import { ReaderHeader } from './components/ReaderHeader';
 import { AnnotationsSidebar } from './components/AnnotationsSidebar';
 import { TableOfContents } from './components/TableOfContents';
 import { ProgressBar } from './components/ProgressBar';
@@ -92,32 +86,7 @@ const MobileNavBtn: React.FC<{
   </motion.button>
 );
 
-/* ── Header Icon Button ── */
-const HeaderBtn: React.FC<{
-  onClick: (e: React.MouseEvent) => void;
-  icon: React.ReactNode;
-  label: string;
-  active?: boolean;
-}> = ({ onClick, icon, label, active = false }) => (
-  <button
-    onClick={onClick}
-    title={label}
-    className="w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200 active:scale-90 shrink-0"
-    style={{
-      background: active
-        ? 'var(--app-brand-dim)'
-        : 'transparent',
-      color: active
-        ? 'var(--app-brand)'
-        : 'var(--app-text-muted)',
-      border: active
-        ? '1px solid var(--app-brand-border)'
-        : '1px solid transparent',
-    }}
-  >
-    {icon}
-  </button>
-);
+
 
 /* ── Page Flip Animation Variants ── */
 const pageFlipVariants: Variants = {
@@ -148,7 +117,6 @@ const pageFlipVariants: Variants = {
 
 export const ReaderScreen: React.FC = () => {
   const { currentPage, preferences, setCurrentPage, toggleControls, isControlsVisible, isReadingAloud, toggleReadingAloud } = useReaderStore();
-  const navigate = useNavigate();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAnnotationsOpen, setIsAnnotationsOpen] = useState(false);
   const [isTOCOpen, setIsTOCOpen] = useState(false);
@@ -157,7 +125,6 @@ export const ReaderScreen: React.FC = () => {
   const [isDictModalOpen, setIsDictModalOpen] = useState(false);
   const [slideDir, setSlideDir] = useState<-1 | 1>(-1); // -1: Next, 1: Prev
   const totalPages = bookDataService.getPages().length;
-  const isDark = preferences.theme === 'dark' || preferences.theme === 'emerald' || preferences.theme === 'midnight' || preferences.theme === 'coffee' || preferences.theme === 'slate';
 
   const pageData = bookDataService.getPage(currentPage);
 
@@ -365,95 +332,22 @@ export const ReaderScreen: React.FC = () => {
       {/* ══════════════════════════════════════════════════
           1. TOP APP BAR
           ══════════════════════════════════════════════════ */}
-      <div
-        className={`absolute top-0 w-full z-20 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] app-bar border-b ${
-          showControls ? 'translate-y-0' : '-translate-y-full'
-        }`}
-        style={{
-          borderBottomColor: 'var(--app-bar-border)',
-        }}
-      >
-        <div className="flex items-center justify-between px-3 md:px-6 py-2.5 gap-2">
-          {/* LEFT — back to dashboard */}
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all active:scale-95 font-arabic text-xs font-semibold"
-              style={{
-                background: 'var(--app-brand-dim)',
-                border: '1px solid var(--app-brand-border)',
-                color: 'var(--app-brand)',
-              }}
-            >
-              <ArrowRight className="w-4 h-4" />
-              <span className="hidden sm:inline">الرئيسية</span>
-            </button>
-          </div>
-
-          {/* CENTER — mode indicator + page title */}
-          <div className="flex flex-col items-center gap-0.5 flex-1 min-w-0 overflow-hidden">
-            <ReaderModeToggle isDark={isDark} />
-            <div
-              className="text-[11px] font-arabic font-semibold truncate max-w-44 sm:max-w-sm opacity-70"
-              style={{ color: 'var(--app-text)' }}
-            >
-              {pageData.title}
-            </div>
-          </div>
-
-          {/* RIGHT — action buttons */}
-          <div className="flex items-center gap-1 shrink-0">
-            <HeaderBtn
-              onClick={(e) => { e.stopPropagation(); setIsSoundModalOpen(true); }}
-              icon={<Music className="w-4 h-4" />}
-              label="أصوات التركيز"
-            />
-            <HeaderBtn
-              onClick={(e) => { e.stopPropagation(); setIsDictModalOpen(true); }}
-              icon={<BookMarked className="w-4 h-4" />}
-              label="المعجم اللغوي"
-            />
-            <HeaderBtn
-              onClick={(e) => { e.stopPropagation(); setIsCardStudioOpen(true); }}
-              icon={<Sparkles className="w-4 h-4" />}
-              label="استوديو البطاقات"
-            />
-            <HeaderBtn
-              onClick={(e) => { e.stopPropagation(); setIsTOCOpen(true); }}
-              icon={<List className="w-4 h-4" />}
-              label="فهرس الكتاب"
-            />
-            <HeaderBtn
-              onClick={(e) => { e.stopPropagation(); toggleReadingAloud(); }}
-              icon={isReadingAloud
-                ? <Volume2 className="w-4 h-4 text-emerald-500 animate-pulse" />
-                : <VolumeX className="w-4 h-4" />
-              }
-              label={isReadingAloud ? 'إيقاف القراءة' : 'قراءة صوتية'}
-              active={isReadingAloud}
-            />
-            <HeaderBtn
-              onClick={toggleBookmark}
-              icon={isBookmarked
-                ? <Bookmark className="w-4 h-4 fill-amber-500 text-amber-500" />
-                : <Bookmark className="w-4 h-4" />
-              }
-              label={isBookmarked ? 'إزالة العلامة' : 'إضافة علامة مرجعية'}
-              active={isBookmarked as boolean}
-            />
-            <HeaderBtn
-              onClick={(e) => { e.stopPropagation(); setIsAnnotationsOpen(true); }}
-              icon={<PanelRightOpen className="w-4 h-4" />}
-              label="الملاحظات"
-            />
-            <HeaderBtn
-              onClick={(e) => { e.stopPropagation(); setIsSettingsOpen(true); }}
-              icon={<Settings className="w-4 h-4" />}
-              label="الإعدادات"
-            />
-          </div>
-        </div>
-      </div>
+      <ReaderHeader
+        showControls={showControls}
+        chapterTitle={pageData.title}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        isBookmarked={!!isBookmarked}
+        isReadingAloud={isReadingAloud}
+        onToggleBookmark={toggleBookmark}
+        onToggleReadingAloud={toggleReadingAloud}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenTOC={() => setIsTOCOpen(true)}
+        onOpenAnnotations={() => setIsAnnotationsOpen(true)}
+        onOpenQuoteStudio={() => setIsCardStudioOpen(true)}
+        onOpenSoundModal={() => setIsSoundModalOpen(true)}
+        onOpenDictModal={() => setIsDictModalOpen(true)}
+      />
 
       {/* ── Left & Right Edge Tap Zones ── */}
       <TapZone

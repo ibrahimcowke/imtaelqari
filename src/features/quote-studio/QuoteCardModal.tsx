@@ -1,18 +1,152 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import {
-  Download, Share2, Sparkles, X, Check,
+  Download, Share2, Sparkles, X, Check, Copy, Type,
+  Palette, Edit3, Smartphone, Square, Monitor,
+  Sliders, RefreshCw, CheckCircle2,
 } from 'lucide-react';
 
-type CardTemplate = 'gold' | 'parchment' | 'emerald' | 'midnight' | 'rose';
+export type CardRatio = '1:1' | '9:16' | '4:5' | '16:9';
+export type CardTemplate =
+  | 'gold'
+  | 'parchment'
+  | 'emerald'
+  | 'midnight'
+  | 'ruby'
+  | 'marble'
+  | 'terracotta'
+  | 'obsidian';
 
-const TEMPLATES: { id: CardTemplate; name: string; bg: string; text: string; ring: string }[] = [
-  { id: 'gold',      name: 'ذهب ملكي',    bg: '#14110f', text: '#e6c88b', ring: '#d4af37' },
-  { id: 'parchment', name: 'مخطوطة عتيقة', bg: '#f4ebd0', text: '#2c1810', ring: '#8b5a2b' },
-  { id: 'emerald',   name: 'زمرد أندلسي', bg: '#081c14', text: '#a3e8ca', ring: '#2ea879' },
-  { id: 'midnight',  name: 'سماء الليل',   bg: '#0a1128', text: '#c8dcff', ring: '#38bdf8' },
-  { id: 'rose',      name: 'وردي دمشقي',  bg: '#fcf3f2', text: '#4a151b', ring: '#c96868' },
+export type HeaderOrnament = 'bismillah' | 'stars' | 'rub-el-hizb' | 'fleuron' | 'royal' | 'none';
+export type FrameStyle = 'royal' | 'minimal' | 'vintage' | 'none';
+export type TextAlign = 'center' | 'right';
+
+interface TemplateConfig {
+  id: CardTemplate;
+  name: string;
+  category: 'dark' | 'light';
+  bgGrad: [string, string, string];
+  textColor: string;
+  accentColor: string;
+  subtextColor: string;
+  borderInner: string;
+  glowColor: string;
+}
+
+const TEMPLATES: TemplateConfig[] = [
+  {
+    id: 'gold',
+    name: 'ذهب ملكي فاخر',
+    category: 'dark',
+    bgGrad: ['#1c1714', '#0d0a08', '#1a130f'],
+    textColor: '#f5e6c8',
+    accentColor: '#d4af37',
+    subtextColor: '#c4a77d',
+    borderInner: 'rgba(212, 175, 55, 0.35)',
+    glowColor: 'rgba(212, 175, 55, 0.15)',
+  },
+  {
+    id: 'parchment',
+    name: 'مخطوطة أثرية عتيقة',
+    category: 'light',
+    bgGrad: ['#faf4e6', '#f2e8cf', '#e6d7b9'],
+    textColor: '#2a1810',
+    accentColor: '#8b5a2b',
+    subtextColor: '#6e4823',
+    borderInner: 'rgba(139, 90, 43, 0.3)',
+    glowColor: 'rgba(139, 90, 43, 0.08)',
+  },
+  {
+    id: 'emerald',
+    name: 'زمرد أندلسي ملكي',
+    category: 'dark',
+    bgGrad: ['#0a2218', '#05130d', '#0d2b1f'],
+    textColor: '#d4f7e6',
+    accentColor: '#34d399',
+    subtextColor: '#86efac',
+    borderInner: 'rgba(52, 211, 153, 0.35)',
+    glowColor: 'rgba(52, 211, 153, 0.15)',
+  },
+  {
+    id: 'midnight',
+    name: 'سماء الليل الكحلية',
+    category: 'dark',
+    bgGrad: ['#0d1b2a', '#060b14', '#112238'],
+    textColor: '#e0f2fe',
+    accentColor: '#38bdf8',
+    subtextColor: '#93c5fd',
+    borderInner: 'rgba(56, 189, 248, 0.35)',
+    glowColor: 'rgba(56, 189, 248, 0.15)',
+  },
+  {
+    id: 'ruby',
+    name: 'عقيق دمشقي مخملي',
+    category: 'dark',
+    bgGrad: ['#28090d', '#130305', '#330c11'],
+    textColor: '#ffe4e6',
+    accentColor: '#fb7185',
+    subtextColor: '#fda4af',
+    borderInner: 'rgba(251, 113, 133, 0.35)',
+    glowColor: 'rgba(251, 113, 133, 0.15)',
+  },
+  {
+    id: 'marble',
+    name: 'رخام أبيض كلاسيكي',
+    category: 'light',
+    bgGrad: ['#ffffff', '#f8fafc', '#f1f5f9'],
+    textColor: '#0f172a',
+    accentColor: '#475569',
+    subtextColor: '#64748b',
+    borderInner: 'rgba(71, 85, 105, 0.25)',
+    glowColor: 'rgba(0, 0, 0, 0.04)',
+  },
+  {
+    id: 'terracotta',
+    name: 'كثبان الصحراء والصلصال',
+    category: 'light',
+    bgGrad: ['#fdf6ee', '#f8ebd9', '#ebd5bb'],
+    textColor: '#3a2012',
+    accentColor: '#c26d38',
+    subtextColor: '#9c5428',
+    borderInner: 'rgba(194, 109, 56, 0.3)',
+    glowColor: 'rgba(194, 109, 56, 0.08)',
+  },
+  {
+    id: 'obsidian',
+    name: 'فحم وألماس ناصع',
+    category: 'dark',
+    bgGrad: ['#121214', '#080809', '#141416'],
+    textColor: '#ffffff',
+    accentColor: '#e2e8f0',
+    subtextColor: '#94a3b8',
+    borderInner: 'rgba(226, 232, 240, 0.3)',
+    glowColor: 'rgba(255, 255, 255, 0.1)',
+  },
 ];
+
+const FONTS = [
+  { id: 'Amiri', name: 'أميري تراثي' },
+  { id: 'Noto Naskh Arabic', name: 'نسخ واضح' },
+  { id: 'Cairo', name: 'كايرو هندسي' },
+  { id: 'Tajawal', name: 'تجوال عصري' },
+  { id: 'Almarai', name: 'المراعي حديث' },
+];
+
+const ORNAMENTS: { id: HeaderOrnament; name: string; symbol: string }[] = [
+  { id: 'bismillah', name: 'البسملة الشريفة', symbol: '﷽' },
+  { id: 'stars', name: 'نجمة كلاسيكية', symbol: '« ✦ »' },
+  { id: 'rub-el-hizb', name: 'الربع القرآني', symbol: '۞' },
+  { id: 'fleuron', name: 'زهرة مورقة', symbol: '❦' },
+  { id: 'royal', name: 'شارة ملكية', symbol: '⚜' },
+  { id: 'none', name: 'بدون زخرفة', symbol: '—' },
+];
+
+const RATIO_CONFIG: Record<CardRatio, { width: number; height: number; label: string; icon: any }> = {
+  '1:1': { width: 1080, height: 1080, label: 'مربع (1:1)', icon: Square },
+  '9:16': { width: 1080, height: 1920, label: 'قصة / ريلز (9:16)', icon: Smartphone },
+  '4:5': { width: 1080, height: 1350, label: 'منشور إنستغرام (4:5)', icon: Square },
+  '16:9': { width: 1920, height: 1080, label: 'عرضي / لاندسكيب (16:9)', icon: Monitor },
+};
 
 export const QuoteCardModal: React.FC<{
   open: boolean;
@@ -20,202 +154,379 @@ export const QuoteCardModal: React.FC<{
   quoteText: string;
   sourceText?: string;
   pageNumber?: number;
-}> = ({ open, onOpenChange, quoteText, sourceText = 'كتاب إمتاع القارئ', pageNumber }) => {
+}> = ({ open, onOpenChange, quoteText: initialQuote, sourceText = 'كتاب إمتاع القارئ', pageNumber }) => {
+  // State
+  const [activeTab, setActiveTab] = useState<'style' | 'text' | 'decor'>('style');
   const [template, setTemplate] = useState<CardTemplate>('gold');
-  const [fontSize, setFontSize] = useState<number>(36);
+  const [ratio, setRatio] = useState<CardRatio>('1:1');
+  const [fontSize, setFontSize] = useState<number>(38);
+  const [lineHeightMult, setLineHeightMult] = useState<number>(1.75);
   const [fontFamily, setFontFamily] = useState<string>('Amiri');
+  const [textAlign, setTextAlign] = useState<TextAlign>('center');
+  const [headerOrnament, setHeaderOrnament] = useState<HeaderOrnament>('bismillah');
+  const [frameStyle, setFrameStyle] = useState<FrameStyle>('royal');
+  const [showWatermark, setShowWatermark] = useState<boolean>(true);
+  const [showAuthorBadge, setShowAuthorBadge] = useState<boolean>(true);
+  const [quoteMarks, setQuoteMarks] = useState<boolean>(true);
+
+  // Editable text
+  const [editableQuote, setEditableQuote] = useState<string>(initialQuote);
+  const [customAuthor, setCustomAuthor] = useState<string>('محمد بن سعد النهاري');
+  const [customSource, setCustomSource] = useState<string>(sourceText);
+  const [customPage, setCustomPage] = useState<string>(pageNumber ? `${pageNumber}` : '');
+
+  // Feedback states
+  const [copiedToast, setCopiedToast] = useState<boolean>(false);
+  const [downloading, setDownloading] = useState<boolean>(false);
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Draw Card onto HTML5 Canvas
+  // Sync initial quote if changed
   useEffect(() => {
-    if (!open) return;
+    setEditableQuote(initialQuote);
+  }, [initialQuote]);
+
+  useEffect(() => {
+    if (pageNumber) setCustomPage(`${pageNumber}`);
+  }, [pageNumber]);
+
+  // Render Canvas Function
+  const renderCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // 1080x1080 High-Res Square Card for Instagram / WhatsApp / X
-    const width = 1080;
-    const height = 1080;
+    const { width, height } = RATIO_CONFIG[ratio];
     canvas.width = width;
     canvas.height = height;
 
-    // 1. Background
-    if (template === 'gold') {
-      const grad = ctx.createLinearGradient(0, 0, width, height);
-      grad.addColorStop(0, '#1c1714');
-      grad.addColorStop(0.5, '#0f0c0a');
-      grad.addColorStop(1, '#18120e');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, width, height);
+    const t = TEMPLATES.find((item) => item.id === template) || TEMPLATES[0];
 
-      // Gold Outer Border
-      ctx.strokeStyle = '#d4af37';
+    // 1. Background Gradient
+    const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+    bgGrad.addColorStop(0, t.bgGrad[0]);
+    bgGrad.addColorStop(0.5, t.bgGrad[1]);
+    bgGrad.addColorStop(1, t.bgGrad[2]);
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // Subtle ambient glow in center
+    const radialGlow = ctx.createRadialGradient(
+      width / 2,
+      height / 2,
+      50,
+      width / 2,
+      height / 2,
+      Math.max(width, height) / 1.5
+    );
+    radialGlow.addColorStop(0, t.glowColor);
+    radialGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = radialGlow;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Frames and Borders
+    const padding = ratio === '9:16' ? 70 : 60;
+    const innerPad = padding + 20;
+
+    if (frameStyle === 'royal') {
+      // Outer Solid Accent Frame
+      ctx.strokeStyle = t.accentColor;
+      ctx.lineWidth = 5;
+      ctx.strokeRect(padding, padding, width - padding * 2, height - padding * 2);
+
+      // Inner Fine Frame
+      ctx.strokeStyle = t.borderInner;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(innerPad, innerPad, width - innerPad * 2, height - innerPad * 2);
+
+      // Arabesque Corner Ornaments
+      const cornerSize = 40;
+      const corners = [
+        { x: innerPad, y: innerPad, dx: 1, dy: 1 },
+        { x: width - innerPad, y: innerPad, dx: -1, dy: 1 },
+        { x: innerPad, y: height - innerPad, dx: 1, dy: -1 },
+        { x: width - innerPad, y: height - innerPad, dx: -1, dy: -1 },
+      ];
+
+      ctx.fillStyle = t.accentColor;
+      ctx.strokeStyle = t.accentColor;
+      ctx.lineWidth = 2.5;
+
+      corners.forEach(({ x, y, dx, dy }) => {
+        ctx.beginPath();
+        ctx.moveTo(x + dx * 8, y);
+        ctx.lineTo(x + dx * cornerSize, y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x, y + dy * 8);
+        ctx.lineTo(x, y + dy * cornerSize);
+        ctx.stroke();
+
+        // Little diamond at inner junction
+        ctx.beginPath();
+        const cx = x + dx * 14;
+        const cy = y + dy * 14;
+        ctx.moveTo(cx, cy - 4);
+        ctx.lineTo(cx + 4, cy);
+        ctx.lineTo(cx, cy + 4);
+        ctx.lineTo(cx - 4, cy);
+        ctx.closePath();
+        ctx.fill();
+      });
+    } else if (frameStyle === 'minimal') {
+      ctx.strokeStyle = t.accentColor;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(padding, padding, width - padding * 2, height - padding * 2);
+    } else if (frameStyle === 'vintage') {
+      ctx.strokeStyle = t.accentColor;
       ctx.lineWidth = 6;
-      ctx.strokeRect(50, 50, width - 100, height - 100);
-
-      // Inner Fine Border
-      ctx.strokeStyle = 'rgba(212,175,55,0.4)';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(70, 70, width - 140, height - 140);
-    } else if (template === 'parchment') {
-      const grad = ctx.createLinearGradient(0, 0, width, height);
-      grad.addColorStop(0, '#f9f3e3');
-      grad.addColorStop(0.5, '#f3ebd4');
-      grad.addColorStop(1, '#e8dcbd');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.strokeStyle = '#8b5a2b';
-      ctx.lineWidth = 8;
-      ctx.strokeRect(50, 50, width - 100, height - 100);
-      ctx.strokeStyle = 'rgba(139,90,43,0.3)';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(66, 66, width - 132, height - 132);
-    } else if (template === 'emerald') {
-      const grad = ctx.createLinearGradient(0, 0, width, height);
-      grad.addColorStop(0, '#0d281d');
-      grad.addColorStop(0.5, '#071610');
-      grad.addColorStop(1, '#0e2b1f');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.strokeStyle = '#2ea879';
-      ctx.lineWidth = 6;
-      ctx.strokeRect(50, 50, width - 100, height - 100);
-      ctx.strokeStyle = 'rgba(46,168,121,0.35)';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(68, 68, width - 136, height - 136);
-    } else if (template === 'midnight') {
-      const grad = ctx.createLinearGradient(0, 0, width, height);
-      grad.addColorStop(0, '#0d1730');
-      grad.addColorStop(0.5, '#070b18');
-      grad.addColorStop(1, '#111e3d');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 6;
-      ctx.strokeRect(50, 50, width - 100, height - 100);
-      ctx.strokeStyle = 'rgba(56,189,248,0.35)';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(68, 68, width - 136, height - 136);
-    } else if (template === 'rose') {
-      const grad = ctx.createLinearGradient(0, 0, width, height);
-      grad.addColorStop(0, '#fff5f4');
-      grad.addColorStop(0.5, '#faecea');
-      grad.addColorStop(1, '#f3ddda');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.strokeStyle = '#c96868';
-      ctx.lineWidth = 6;
-      ctx.strokeRect(50, 50, width - 100, height - 100);
-      ctx.strokeStyle = 'rgba(201,104,104,0.35)';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(68, 68, width - 136, height - 136);
+      ctx.strokeRect(padding, padding, width - padding * 2, height - padding * 2);
+      ctx.strokeStyle = t.borderInner;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(padding + 8, padding + 8, width - (padding + 8) * 2, height - (padding + 8) * 2);
+      ctx.strokeRect(padding + 16, padding + 16, width - (padding + 16) * 2, height - (padding + 16) * 2);
     }
 
-    // 2. Decorative Quotes Symbol « »
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    // 3. Header Section (Top Ornament)
+    let headerY = ratio === '9:16' ? 220 : 150;
+    if (headerOrnament !== 'none') {
+      const ornConfig = ORNAMENTS.find((o) => o.id === headerOrnament);
+      if (ornConfig && ornConfig.id !== 'none') {
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = t.accentColor;
 
-    const tConfig = TEMPLATES.find((t) => t.id === template) || TEMPLATES[0];
-
-    // Top Ornament
-    ctx.font = `44px ${fontFamily}, "Amiri", serif`;
-    ctx.fillStyle = tConfig.ring;
-    ctx.fillText('﷽', width / 2, 140);
-
-    // Decorative Quote Marks
-    ctx.font = `60px ${fontFamily}, "Amiri", serif`;
-    ctx.fillStyle = tConfig.ring;
-    ctx.fillText('« ✦ »', width / 2, 220);
-
-    // 3. Multi-line Quote Text
-    ctx.fillStyle = tConfig.text;
-    ctx.font = `${fontSize}px "${fontFamily}", "Noto Naskh Arabic", sans-serif`;
-
-    const maxTextWidth = width - 240;
-    const words = quoteText.split(' ');
-    const lines: string[] = [];
-    let currentLine = '';
-
-    for (let n = 0; n < words.length; n++) {
-      const testLine = currentLine ? `${currentLine} ${words[n]}` : words[n];
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxTextWidth && n > 0) {
-        lines.push(currentLine);
-        currentLine = words[n];
-      } else {
-        currentLine = testLine;
+        if (headerOrnament === 'bismillah') {
+          ctx.font = `52px "${fontFamily}", "Amiri", serif`;
+          ctx.fillText('﷽', width / 2, headerY);
+          headerY += 60;
+        } else if (headerOrnament === 'stars') {
+          ctx.font = `40px "${fontFamily}", "Amiri", serif`;
+          ctx.fillText('« ✦ ✦ ✦ »', width / 2, headerY);
+          headerY += 50;
+        } else if (headerOrnament === 'rub-el-hizb') {
+          ctx.font = `44px "${fontFamily}", "Amiri", serif`;
+          ctx.fillText('۞ ۞ ۞', width / 2, headerY);
+          headerY += 50;
+        } else {
+          ctx.font = `42px "${fontFamily}", "Amiri", serif`;
+          ctx.fillText(ornConfig.symbol, width / 2, headerY);
+          headerY += 50;
+        }
       }
     }
-    lines.push(currentLine);
 
-    // Calculate vertical centering
-    const lineHeight = fontSize * 1.7;
-    const totalTextHeight = lines.length * lineHeight;
-    let startY = (height / 2) - (totalTextHeight / 2) + 20;
+    // 4. Footer Section (Branding & Author)
+    const footerBaseY = height - (ratio === '9:16' ? 190 : 130);
 
-    lines.forEach((line) => {
-      ctx.fillText(line, width / 2, startY);
-      startY += lineHeight;
+    if (showAuthorBadge) {
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Decorative divider line above footer
+      ctx.strokeStyle = t.accentColor;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      const divWidth = Math.min(width * 0.4, 280);
+      ctx.moveTo(width / 2 - divWidth, footerBaseY - 60);
+      ctx.lineTo(width / 2 - 20, footerBaseY - 60);
+      ctx.moveTo(width / 2 + 20, footerBaseY - 60);
+      ctx.lineTo(width / 2 + divWidth, footerBaseY - 60);
+      ctx.stroke();
+
+      // Center diamond on divider
+      ctx.fillStyle = t.accentColor;
+      ctx.beginPath();
+      ctx.moveTo(width / 2, footerBaseY - 65);
+      ctx.lineTo(width / 2 + 6, footerBaseY - 60);
+      ctx.lineTo(width / 2, footerBaseY - 55);
+      ctx.lineTo(width / 2 - 6, footerBaseY - 60);
+      ctx.closePath();
+      ctx.fill();
+
+      // Book Title
+      if (customSource) {
+        ctx.font = `bold 26px "${fontFamily}", "Noto Naskh Arabic", sans-serif`;
+        ctx.fillStyle = t.accentColor;
+        ctx.fillText(customSource, width / 2, footerBaseY - 24);
+      }
+
+      // Author & Page
+      const authorTextParts = [];
+      if (customAuthor) authorTextParts.push(customAuthor);
+      if (customPage) authorTextParts.push(`ص ${customPage}`);
+      const authorFullText = authorTextParts.join('  •  ');
+
+      if (authorFullText) {
+        ctx.font = `20px "${fontFamily}", "Noto Naskh Arabic", sans-serif`;
+        ctx.fillStyle = t.subtextColor;
+        ctx.fillText(authorFullText, width / 2, footerBaseY + 14);
+      }
+    }
+
+    // Watermark at very bottom
+    if (showWatermark) {
+      ctx.textAlign = 'center';
+      ctx.font = `14px "${fontFamily}", "Cairo", sans-serif`;
+      ctx.fillStyle = t.subtextColor;
+      ctx.globalAlpha = 0.6;
+      ctx.fillText('تطبيق إمتاع القارئ', width / 2, height - (ratio === '9:16' ? 45 : 30));
+      ctx.globalAlpha = 1.0;
+    }
+
+    // 5. Quote Text Formatting & Multi-line Flow
+    const quoteContent = quoteMarks
+      ? `« ${editableQuote.trim()} »`
+      : editableQuote.trim();
+
+    const maxTextWidth = width - (padding * 2 + 120);
+    const availableTop = headerY + 20;
+    const availableBottom = showAuthorBadge ? footerBaseY - 90 : height - padding - 40;
+    const availableHeight = availableBottom - availableTop;
+
+    ctx.fillStyle = t.textColor;
+    ctx.font = `${fontSize}px "${fontFamily}", "Noto Naskh Arabic", sans-serif`;
+    ctx.textAlign = textAlign;
+    ctx.textBaseline = 'middle';
+
+    // Word Wrap Algorithm supporting hard breaks
+    const rawParagraphs = quoteContent.split('\n');
+    const lines: string[] = [];
+
+    rawParagraphs.forEach((para) => {
+      const words = para.split(' ').filter(Boolean);
+      let currentLine = '';
+
+      for (let n = 0; n < words.length; n++) {
+        const testLine = currentLine ? `${currentLine} ${words[n]}` : words[n];
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxTextWidth && n > 0) {
+          lines.push(currentLine);
+          currentLine = words[n];
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine) {
+        lines.push(currentLine);
+      }
     });
 
-    // 4. Bottom Author Badge & Book Info
-    ctx.strokeStyle = tConfig.ring;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(width / 2 - 120, height - 190);
-    ctx.lineTo(width / 2 + 120, height - 190);
-    ctx.stroke();
+    const lineHeight = fontSize * lineHeightMult;
+    const totalTextHeight = lines.length * lineHeight;
 
-    ctx.font = `bold 28px "${fontFamily}", "Noto Naskh Arabic", sans-serif`;
-    ctx.fillStyle = tConfig.ring;
-    ctx.fillText('إمتاع القارئ بجمال الكلم وروائع الحكم', width / 2, height - 145);
+    // Centered Y Position in the available content bounding box
+    let startY = availableTop + (availableHeight - totalTextHeight) / 2 + lineHeight / 2;
 
-    ctx.font = `22px "${fontFamily}", "Noto Naskh Arabic", sans-serif`;
-    ctx.fillStyle = tConfig.text;
-    const footerText = `محمد بن سعد النهاري ${pageNumber ? `• ص ${pageNumber}` : ''}`;
-    ctx.fillText(footerText, width / 2, height - 105);
+    // Boundary check so text doesn't overlap header
+    if (startY - lineHeight / 2 < availableTop) {
+      startY = availableTop + lineHeight / 2;
+    }
 
-  }, [open, template, fontSize, fontFamily, quoteText, sourceText, pageNumber]);
+    const textX = textAlign === 'center' ? width / 2 : width - padding - 80;
 
-  // Download Action
+    lines.forEach((line) => {
+      ctx.fillText(line, textX, startY);
+      startY += lineHeight;
+    });
+  }, [
+    ratio,
+    template,
+    fontSize,
+    lineHeightMult,
+    fontFamily,
+    textAlign,
+    headerOrnament,
+    frameStyle,
+    showWatermark,
+    showAuthorBadge,
+    quoteMarks,
+    editableQuote,
+    customAuthor,
+    customSource,
+    customPage,
+  ]);
+
+  // Re-draw canvas on any change
+  useEffect(() => {
+    if (open) {
+      // Delay slightly to ensure dialog mounting
+      const timer = setTimeout(renderCanvas, 40);
+      return () => clearTimeout(timer);
+    }
+  }, [open, renderCanvas]);
+
+  // Download Card
   const downloadImage = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const url = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `إمتاع_القارئ_اقتباس_${Date.now()}.png`;
-    a.click();
+    setDownloading(true);
+
+    try {
+      const url = canvas.toDataURL('image/png', 1.0);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `إمتاع_القارئ_اقتباس_${Date.now()}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } finally {
+      setTimeout(() => setDownloading(false), 500);
+    }
   };
 
-  // Web Share API
+  // Copy Image to Clipboard
+  const copyToClipboard = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+      try {
+        if (navigator.clipboard && window.ClipboardItem) {
+          await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': blob }),
+          ]);
+          setCopiedToast(true);
+          setTimeout(() => setCopiedToast(false), 2500);
+        } else {
+          // Fallback to text copy
+          await navigator.clipboard.writeText(`«${editableQuote}»\n— ${customSource} (${customAuthor})`);
+          setCopiedToast(true);
+          setTimeout(() => setCopiedToast(false), 2500);
+        }
+      } catch (err) {
+        console.warn('Clipboard write error:', err);
+        downloadImage();
+      }
+    }, 'image/png');
+  };
+
+  // Share Card via Web Share API
   const shareImage = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     canvas.toBlob(async (blob) => {
       if (!blob) return;
-      const file = new File([blob], 'quote.png', { type: 'image/png' });
+      const file = new File([blob], 'imta-quote.png', { type: 'image/png' });
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
             files: [file],
-            title: 'إمتاع القارئ بجمال الكلم',
-            text: `«${quoteText}»\n— كتاب إمتاع القارئ`,
+            title: customSource || 'إمتاع القارئ',
+            text: `«${editableQuote}»\n— ${customSource} • ${customAuthor}`,
           });
         } catch {
-          downloadImage();
+          // User canceled or fallback
         }
       } else if (navigator.share) {
         navigator.share({
-          title: 'إمتاع القارئ بجمال الكلم',
-          text: `«${quoteText}»\n— كتاب إمتاع القارئ`,
+          title: customSource || 'إمتاع القارئ',
+          text: `«${editableQuote}»\n— ${customSource} • ${customAuthor}`,
         }).catch(() => downloadImage());
       } else {
         downloadImage();
@@ -223,142 +534,552 @@ export const QuoteCardModal: React.FC<{
     }, 'image/png');
   };
 
+  // Reset to original
+  const handleReset = () => {
+    setEditableQuote(initialQuote);
+    setFontSize(38);
+    setLineHeightMult(1.75);
+    setFontFamily('Amiri');
+    setTextAlign('center');
+    setHeaderOrnament('bismillah');
+    setFrameStyle('royal');
+    setQuoteMarks(true);
+  };
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-fade-in" />
+        <Dialog.Overlay className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 animate-fade-in" />
         <Dialog.Content
-          className="fixed bottom-0 sm:bottom-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 w-full sm:max-w-xl rounded-t-3xl sm:rounded-3xl z-50 p-6 shadow-2xl focus:outline-none max-h-[95vh] overflow-y-auto custom-scrollbar"
+          className="fixed bottom-0 sm:bottom-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 w-full sm:max-w-4xl rounded-t-3xl sm:rounded-3xl z-50 p-0 shadow-2xl focus:outline-none max-h-[96vh] flex flex-col overflow-hidden border"
           style={{
             background: 'var(--app-surface)',
-            border: '1px solid var(--app-surface-border)',
+            borderColor: 'var(--app-surface-border)',
             color: 'var(--app-text)',
           }}
           dir="rtl"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-md"
-                style={{ background: 'var(--app-brand-grad)', color: 'white' }}>
-                <Sparkles className="w-5 h-5" />
+          {/* Header Bar */}
+          <div
+            className="flex items-center justify-between px-6 py-4 border-b shrink-0"
+            style={{ borderColor: 'var(--app-divider)' }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg"
+                style={{ background: 'var(--app-brand-grad)', color: 'white' }}
+              >
+                <Sparkles className="w-5 h-5 animate-pulse" />
               </div>
               <div>
-                <Dialog.Title className="text-lg font-bold font-arabic">
-                  استوديو بطاقات الاقتباسات
+                <Dialog.Title className="text-lg font-bold font-arabic flex items-center gap-2">
+                  استوديو بطاقات الاقتباسات الفاخرة
+                  <span
+                    className="text-[10px] px-2 py-0.5 rounded-full font-bold font-arabic"
+                    style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)' }}
+                  >
+                    احترافي HD
+                  </span>
                 </Dialog.Title>
                 <p className="text-xs font-arabic opacity-70">
-                  صمم بطاقة أدبية فائقة الجودة للمشاركة والتحميل
+                  صمم بطاقات أدبية وإسلامية مخصصة للنشر والمشاركة
                 </p>
               </div>
             </div>
 
-            <Dialog.Close asChild>
-              <button className="p-2 rounded-full hover:bg-black/5 active:scale-90 transition-all">
-                <X className="w-5 h-5" />
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={handleReset}
+                title="إعادة ضبط الافتراضي"
+                className="p-2 rounded-xl text-xs font-arabic opacity-70 hover:opacity-100 hover:bg-black/5 active:scale-95 transition-all flex items-center gap-1"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span className="hidden sm:inline">استعادة</span>
               </button>
-            </Dialog.Close>
-          </div>
-
-          {/* Live Canvas Preview */}
-          <div className="flex justify-center mb-5">
-            <div className="w-full max-w-85 aspect-square rounded-2xl overflow-hidden shadow-2xl border border-black/10">
-              <canvas ref={canvasRef} className="w-full h-full object-contain" />
+              <Dialog.Close asChild>
+                <button className="p-2 rounded-full hover:bg-black/5 active:scale-90 transition-all opacity-80 hover:opacity-100">
+                  <X className="w-5 h-5" />
+                </button>
+              </Dialog.Close>
             </div>
           </div>
 
-          {/* Template Selector */}
-          <div className="mb-4">
-            <label className="text-xs font-arabic font-bold uppercase tracking-wider block mb-2 opacity-70">
-              قالب التصميم
-            </label>
-            <div className="grid grid-cols-5 gap-2">
-              {TEMPLATES.map((t) => {
-                const isActive = template === t.id;
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => setTemplate(t.id)}
-                    className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all active:scale-95"
-                    style={{
-                      background: isActive ? 'var(--app-brand-dim)' : 'transparent',
-                      border: isActive ? `2px solid ${t.ring}` : '2px solid transparent',
-                    }}
-                  >
-                    <div
-                      className="w-8 h-8 rounded-xl relative flex items-center justify-center shadow-sm"
-                      style={{ background: t.bg, border: `1px solid ${t.ring}` }}
+          {/* Main Modal Body */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-y-auto custom-scrollbar flex-1 min-h-0">
+            {/* Left/Top: Live Canvas Preview Area */}
+            <div
+              className="lg:col-span-6 p-4 sm:p-6 flex flex-col items-center justify-center bg-black/5 border-b lg:border-b-0 lg:border-l relative min-h-80"
+              style={{ borderColor: 'var(--app-divider)' }}
+            >
+              {/* Ratio Selector Pills */}
+              <div
+                className="flex items-center gap-1 p-1 rounded-2xl mb-4 shadow-sm border"
+                style={{
+                  background: 'var(--app-surface)',
+                  borderColor: 'var(--app-surface-border)',
+                }}
+              >
+                {(['1:1', '9:16', '4:5', '16:9'] as CardRatio[]).map((r) => {
+                  const Icon = RATIO_CONFIG[r].icon;
+                  const isActive = ratio === r;
+                  return (
+                    <button
+                      key={r}
+                      onClick={() => setRatio(r)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-arabic font-medium transition-all active:scale-95"
+                      style={
+                        isActive
+                          ? { background: 'var(--app-brand-grad)', color: 'white', fontWeight: 'bold' }
+                          : { color: 'var(--app-text)', opacity: 0.8 }
+                      }
                     >
-                      {isActive && <Check className="w-4 h-4 text-white" />}
-                    </div>
-                    <span className="text-[10px] font-arabic font-medium truncate max-w-full">{t.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+                      <Icon className="w-3.5 h-3.5" />
+                      <span>{r}</span>
+                    </button>
+                  );
+                })}
+              </div>
 
-          {/* Typography & Font size */}
-          <div className="grid grid-cols-2 gap-3 mb-5">
-            <div>
-              <label className="text-xs font-arabic font-bold block mb-1.5 opacity-70">نوع الخط</label>
-              <div className="flex gap-1.5">
-                {['Amiri', 'Noto Naskh Arabic', 'Cairo', 'Tajawal'].map((f) => (
+              {/* Canvas Container with dynamic Aspect Ratio */}
+              <div
+                className="relative w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border transition-all duration-300 flex items-center justify-center"
+                style={{
+                  aspectRatio:
+                    ratio === '1:1'
+                      ? '1/1'
+                      : ratio === '9:16'
+                      ? '9/16'
+                      : ratio === '4:5'
+                      ? '4/5'
+                      : '16/9',
+                  maxHeight: ratio === '9:16' ? '400px' : '360px',
+                  borderColor: 'var(--app-surface-border)',
+                }}
+              >
+                <canvas
+                  ref={canvasRef}
+                  className="w-full h-full object-contain select-none"
+                  style={{ display: 'block' }}
+                />
+              </div>
+
+              {/* Toast Feedback */}
+              {copiedToast && (
+                <div className="absolute bottom-4 flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-600 text-white text-xs font-arabic font-bold shadow-xl animate-fade-in">
+                  <CheckCircle2 className="w-4 h-4" />
+                  تم نسخ البطاقة بنجاح إلى الحافظة!
+                </div>
+              )}
+            </div>
+
+            {/* Right/Bottom: Controls & Customization Studio */}
+            <div className="lg:col-span-6 p-4 sm:p-6 flex flex-col justify-between overflow-y-auto">
+              <div>
+                {/* Control Category Navigation Tabs */}
+                <div
+                  className="flex rounded-2xl p-1 mb-5 border gap-1"
+                  style={{
+                    background: 'var(--app-brand-dim)',
+                    borderColor: 'var(--app-brand-border)',
+                  }}
+                >
                   <button
-                    key={f}
-                    onClick={() => setFontFamily(f)}
-                    className="flex-1 py-1.5 rounded-xl text-xs font-arabic transition-all"
-                    style={fontFamily === f
-                      ? { background: 'var(--app-brand-grad)', color: 'white', fontWeight: 'bold' }
-                      : { background: 'var(--app-brand-dim)', color: 'var(--app-brand)' }
+                    onClick={() => setActiveTab('style')}
+                    className="flex-1 py-2 rounded-xl text-xs font-arabic font-bold flex items-center justify-center gap-1.5 transition-all"
+                    style={
+                      activeTab === 'style'
+                        ? { background: 'var(--app-surface)', color: 'var(--app-brand)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }
+                        : { opacity: 0.7 }
                     }
                   >
-                    {f === 'Amiri' ? 'أميري' : f === 'Noto Naskh Arabic' ? 'نسخ' : f === 'Cairo' ? 'كايرو' : 'تجوال'}
+                    <Palette className="w-4 h-4" />
+                    القوالب والمظهر
                   </button>
-                ))}
+
+                  <button
+                    onClick={() => setActiveTab('text')}
+                    className="flex-1 py-2 rounded-xl text-xs font-arabic font-bold flex items-center justify-center gap-1.5 transition-all"
+                    style={
+                      activeTab === 'text'
+                        ? { background: 'var(--app-surface)', color: 'var(--app-brand)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }
+                        : { opacity: 0.7 }
+                    }
+                  >
+                    <Type className="w-4 h-4" />
+                    الخط والنص
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('decor')}
+                    className="flex-1 py-2 rounded-xl text-xs font-arabic font-bold flex items-center justify-center gap-1.5 transition-all"
+                    style={
+                      activeTab === 'decor'
+                        ? { background: 'var(--app-surface)', color: 'var(--app-brand)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }
+                        : { opacity: 0.7 }
+                    }
+                  >
+                    <Sliders className="w-4 h-4" />
+                    الزخارف والهوامش
+                  </button>
+                </div>
+
+                {/* TAB 1: THEMES & STYLES */}
+                {activeTab === 'style' && (
+                  <div className="space-y-4 animate-fade-in">
+                    <div>
+                      <label className="text-xs font-arabic font-bold uppercase tracking-wider block mb-2.5 opacity-80">
+                        اختر طابع التصميم (8 قوالب فاخرة)
+                      </label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {TEMPLATES.map((t) => {
+                          const isActive = template === t.id;
+                          return (
+                            <button
+                              key={t.id}
+                              onClick={() => setTemplate(t.id)}
+                              className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all active:scale-95 border"
+                              style={{
+                                background: isActive ? 'var(--app-brand-dim)' : 'transparent',
+                                borderColor: isActive ? t.accentColor : 'transparent',
+                              }}
+                            >
+                              <div
+                                className="w-9 h-9 rounded-xl relative flex items-center justify-center shadow-md transition-transform"
+                                style={{
+                                  background: `linear-gradient(135deg, ${t.bgGrad[0]}, ${t.bgGrad[1]})`,
+                                  border: `1.5px solid ${t.accentColor}`,
+                                }}
+                              >
+                                {isActive ? (
+                                  <Check className="w-4 h-4 text-white drop-shadow" />
+                                ) : (
+                                  <span
+                                    className="w-2 h-2 rounded-full"
+                                    style={{ background: t.accentColor }}
+                                  />
+                                )}
+                              </div>
+                              <span className="text-[11px] font-arabic font-medium truncate max-w-full text-center">
+                                {t.name.split(' ')[0]} {t.name.split(' ')[1] || ''}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Frame Styles */}
+                    <div>
+                      <label className="text-xs font-arabic font-bold block mb-2 opacity-80">
+                        نمط الإطار
+                      </label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[
+                          { id: 'royal', name: 'ملكي مزخرف' },
+                          { id: 'vintage', name: 'مخطوطة ثلاثية' },
+                          { id: 'minimal', name: 'بسيط ناعم' },
+                          { id: 'none', name: 'بدون إطار' },
+                        ].map((f) => (
+                          <button
+                            key={f.id}
+                            onClick={() => setFrameStyle(f.id as FrameStyle)}
+                            className="py-2 px-1 rounded-xl text-xs font-arabic text-center transition-all border"
+                            style={
+                              frameStyle === f.id
+                                ? { background: 'var(--app-brand-grad)', color: 'white', fontWeight: 'bold' }
+                                : { background: 'var(--app-brand-dim)', borderColor: 'var(--app-brand-border)', color: 'var(--app-text)' }
+                            }
+                          >
+                            {f.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 2: TEXT & TYPOGRAPHY */}
+                {activeTab === 'text' && (
+                  <div className="space-y-4 animate-fade-in">
+                    {/* Live Quote Editor Box */}
+                    <div>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label className="text-xs font-arabic font-bold opacity-80 flex items-center gap-1">
+                          <Edit3 className="w-3.5 h-3.5" />
+                          تعديل نص الاقتباس
+                        </label>
+                        <span className="text-[10px] font-arabic opacity-60">
+                          {editableQuote.length} حرف
+                        </span>
+                      </div>
+                      <textarea
+                        value={editableQuote}
+                        onChange={(e) => setEditableQuote(e.target.value)}
+                        rows={3}
+                        className="w-full p-3 rounded-2xl text-sm font-arabic border focus:outline-none focus:ring-2 resize-none custom-scrollbar"
+                        style={{
+                          background: 'var(--app-bg-2)',
+                          borderColor: 'var(--app-brand-border)',
+                          color: 'var(--app-text)',
+                        }}
+                        placeholder="اكتب أو عدّل نص الاقتباس هنا..."
+                      />
+                    </div>
+
+                    {/* Font Choice */}
+                    <div>
+                      <label className="text-xs font-arabic font-bold block mb-1.5 opacity-80">
+                        نوع الخط العربي
+                      </label>
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
+                        {FONTS.map((f) => (
+                          <button
+                            key={f.id}
+                            onClick={() => setFontFamily(f.id)}
+                            className="py-2 rounded-xl text-xs font-arabic text-center transition-all border"
+                            style={
+                              fontFamily === f.id
+                                ? { background: 'var(--app-brand-grad)', color: 'white', fontWeight: 'bold' }
+                                : { background: 'var(--app-brand-dim)', borderColor: 'var(--app-brand-border)', color: 'var(--app-text)' }
+                            }
+                          >
+                            {f.name.split(' ')[0]}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Sliders: Size & Spacing */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="flex justify-between items-center mb-1 text-xs font-arabic font-bold opacity-80">
+                          <span>حجم الخط</span>
+                          <span className="font-mono text-[11px]">{fontSize}px</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={22}
+                          max={58}
+                          value={fontSize}
+                          onChange={(e) => setFontSize(parseInt(e.target.value, 10))}
+                          className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                          style={{ accentColor: 'var(--app-brand)' }}
+                        />
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between items-center mb-1 text-xs font-arabic font-bold opacity-80">
+                          <span>تباعد الأسطر</span>
+                          <span className="font-mono text-[11px]">{lineHeightMult}x</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={1.3}
+                          max={2.4}
+                          step={0.1}
+                          value={lineHeightMult}
+                          onChange={(e) => setLineHeightMult(parseFloat(e.target.value))}
+                          className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                          style={{ accentColor: 'var(--app-brand)' }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Alignment & Quotes Toggle */}
+                    <div className="flex items-center justify-between gap-3 pt-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-arabic opacity-80">المحاذاة:</span>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => setTextAlign('center')}
+                            className="px-3 py-1 rounded-xl text-xs font-arabic transition-all border"
+                            style={
+                              textAlign === 'center'
+                                ? { background: 'var(--app-brand-grad)', color: 'white', fontWeight: 'bold' }
+                                : { background: 'var(--app-brand-dim)', borderColor: 'var(--app-brand-border)' }
+                            }
+                          >
+                            توسيط
+                          </button>
+                          <button
+                            onClick={() => setTextAlign('right')}
+                            className="px-3 py-1 rounded-xl text-xs font-arabic transition-all border"
+                            style={
+                              textAlign === 'right'
+                                ? { background: 'var(--app-brand-grad)', color: 'white', fontWeight: 'bold' }
+                                : { background: 'var(--app-brand-dim)', borderColor: 'var(--app-brand-border)' }
+                            }
+                          >
+                            يمين
+                          </button>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => setQuoteMarks(!quoteMarks)}
+                        className="px-3 py-1 rounded-xl text-xs font-arabic border flex items-center gap-1.5 transition-all"
+                        style={
+                          quoteMarks
+                            ? { background: 'var(--app-brand-dim)', borderColor: 'var(--app-brand)', color: 'var(--app-brand)', fontWeight: 'bold' }
+                            : { opacity: 0.6 }
+                        }
+                      >
+                        {quoteMarks ? <Check className="w-3.5 h-3.5" /> : null}
+                        أقواس الاقتباس « »
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 3: ORNAMENTS & METADATA */}
+                {activeTab === 'decor' && (
+                  <div className="space-y-4 animate-fade-in">
+                    {/* Header Ornament Select */}
+                    <div>
+                      <label className="text-xs font-arabic font-bold block mb-2 opacity-80">
+                        الزخرفة العلوية (الرأسية)
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {ORNAMENTS.map((o) => (
+                          <button
+                            key={o.id}
+                            onClick={() => setHeaderOrnament(o.id)}
+                            className="py-2 px-2 rounded-xl text-xs font-arabic text-center transition-all border flex flex-col items-center gap-0.5"
+                            style={
+                              headerOrnament === o.id
+                                ? { background: 'var(--app-brand-grad)', color: 'white', fontWeight: 'bold' }
+                                : { background: 'var(--app-brand-dim)', borderColor: 'var(--app-brand-border)', color: 'var(--app-text)' }
+                            }
+                          >
+                            <span className="text-base leading-none">{o.symbol}</span>
+                            <span className="text-[10px]">{o.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Metadata Customization */}
+                    <div className="space-y-2.5">
+                      <label className="text-xs font-arabic font-bold block opacity-80">
+                        بيانات التوثيق والهامش
+                      </label>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <span className="text-[11px] font-arabic opacity-70 block mb-1">اسم الكتاب</span>
+                          <input
+                            type="text"
+                            value={customSource}
+                            onChange={(e) => setCustomSource(e.target.value)}
+                            className="w-full px-3 py-1.5 rounded-xl text-xs font-arabic border focus:outline-none"
+                            style={{ background: 'var(--app-bg-2)', borderColor: 'var(--app-brand-border)' }}
+                          />
+                        </div>
+
+                        <div>
+                          <span className="text-[11px] font-arabic opacity-70 block mb-1">المؤلف / القائل</span>
+                          <input
+                            type="text"
+                            value={customAuthor}
+                            onChange={(e) => setCustomAuthor(e.target.value)}
+                            className="w-full px-3 py-1.5 rounded-xl text-xs font-arabic border focus:outline-none"
+                            style={{ background: 'var(--app-bg-2)', borderColor: 'var(--app-brand-border)' }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        <div>
+                          <span className="text-[11px] font-arabic opacity-70 block mb-1">رقم الصفحة (اختياري)</span>
+                          <input
+                            type="text"
+                            value={customPage}
+                            onChange={(e) => setCustomPage(e.target.value)}
+                            placeholder="مثال: 45"
+                            className="w-full px-3 py-1.5 rounded-xl text-xs font-arabic border focus:outline-none"
+                            style={{ background: 'var(--app-bg-2)', borderColor: 'var(--app-brand-border)' }}
+                          />
+                        </div>
+
+                        <div className="flex flex-col justify-end gap-1">
+                          <button
+                            onClick={() => setShowAuthorBadge(!showAuthorBadge)}
+                            className="w-full py-2 rounded-xl text-xs font-arabic border flex items-center justify-center gap-1.5 transition-all"
+                            style={
+                              showAuthorBadge
+                                ? { background: 'var(--app-brand-dim)', borderColor: 'var(--app-brand)', color: 'var(--app-brand)', fontWeight: 'bold' }
+                                : { opacity: 0.6 }
+                            }
+                          >
+                            {showAuthorBadge && <Check className="w-3.5 h-3.5" />}
+                            إظهار معلومات التوثيق
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="pt-2">
+                        <button
+                          onClick={() => setShowWatermark(!showWatermark)}
+                          className="w-full py-2 rounded-xl text-xs font-arabic border flex items-center justify-center gap-1.5 transition-all"
+                          style={
+                            showWatermark
+                              ? { background: 'var(--app-brand-dim)', borderColor: 'var(--app-brand)', color: 'var(--app-brand)', fontWeight: 'bold' }
+                              : { opacity: 0.6 }
+                          }
+                        >
+                          {showWatermark && <Check className="w-3.5 h-3.5" />}
+                          إظهار ختم التطبيق في الأسفل
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons Bar */}
+              <div
+                className="mt-6 pt-4 border-t flex flex-col sm:flex-row gap-2.5 shrink-0"
+                style={{ borderColor: 'var(--app-divider)' }}
+              >
+                {/* Direct Share */}
+                <button
+                  onClick={shareImage}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl font-arabic text-xs sm:text-sm font-bold shadow-lg transition-all active:scale-95"
+                  style={{ background: 'var(--app-brand-grad)', color: 'white' }}
+                >
+                  <Share2 className="w-4 h-4" />
+                  مشاركة فورية
+                </button>
+
+                {/* Copy Image */}
+                <button
+                  onClick={copyToClipboard}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl font-arabic text-xs sm:text-sm font-bold border transition-all active:scale-95"
+                  style={{
+                    background: 'var(--app-brand-dim)',
+                    borderColor: 'var(--app-brand-border)',
+                    color: 'var(--app-brand)',
+                  }}
+                >
+                  <Copy className="w-4 h-4" />
+                  نسخ كصورة
+                </button>
+
+                {/* Download PNG */}
+                <button
+                  onClick={downloadImage}
+                  disabled={downloading}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl font-arabic text-xs sm:text-sm font-bold border transition-all active:scale-95 hover:bg-black/5"
+                  style={{
+                    borderColor: 'var(--app-brand-border)',
+                    color: 'var(--app-text)',
+                  }}
+                >
+                  <Download className="w-4 h-4" />
+                  {downloading ? 'جاري التحميل...' : 'حفظ PNG عالية الدقة'}
+                </button>
               </div>
             </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-1.5 text-xs font-arabic font-bold opacity-70">
-                <span>حجم النص</span>
-                <span className="font-mono">{fontSize}px</span>
-              </div>
-              <input
-                type="range"
-                min={26}
-                max={50}
-                value={fontSize}
-                onChange={(e) => setFontSize(parseInt(e.target.value, 10))}
-                className="w-full h-1.5 rounded-full appearance-none cursor-pointer mt-2"
-                style={{ accentColor: 'var(--app-brand)' }}
-              />
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-2.5">
-            <button
-              onClick={shareImage}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-sm font-bold shadow-md transition-all active:scale-95"
-              style={{ background: 'var(--app-brand-grad)', color: 'white' }}
-            >
-              <Share2 className="w-4 h-4" />
-              مشاركة البطاقة
-            </button>
-
-            <button
-              onClick={downloadImage}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-arabic text-sm font-bold border transition-all active:scale-95"
-              style={{
-                background: 'var(--app-brand-dim)',
-                borderColor: 'var(--app-brand-border)',
-                color: 'var(--app-brand)',
-              }}
-            >
-              <Download className="w-4 h-4" />
-              تحميل صورة PNG
-            </button>
           </div>
         </Dialog.Content>
       </Dialog.Portal>
