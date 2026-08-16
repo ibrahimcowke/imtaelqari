@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
@@ -6,8 +6,11 @@ import { Capacitor } from '@capacitor/core';
 import {
   Download, Share2, Sparkles, X, Check, Copy, Type,
   Palette, Edit3, Smartphone, Square, Monitor,
-  Sliders, RefreshCw, CheckCircle2,
+  Sliders, RefreshCw, CheckCircle2, BookOpen, ChevronRight, ChevronLeft,
+  Quote,
 } from 'lucide-react';
+import { bookDataService } from '../../data/service';
+import { useReaderStore } from '../../store/readerStore';
 
 export type CardRatio = '1:1' | '9:16' | '4:5' | '16:9';
 export type CardTemplate =
@@ -154,12 +157,14 @@ const RATIO_CONFIG: Record<CardRatio, { width: number; height: number; label: st
 export const QuoteCardModal: React.FC<{
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  quoteText: string;
+  quoteText?: string;
   sourceText?: string;
   pageNumber?: number;
-}> = ({ open, onOpenChange, quoteText: initialQuote, sourceText = 'كتاب إمتاع القارئ', pageNumber }) => {
-  // State
-  const [activeTab, setActiveTab] = useState<'style' | 'text' | 'decor'>('style');
+}> = ({ open, onOpenChange, quoteText: initialQuote = '', sourceText = 'كتاب إمتاع القارئ', pageNumber }) => {
+  const readerCurrentPage = useReaderStore((state) => state.currentPage);
+
+  // Tabs & Customization State
+  const [activeTab, setActiveTab] = useState<'style' | 'page' | 'text' | 'decor'>('page');
   const [template, setTemplate] = useState<CardTemplate>('gold');
   const [ratio, setRatio] = useState<CardRatio>('1:1');
   const [fontSize, setFontSize] = useState<number>(38);
@@ -172,11 +177,16 @@ export const QuoteCardModal: React.FC<{
   const [showAuthorBadge, setShowAuthorBadge] = useState<boolean>(true);
   const [quoteMarks, setQuoteMarks] = useState<boolean>(true);
 
-  // Editable text
+  // Active reading page navigation state
+  const [readingPage, setReadingPage] = useState<number>(pageNumber || readerCurrentPage || 1);
+  const totalPages = useMemo(() => bookDataService.getPages().length || 174, []);
+  const activePageData = useMemo(() => bookDataService.getPage(readingPage), [readingPage]);
+
+  // Editable text & metadata
   const [editableQuote, setEditableQuote] = useState<string>(initialQuote);
   const [customAuthor, setCustomAuthor] = useState<string>('محمد بن سعد النهاري');
   const [customSource, setCustomSource] = useState<string>(sourceText);
-  const [customPage, setCustomPage] = useState<string>(pageNumber ? `${pageNumber}` : '');
+  const [customPage, setCustomPage] = useState<string>(pageNumber ? `${pageNumber}` : `${readingPage}`);
 
   // Feedback states
   const [copiedToast, setCopiedToast] = useState<boolean>(false);
@@ -184,14 +194,54 @@ export const QuoteCardModal: React.FC<{
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Sync initial quote if changed
+  // Synchronize when modal opens or initial props change
   useEffect(() => {
-    setEditableQuote(initialQuote);
-  }, [initialQuote]);
+    if (open) {
+      const pageToUse = pageNumber || readerCurrentPage || 1;
+      setReadingPage(pageToUse);
 
-  useEffect(() => {
-    if (pageNumber) setCustomPage(`${pageNumber}`);
-  }, [pageNumber]);
+      if (initialQuote && initialQuote.trim().length > 0) {
+        setEditableQuote(initialQuote);
+      } else {
+        const p = bookDataService.getPage(pageToUse);
+        const excerpt = p?.blocks?.[0]?.text || p?.display_text?.slice(0, 240) || '';
+        setEditableQuote(excerpt);
+      }
+
+      setCustomSource(sourceText || bookDataService.getPage(pageToUse)?.title || 'كتاب إمتاع القارئ');
+      setCustomPage(`${pageToUse}`);
+    }
+  }, [open, initialQuote, sourceText, pageNumber, readerCurrentPage]);
+
+  // Helper to select a paragraph from the current page
+  const handleSelectParagraph = (text: string, title?: string) => {
+    setEditableQuote(text);
+    if (title) setCustomSource(title);
+    setCustomPage(`${readingPage}`);
+
+    // Intelligent auto-font size adjustment based on text length
+    const len = text.length;
+    if (len < 60) setFontSize(46);
+    else if (len < 130) setFontSize(40);
+    else if (len < 220) setFontSize(34);
+    else if (len < 320) setFontSize(28);
+    else setFontSize(24);
+  };
+
+  // Helper to navigate page within Quote Studio
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setReadingPage(newPage);
+    const p = bookDataService.getPage(newPage);
+    if (p) {
+      setCustomPage(`${newPage}`);
+      if (p.title) setCustomSource(p.title);
+      const firstBlock = p.blocks?.[0]?.text || p.display_text.slice(0, 220);
+      if (firstBlock) {
+        handleSelectParagraph(firstBlock, p.title);
+      }
+    }
+  };
 
   // Render Canvas Function
   const renderCanvas = useCallback(() => {
@@ -349,7 +399,7 @@ export const QuoteCardModal: React.FC<{
       ctx.closePath();
       ctx.fill();
 
-      // Book Title
+      // Book Title / Chapter
       if (customSource) {
         ctx.font = `bold 26px "${fontFamily}", "Noto Naskh Arabic", sans-serif`;
         ctx.fillStyle = t.accentColor;
@@ -380,9 +430,8 @@ export const QuoteCardModal: React.FC<{
     }
 
     // 5. Quote Text Formatting & Multi-line Flow
-    const quoteContent = quoteMarks
-      ? `« ${editableQuote.trim()} »`
-      : editableQuote.trim();
+    const rawQuote = (editableQuote || '').trim();
+    const quoteContent = quoteMarks && rawQuote ? `« ${rawQuote} »` : rawQuote;
 
     const maxTextWidth = width - (padding * 2 + 120);
     const availableTop = headerY + 20;
@@ -423,7 +472,6 @@ export const QuoteCardModal: React.FC<{
     // Centered Y Position in the available content bounding box
     let startY = availableTop + (availableHeight - totalTextHeight) / 2 + lineHeight / 2;
 
-    // Boundary check so text doesn't overlap header
     if (startY - lineHeight / 2 < availableTop) {
       startY = availableTop + lineHeight / 2;
     }
@@ -455,7 +503,6 @@ export const QuoteCardModal: React.FC<{
   // Re-draw canvas on any change
   useEffect(() => {
     if (open) {
-      // Delay slightly to ensure dialog mounting
       const timer = setTimeout(renderCanvas, 40);
       return () => clearTimeout(timer);
     }
@@ -467,7 +514,7 @@ export const QuoteCardModal: React.FC<{
     if (!canvas) return;
     setDownloading(true);
 
-    const fileName = `imta_quote_${Date.now()}.png`;
+    const fileName = `imta_quote_p${readingPage}_${Date.now()}.png`;
 
     try {
       const dataUrl = canvas.toDataURL('image/png', 1.0);
@@ -482,7 +529,7 @@ export const QuoteCardModal: React.FC<{
 
         await Share.share({
           title: customSource || 'إمتاع القارئ',
-          text: `«${editableQuote}»\n— ${customSource} • ${customAuthor}`,
+          text: `«${editableQuote}»\n— ${customSource} • ${customAuthor} (ص ${customPage})`,
           url: savedFile.uri,
           dialogTitle: 'حفظ أو مشاركة بطاقة الاقتباس',
         });
@@ -492,7 +539,7 @@ export const QuoteCardModal: React.FC<{
           const blobUrl = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = blobUrl;
-          a.download = `إمتاع_القارئ_اقتباس_${Date.now()}.png`;
+          a.download = `إمتاع_القارئ_صفحة_${readingPage}_${Date.now()}.png`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -507,7 +554,7 @@ export const QuoteCardModal: React.FC<{
       const url = canvas.toDataURL('image/png', 1.0);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `إمتاع_القارئ_${Date.now()}.png`;
+      a.download = `إمتاع_القارئ_اقتباس_${Date.now()}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -531,7 +578,7 @@ export const QuoteCardModal: React.FC<{
           setCopiedToast(true);
           setTimeout(() => setCopiedToast(false), 2500);
         } else {
-          await navigator.clipboard.writeText(`«${editableQuote}»\n— ${customSource} (${customAuthor})`);
+          await navigator.clipboard.writeText(`«${editableQuote}»\n— ${customSource} • ${customAuthor} (ص ${customPage})`);
           setCopiedToast(true);
           setTimeout(() => setCopiedToast(false), 2500);
         }
@@ -561,7 +608,7 @@ export const QuoteCardModal: React.FC<{
 
         await Share.share({
           title: customSource || 'إمتاع القارئ',
-          text: `«${editableQuote}»\n— ${customSource} • ${customAuthor}`,
+          text: `«${editableQuote}»\n— ${customSource} • ${customAuthor} (ص ${customPage})`,
           url: savedFile.uri,
           dialogTitle: 'مشاركة بطاقة الاقتباس',
         });
@@ -573,12 +620,12 @@ export const QuoteCardModal: React.FC<{
             await navigator.share({
               files: [file],
               title: customSource || 'إمتاع القارئ',
-              text: `«${editableQuote}»\n— ${customSource} • ${customAuthor}`,
+              text: `«${editableQuote}»\n— ${customSource} • ${customAuthor} (ص ${customPage})`,
             });
           } else {
             await navigator.share({
               title: customSource || 'إمتاع القارئ',
-              text: `«${editableQuote}»\n— ${customSource} • ${customAuthor}`,
+              text: `«${editableQuote}»\n— ${customSource} • ${customAuthor} (ص ${customPage})`,
             });
           }
         }, 'image/png');
@@ -592,7 +639,9 @@ export const QuoteCardModal: React.FC<{
 
   // Reset to original
   const handleReset = () => {
-    setEditableQuote(initialQuote);
+    const p = bookDataService.getPage(readingPage);
+    const excerpt = p?.blocks?.[0]?.text || p?.display_text?.slice(0, 240) || initialQuote;
+    setEditableQuote(excerpt);
     setFontSize(38);
     setLineHeightMult(1.75);
     setFontFamily('Amiri');
@@ -600,6 +649,8 @@ export const QuoteCardModal: React.FC<{
     setHeaderOrnament('bismillah');
     setFrameStyle('royal');
     setQuoteMarks(true);
+    setCustomPage(`${readingPage}`);
+    if (p?.title) setCustomSource(p.title);
   };
 
   return (
@@ -617,7 +668,7 @@ export const QuoteCardModal: React.FC<{
         >
           {/* Header Bar */}
           <div
-            className="flex items-center justify-between px-6 py-4 border-b shrink-0"
+            className="flex items-center justify-between px-5 sm:px-6 py-3.5 border-b shrink-0"
             style={{ borderColor: 'var(--app-divider)' }}
           >
             <div className="flex items-center gap-3">
@@ -628,17 +679,17 @@ export const QuoteCardModal: React.FC<{
                 <Sparkles className="w-5 h-5 animate-pulse" />
               </div>
               <div>
-                <Dialog.Title className="text-lg font-bold font-arabic flex items-center gap-2">
+                <Dialog.Title className="text-base sm:text-lg font-bold font-arabic flex items-center gap-2">
                   استوديو بطاقات الاقتباسات الفاخرة
                   <span
                     className="text-[10px] px-2 py-0.5 rounded-full font-bold font-arabic"
                     style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)' }}
                   >
-                    احترافي HD
+                    ص {readingPage}
                   </span>
                 </Dialog.Title>
-                <p className="text-xs font-arabic opacity-70">
-                  صمم بطاقات أدبية وإسلامية مخصصة للنشر والمشاركة
+                <p className="text-xs font-arabic opacity-70 truncate max-w-60 sm:max-w-md">
+                  {activePageData?.title || 'مقتطفات وتصميم بطاقات احترافية للنشر'}
                 </p>
               </div>
             </div>
@@ -740,6 +791,19 @@ export const QuoteCardModal: React.FC<{
                   }}
                 >
                   <button
+                    onClick={() => setActiveTab('page')}
+                    className="flex-1 py-2 rounded-xl text-xs font-arabic font-bold flex items-center justify-center gap-1.5 transition-all"
+                    style={
+                      activeTab === 'page'
+                        ? { background: 'var(--app-surface)', color: 'var(--app-brand)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }
+                        : { opacity: 0.7 }
+                    }
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    الصفحة المقروءة
+                  </button>
+
+                  <button
                     onClick={() => setActiveTab('style')}
                     className="flex-1 py-2 rounded-xl text-xs font-arabic font-bold flex items-center justify-center gap-1.5 transition-all"
                     style={
@@ -749,7 +813,7 @@ export const QuoteCardModal: React.FC<{
                     }
                   >
                     <Palette className="w-4 h-4" />
-                    القوالب والمظهر
+                    المظهر
                   </button>
 
                   <button
@@ -762,7 +826,7 @@ export const QuoteCardModal: React.FC<{
                     }
                   >
                     <Type className="w-4 h-4" />
-                    الخط والنص
+                    الخط
                   </button>
 
                   <button
@@ -775,16 +839,158 @@ export const QuoteCardModal: React.FC<{
                     }
                   >
                     <Sliders className="w-4 h-4" />
-                    الزخارف والهوامش
+                    الزخارف
                   </button>
                 </div>
+
+                {/* TAB 0: CURRENT READING PAGE (محتوى وتصفح الصفحة المقروءة) */}
+                {activeTab === 'page' && (
+                  <div className="space-y-4 animate-fade-in">
+                    {/* Active Reading Page Stepper & Selector */}
+                    <div
+                      className="p-3.5 rounded-2xl border flex flex-col gap-2.5"
+                      style={{
+                        background: 'var(--app-brand-dim)',
+                        borderColor: 'var(--app-brand-border)',
+                      }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <BookOpen className="w-4 h-4" style={{ color: 'var(--app-brand)' }} />
+                          <span className="text-xs font-arabic font-bold" style={{ color: 'var(--app-brand)' }}>
+                            تصفح واقتباس صفحات القراءة
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-arabic font-semibold opacity-75">
+                          {readingPage} / {totalPages}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2">
+                        <button
+                          onClick={() => handlePageChange(readingPage - 1)}
+                          disabled={readingPage <= 1}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-arabic font-bold transition-all border disabled:opacity-30 disabled:pointer-events-none active:scale-95"
+                          style={{
+                            background: 'var(--app-surface)',
+                            borderColor: 'var(--app-surface-border)',
+                            color: 'var(--app-text)',
+                          }}
+                        >
+                          <ChevronRight className="w-3.5 h-3.5" />
+                          <span>الصفحة السابقة</span>
+                        </button>
+
+                        <div className="text-center px-2 py-1 rounded-xl bg-black/5 dark:bg-white/5">
+                          <span className="text-xs font-arabic font-bold block truncate max-w-36 sm:max-w-48">
+                            {activePageData?.title || `صفحة ${readingPage}`}
+                          </span>
+                        </div>
+
+                        <button
+                          onClick={() => handlePageChange(readingPage + 1)}
+                          disabled={readingPage >= totalPages}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-arabic font-bold transition-all border disabled:opacity-30 disabled:pointer-events-none active:scale-95"
+                          style={{
+                            background: 'var(--app-surface)',
+                            borderColor: 'var(--app-surface-border)',
+                            color: 'var(--app-text)',
+                          }}
+                        >
+                          <span>الصفحة التالية</span>
+                          <ChevronLeft className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Excerpts List from Current Reading Page */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-xs font-arabic font-bold opacity-80 flex items-center gap-1.5">
+                          <Quote className="w-3.5 h-3.5" />
+                          فقرات ومقتطفات الصفحة {readingPage} (اضغط للاقتباس فوراً)
+                        </label>
+                        <span className="text-[10px] font-arabic opacity-60">
+                          {activePageData?.blocks?.length || 1} فقرات متاحة
+                        </span>
+                      </div>
+
+                      <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+                        {/* Full page excerpt button */}
+                        {activePageData?.display_text && (
+                          <button
+                            onClick={() => handleSelectParagraph(activePageData.display_text.slice(0, 320), activePageData.title)}
+                            className="w-full text-right p-3 rounded-2xl border transition-all text-xs font-arabic active:scale-[0.99] flex flex-col gap-1 hover:border-amber-400/50"
+                            style={{
+                              background: 'var(--app-bg-2)',
+                              borderColor: 'var(--app-surface-border)',
+                            }}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                                مطلع الصفحة كاملاً
+                              </span>
+                              <span className="text-[10px] opacity-60">
+                                {Math.min(activePageData.display_text.length, 320)} حرف
+                              </span>
+                            </div>
+                            <p className="line-clamp-2 leading-relaxed opacity-90">
+                              {activePageData.display_text}
+                            </p>
+                          </button>
+                        )}
+
+                        {/* Individual blocks / paragraphs */}
+                        {activePageData?.blocks?.map((block, index) => {
+                          const isCurrentQuote = editableQuote.trim() === block.text.trim();
+                          const badgeLabel =
+                            block.type === 'heading' ? 'عنوان' :
+                            block.type === 'quote' ? 'حكمة / قول' :
+                            block.type === 'bullet' ? 'نقطة' : `الفقرة ${index + 1}`;
+
+                          return (
+                            <button
+                              key={block.id || index}
+                              onClick={() => handleSelectParagraph(block.text, activePageData.title)}
+                              className="w-full text-right p-3 rounded-2xl border transition-all text-xs font-arabic active:scale-[0.99] flex flex-col gap-1"
+                              style={{
+                                background: isCurrentQuote ? 'var(--app-brand-dim)' : 'var(--app-bg-2)',
+                                borderColor: isCurrentQuote ? 'var(--app-brand)' : 'var(--app-surface-border)',
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                  style={{
+                                    background: isCurrentQuote ? 'var(--app-brand)' : 'rgba(0,0,0,0.06)',
+                                    color: isCurrentQuote ? 'white' : 'inherit',
+                                  }}
+                                >
+                                  {badgeLabel}
+                                </span>
+                                {isCurrentQuote && (
+                                  <span className="text-[10px] font-bold text-amber-500 flex items-center gap-1">
+                                    <Check className="w-3 h-3" /> تم الاختيار
+                                  </span>
+                                )}
+                              </div>
+                              <p className="line-clamp-2 leading-relaxed opacity-90">
+                                {block.text}
+                              </p>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* TAB 1: THEMES & STYLES */}
                 {activeTab === 'style' && (
                   <div className="space-y-4 animate-fade-in">
                     <div>
                       <label className="text-xs font-arabic font-bold uppercase tracking-wider block mb-2.5 opacity-80">
-                        اختر طابع التصميم (8 قوالب فاخرة)
+                        طابع التصميم (8 قوالب فاخرة)
                       </label>
                       <div className="grid grid-cols-4 gap-2">
                         {TEMPLATES.map((t) => {
@@ -857,12 +1063,46 @@ export const QuoteCardModal: React.FC<{
                 {/* TAB 2: TEXT & TYPOGRAPHY */}
                 {activeTab === 'text' && (
                   <div className="space-y-4 animate-fade-in">
+                    {/* Quick paragraph selector from active reading page */}
+                    {activePageData?.blocks && activePageData.blocks.length > 0 && (
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-[11px] font-arabic font-bold opacity-75 flex items-center gap-1">
+                            <BookOpen className="w-3.5 h-3.5" />
+                            مقتطفات سريعة من الصفحة {readingPage}:
+                          </label>
+                          <button
+                            onClick={() => setActiveTab('page')}
+                            className="text-[10px] font-arabic font-bold text-amber-500 hover:underline"
+                          >
+                            استعراض كل الفقرات ←
+                          </button>
+                        </div>
+                        <div className="flex gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
+                          {activePageData.blocks.slice(0, 5).map((b, idx) => (
+                            <button
+                              key={b.id || idx}
+                              onClick={() => handleSelectParagraph(b.text, activePageData.title)}
+                              className="px-2.5 py-1 rounded-xl text-[11px] font-arabic whitespace-nowrap border shrink-0 transition-all active:scale-95"
+                              style={{
+                                background: editableQuote === b.text ? 'var(--app-brand-grad)' : 'var(--app-bg-2)',
+                                color: editableQuote === b.text ? 'white' : 'var(--app-text)',
+                                borderColor: 'var(--app-surface-border)',
+                              }}
+                            >
+                              الفقرة {idx + 1}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Live Quote Editor Box */}
                     <div>
                       <div className="flex justify-between items-center mb-1.5">
                         <label className="text-xs font-arabic font-bold opacity-80 flex items-center gap-1">
                           <Edit3 className="w-3.5 h-3.5" />
-                          تعديل نص الاقتباس
+                          تعديل نص الاقتباس يدوياً
                         </label>
                         <span className="text-[10px] font-arabic opacity-60">
                           {editableQuote.length} حرف
@@ -914,7 +1154,7 @@ export const QuoteCardModal: React.FC<{
                         </div>
                         <input
                           type="range"
-                          min={22}
+                          min={20}
                           max={58}
                           value={fontSize}
                           onChange={(e) => setFontSize(parseInt(e.target.value, 10))}
@@ -1022,7 +1262,7 @@ export const QuoteCardModal: React.FC<{
 
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <span className="text-[11px] font-arabic opacity-70 block mb-1">اسم الكتاب</span>
+                          <span className="text-[11px] font-arabic opacity-70 block mb-1">اسم الكتاب / الباب</span>
                           <input
                             type="text"
                             value={customSource}
@@ -1046,7 +1286,7 @@ export const QuoteCardModal: React.FC<{
 
                       <div className="grid grid-cols-2 gap-2 pt-1">
                         <div>
-                          <span className="text-[11px] font-arabic opacity-70 block mb-1">رقم الصفحة (اختياري)</span>
+                          <span className="text-[11px] font-arabic opacity-70 block mb-1">رقم الصفحة</span>
                           <input
                             type="text"
                             value={customPage}

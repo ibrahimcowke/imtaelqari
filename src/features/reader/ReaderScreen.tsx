@@ -122,6 +122,7 @@ export const ReaderScreen: React.FC = () => {
   const [isAnnotationsOpen, setIsAnnotationsOpen] = useState(false);
   const [isTOCOpen, setIsTOCOpen] = useState(false);
   const [isCardStudioOpen, setIsCardStudioOpen] = useState(false);
+  const [quoteStudioInitialText, setQuoteStudioInitialText] = useState<string>('');
   const [isSoundModalOpen, setIsSoundModalOpen] = useState(false);
   const [isDictModalOpen, setIsDictModalOpen] = useState(false);
   const [slideDir, setSlideDir] = useState<-1 | 1>(-1); // -1: Next, 1: Prev
@@ -333,7 +334,12 @@ export const ReaderScreen: React.FC = () => {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      <HighlightPopover />
+      <HighlightPopover
+        onOpenQuoteCard={(selectedText) => {
+          setQuoteStudioInitialText(selectedText);
+          setIsCardStudioOpen(true);
+        }}
+      />
 
       {/* ══════════════════════════════════════════════════
           1. TOP APP BAR
@@ -350,7 +356,10 @@ export const ReaderScreen: React.FC = () => {
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenTOC={() => setIsTOCOpen(true)}
         onOpenAnnotations={() => setIsAnnotationsOpen(true)}
-        onOpenQuoteStudio={() => setIsCardStudioOpen(true)}
+        onOpenQuoteStudio={() => {
+          setQuoteStudioInitialText('');
+          setIsCardStudioOpen(true);
+        }}
         onOpenSoundModal={() => setIsSoundModalOpen(true)}
         onOpenDictModal={() => setIsDictModalOpen(true)}
       />
@@ -511,9 +520,12 @@ export const ReaderScreen: React.FC = () => {
       <TableOfContents open={isTOCOpen} onOpenChange={setIsTOCOpen} />
       <QuoteCardModal
         open={isCardStudioOpen}
-        onOpenChange={setIsCardStudioOpen}
-        quoteText={pageData.display_text.slice(0, 280)}
-        sourceText={pageData.title}
+        onOpenChange={(isOpen) => {
+          setIsCardStudioOpen(isOpen);
+          if (!isOpen) setQuoteStudioInitialText('');
+        }}
+        quoteText={quoteStudioInitialText || pageData?.blocks?.[0]?.text || pageData?.display_text?.slice(0, 280) || ''}
+        sourceText={pageData?.title || 'كتاب إمتاع القارئ'}
         pageNumber={currentPage}
       />
       <AmbientSoundModal

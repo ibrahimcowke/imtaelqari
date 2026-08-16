@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { db } from '../../../lib/db';
 import { useReaderStore } from '../../../store/readerStore';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Sparkles } from 'lucide-react';
 import type { HighlightColor } from '../../../types/book';
 
 interface SelectionState {
@@ -12,7 +12,9 @@ interface SelectionState {
   endOffset: number;
 }
 
-export const HighlightPopover: React.FC = () => {
+export const HighlightPopover: React.FC<{
+  onOpenQuoteCard?: (selectedText: string) => void;
+}> = ({ onOpenQuoteCard }) => {
   const [selection, setSelection] = useState<SelectionState | null>(null);
   const [copied, setCopied] = useState(false);
   const { currentPage } = useReaderStore();
@@ -134,6 +136,23 @@ export const HighlightPopover: React.FC = () => {
         {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 opacity-80" />}
         <span>{copied ? 'تم النسخ' : 'نسخ'}</span>
       </button>
+
+      {onOpenQuoteCard && (
+        <button
+          onClick={() => {
+            if (!selection) return;
+            const textToQuote = selection.text;
+            window.getSelection()?.removeAllRanges();
+            setSelection(null);
+            onOpenQuoteCard(textToQuote);
+          }}
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-arabic hover:bg-white/15 transition-all text-amber-300 font-bold border border-amber-400/30 bg-amber-400/10 active:scale-95"
+          title="صنع بطاقة اقتباس فاخرة من النص المظلل"
+        >
+          <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+          <span>بطاقة اقتباس</span>
+        </button>
+      )}
     </div>
   );
 };
