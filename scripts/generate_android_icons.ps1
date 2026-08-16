@@ -1,3 +1,7 @@
+[CmdletBinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '')]
+param()
+
 Add-Type -AssemblyName System.Drawing
 
 $srcPath = "C:\Users\XAAJI XARASH\IMTAAELQAARI\public\app-logo.png"
@@ -10,6 +14,10 @@ $srcImg = [System.Drawing.Image]::FromFile($srcPath)
 $resBase = "C:\Users\XAAJI XARASH\IMTAAELQAARI\android\app\src\main\res"
 
 function New-ResizedIcon($img, $width, $height, $outPath, $isRound, $isForeground) {
+    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '')]
+    param()
+
     $destRect = New-Object System.Drawing.Rectangle(0, 0, $width, $height)
     $destImg = New-Object System.Drawing.Bitmap($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
     $g = [System.Drawing.Graphics]::FromImage($destImg)
@@ -20,7 +28,6 @@ function New-ResizedIcon($img, $width, $height, $outPath, $isRound, $isForegroun
     $g.Clear([System.Drawing.Color]::Transparent)
 
     if ($isForeground) {
-        # Foreground is centered in 72dp safe zone of 108dp canvas (approx 66.6% size, 16.6% padding)
         $padX = [int]($width * 0.16)
         $padY = [int]($height * 0.16)
         $drawW = $width - ($padX * 2)
@@ -74,6 +81,10 @@ New-ResizedIcon $srcImg 192 192 "$resBase\mipmap-xxxhdpi\ic_launcher_round.png" 
 New-ResizedIcon $srcImg 432 432 "$resBase\mipmap-xxxhdpi\ic_launcher_foreground.png" $false $true
 
 function New-SplashScreen($img, $width, $height, $outPath) {
+    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '')]
+    param()
+
     $destImg = New-Object System.Drawing.Bitmap($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
     $g = [System.Drawing.Graphics]::FromImage($destImg)
     $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
