@@ -5,318 +5,342 @@
    HARMONIZED THEMES, ICONS & TYPOGRAPHY SYSTEM
    ════════════════════════════════════════════════════════ */
 
+/* ════════════════════════════════════════════════════════
+   HARMONIZED THEMES, ICONS & TYPOGRAPHY SYSTEM
+   ════════════════════════════════════════════════════════ */
+
 :root {
-  --app-font-family: "Noto Naskh Arabic", sans-serif;
+  --app-font-family: "Noto Naskh Arabic", "Amiri", sans-serif;
 }
 
+/* 1. Paper Theme (Classic Literary) */
 :root,
 :root.theme-paper,
 html.theme-paper,
 body.theme-paper,
 .theme-paper,
 [data-theme="paper"] {
-  --app-bg:             #fdf8f6;
-  --app-bg-2:           #f5ede8;
-  --app-bg-3:           #ede0d8;
-  --app-surface:        rgba(255,255,255,0.82);
-  --app-surface-border: rgba(255,255,255,0.9);
-  --app-surface-shadow: rgba(163,124,108,0.07);
-  --app-bar:            rgba(253,248,246,0.88);
-  --app-bar-border:     rgba(163,124,108,0.12);
-  --app-bar-shadow:     rgba(163,124,108,0.08);
-  --app-text:           #1a1a1a;
-  --app-text-muted:     rgba(117,89,78,0.65);
-  --app-text-faint:     rgba(163,124,108,0.5);
-  --app-brand:          #9c6d57;
-  --app-brand-dark:     #744f3e;
-  --app-brand-grad:     linear-gradient(135deg, #9c6d57 0%, #744f3e 100%);
-  --app-brand-glow:     rgba(156,109,87,0.35);
-  --app-brand-dim:      rgba(156,109,87,0.1);
-  --app-brand-border:   rgba(156,109,87,0.22);
-  --app-divider:        rgba(156,109,87,0.1);
-  --sidebar-bg:         linear-gradient(180deg,#2a1c16 0%,#1e1410 60%,#150e0a 100%);
-  --sidebar-border:     rgba(163,124,108,0.15);
-  --reader-bg:          #fdfcf8;
-  --reader-text:        #1a1a1a;
+  --app-bg:             #fbf6f0;
+  --app-bg-2:           #f4ebe2;
+  --app-bg-3:           #ecdcd0;
+  --app-surface:        rgba(255, 255, 255, 0.92);
+  --app-surface-border: rgba(184, 150, 133, 0.35);
+  --app-surface-shadow: rgba(140, 95, 75, 0.08);
+  --app-bar:            rgba(251, 246, 240, 0.94);
+  --app-bar-border:     rgba(184, 150, 133, 0.3);
+  --app-bar-shadow:     rgba(140, 95, 75, 0.08);
+  --app-text:           #1e140f;
+  --app-text-muted:     #5a4135;
+  --app-text-faint:     #876859;
+  --app-brand:          #8f5c3d;
+  --app-brand-dark:     #683e25;
+  --app-brand-grad:     linear-gradient(135deg, #8f5c3d 0%, #683e25 100%);
+  --app-brand-glow:     rgba(143, 92, 61, 0.35);
+  --app-brand-dim:      rgba(143, 92, 61, 0.12);
+  --app-brand-border:   rgba(143, 92, 61, 0.28);
+  --app-divider:        rgba(143, 92, 61, 0.18);
+  --sidebar-bg:         linear-gradient(180deg, #26160e 0%, #1a0f0a 60%, #100805 100%);
+  --sidebar-border:     rgba(184, 150, 133, 0.25);
+  --reader-bg:          #fdfbf7;
+  --reader-text:        #1e140f;
 }
 
+/* 2. White Theme (Clean Modern) */
 :root.theme-white,
 html.theme-white,
 body.theme-white,
 .theme-white,
 [data-theme="white"] {
-  --app-bg:             #f8f8f8;
-  --app-bg-2:           #f0f0f0;
-  --app-bg-3:           #e8e8e8;
-  --app-surface:        rgba(255,255,255,0.92);
-  --app-surface-border: rgba(220,220,220,0.9);
-  --app-surface-shadow: rgba(0,0,0,0.05);
-  --app-bar:            rgba(255,255,255,0.92);
-  --app-bar-border:     rgba(200,200,200,0.4);
-  --app-bar-shadow:     rgba(0,0,0,0.06);
-  --app-text:           #111111;
-  --app-text-muted:     #555555;
-  --app-text-faint:     #aaaaaa;
-  --app-brand:          #7a5848;
-  --app-brand-dark:     #553a2d;
-  --app-brand-grad:     linear-gradient(135deg, #7a5848 0%, #553a2d 100%);
-  --app-brand-glow:     rgba(122,88,72,0.3);
-  --app-brand-dim:      rgba(122,88,72,0.08);
-  --app-brand-border:   rgba(122,88,72,0.2);
-  --app-divider:        rgba(0,0,0,0.08);
-  --sidebar-bg:         linear-gradient(180deg,#252220 0%,#1a1817 60%,#121110 100%);
-  --sidebar-border:     rgba(200,200,200,0.12);
+  --app-bg:             #f8fafc;
+  --app-bg-2:           #f1f5f9;
+  --app-bg-3:           #e2e8f0;
+  --app-surface:        rgba(255, 255, 255, 0.96);
+  --app-surface-border: rgba(203, 213, 225, 0.85);
+  --app-surface-shadow: rgba(15, 23, 42, 0.06);
+  --app-bar:            rgba(255, 255, 255, 0.95);
+  --app-bar-border:     rgba(203, 213, 225, 0.8);
+  --app-bar-shadow:     rgba(15, 23, 42, 0.05);
+  --app-text:           #09090b;
+  --app-text-muted:     #475569;
+  --app-text-faint:     #64748b;
+  --app-brand:          #704a37;
+  --app-brand-dark:     #4f3122;
+  --app-brand-grad:     linear-gradient(135deg, #704a37 0%, #4f3122 100%);
+  --app-brand-glow:     rgba(112, 74, 55, 0.3);
+  --app-brand-dim:      rgba(112, 74, 55, 0.1);
+  --app-brand-border:   rgba(112, 74, 55, 0.25);
+  --app-divider:        rgba(15, 23, 42, 0.1);
+  --sidebar-bg:         linear-gradient(180deg, #1e293b 0%, #0f172a 60%, #020617 100%);
+  --sidebar-border:     rgba(255, 255, 255, 0.12);
   --reader-bg:          #ffffff;
-  --reader-text:        #111111;
+  --reader-text:        #09090b;
 }
 
+/* 3. Sage Theme (Calm Herbal Green) */
 :root.theme-sage,
 html.theme-sage,
 body.theme-sage,
 .theme-sage,
 [data-theme="sage"] {
-  --app-bg:             #dce4d5;
-  --app-bg-2:           #d0dac8;
-  --app-bg-3:           #c4d0bb;
-  --app-surface:        rgba(232,236,225,0.92);
-  --app-surface-border: rgba(180,196,168,0.7);
-  --app-surface-shadow: rgba(30,60,30,0.07);
-  --app-bar:            rgba(232,236,225,0.92);
-  --app-bar-border:     rgba(140,170,130,0.3);
-  --app-bar-shadow:     rgba(30,60,30,0.06);
-  --app-text:           #1a2a1a;
-  --app-text-muted:     #3a5a3a;
-  --app-text-faint:     rgba(30,80,30,0.4);
-  --app-brand:          #3d7a57;
-  --app-brand-dark:     #28543b;
-  --app-brand-grad:     linear-gradient(135deg, #3d7a57 0%, #28543b 100%);
-  --app-brand-glow:     rgba(61,122,87,0.35);
-  --app-brand-dim:      rgba(61,122,87,0.12);
-  --app-brand-border:   rgba(61,122,87,0.25);
-  --app-divider:        rgba(61,122,87,0.15);
-  --sidebar-bg:         linear-gradient(180deg,#152b1e 0%,#0e1f15 60%,#08140e 100%);
-  --sidebar-border:     rgba(61,122,87,0.2);
-  --reader-bg:          #e8ece1;
-  --reader-text:        #1a2a1a;
+  --app-bg:             #e2ebdf;
+  --app-bg-2:           #d5e2d1;
+  --app-bg-3:           #c7d7c2;
+  --app-surface:        rgba(242, 247, 240, 0.94);
+  --app-surface-border: rgba(148, 179, 142, 0.6);
+  --app-surface-shadow: rgba(25, 55, 25, 0.08);
+  --app-bar:            rgba(240, 246, 238, 0.95);
+  --app-bar-border:     rgba(148, 179, 142, 0.5);
+  --app-bar-shadow:     rgba(25, 55, 25, 0.07);
+  --app-text:           #0f2214;
+  --app-text-muted:     #2b4834;
+  --app-text-faint:     #4d6f58;
+  --app-brand:          #2a6943;
+  --app-brand-dark:     #1b482d;
+  --app-brand-grad:     linear-gradient(135deg, #2a6943 0%, #1b482d 100%);
+  --app-brand-glow:     rgba(42, 105, 67, 0.35);
+  --app-brand-dim:      rgba(42, 105, 67, 0.14);
+  --app-brand-border:   rgba(42, 105, 67, 0.3);
+  --app-divider:        rgba(42, 105, 67, 0.18);
+  --sidebar-bg:         linear-gradient(180deg, #102417 0%, #0a180f 60%, #050d08 100%);
+  --sidebar-border:     rgba(42, 105, 67, 0.3);
+  --reader-bg:          #edf4ea;
+  --reader-text:        #0f2214;
 }
 
+/* 4. Sepia Theme (Warm Heritage) */
 :root.theme-sepia,
 html.theme-sepia,
 body.theme-sepia,
 .theme-sepia,
 [data-theme="sepia"] {
-  --app-bg:             #ede4d0;
-  --app-bg-2:           #e5d9c0;
-  --app-bg-3:           #ddd0b0;
-  --app-surface:        rgba(244,236,216,0.92);
-  --app-surface-border: rgba(200,180,140,0.7);
-  --app-surface-shadow: rgba(80,50,20,0.07);
-  --app-bar:            rgba(240,232,210,0.92);
-  --app-bar-border:     rgba(160,130,80,0.3);
-  --app-bar-shadow:     rgba(80,50,20,0.06);
-  --app-text:           #3b2f2f;
-  --app-text-muted:     #6b4f3f;
-  --app-text-faint:     rgba(100,70,40,0.5);
-  --app-brand:          #8f5c2c;
-  --app-brand-dark:     #683f19;
-  --app-brand-grad:     linear-gradient(135deg, #8f5c2c 0%, #683f19 100%);
-  --app-brand-glow:     rgba(143,92,44,0.35);
-  --app-brand-dim:      rgba(143,92,44,0.12);
-  --app-brand-border:   rgba(143,92,44,0.25);
-  --app-divider:        rgba(143,92,44,0.15);
-  --sidebar-bg:         linear-gradient(180deg,#2b190c 0%,#1c1007 60%,#100803 100%);
-  --sidebar-border:     rgba(143,92,44,0.2);
-  --reader-bg:          #f4ecd8;
-  --reader-text:        #3b2f2f;
+  --app-bg:             #eee5d3;
+  --app-bg-2:           #e5dac4;
+  --app-bg-3:           #d9ccb2;
+  --app-surface:        rgba(250, 244, 232, 0.94);
+  --app-surface-border: rgba(191, 163, 126, 0.65);
+  --app-surface-shadow: rgba(70, 45, 20, 0.08);
+  --app-bar:            rgba(247, 239, 226, 0.95);
+  --app-bar-border:     rgba(191, 163, 126, 0.5);
+  --app-bar-shadow:     rgba(70, 45, 20, 0.07);
+  --app-text:           #241710;
+  --app-text-muted:     #543d2f;
+  --app-text-faint:     #7d614f;
+  --app-brand:          #854f24;
+  --app-brand-dark:     #5e3412;
+  --app-brand-grad:     linear-gradient(135deg, #854f24 0%, #5e3412 100%);
+  --app-brand-glow:     rgba(133, 79, 36, 0.35);
+  --app-brand-dim:      rgba(133, 79, 36, 0.14);
+  --app-brand-border:   rgba(133, 79, 36, 0.3);
+  --app-divider:        rgba(133, 79, 36, 0.18);
+  --sidebar-bg:         linear-gradient(180deg, #24140a 0%, #170d06 60%, #0c0703 100%);
+  --sidebar-border:     rgba(191, 163, 126, 0.25);
+  --reader-bg:          #f6efe0;
+  --reader-text:        #241710;
 }
 
+/* 5. Rose Theme (Andalusian Rose) */
 :root.theme-rose,
 html.theme-rose,
 body.theme-rose,
 .theme-rose,
 [data-theme="rose"] {
-  --app-bg:             #fbf4f2;
-  --app-bg-2:           #f5e8e5;
-  --app-bg-3:           #eedcd8;
-  --app-surface:        rgba(255,250,249,0.92);
-  --app-surface-border: rgba(235,210,205,0.8);
-  --app-surface-shadow: rgba(180,90,90,0.06);
-  --app-bar:            rgba(251,244,242,0.92);
-  --app-bar-border:     rgba(214,142,136,0.25);
-  --app-bar-shadow:     rgba(180,90,90,0.05);
-  --app-text:           #332022;
-  --app-text-muted:     #755255;
-  --app-text-faint:     rgba(117,82,85,0.45);
-  --app-brand:          #b54d53;
-  --app-brand-dark:     #842e33;
-  --app-brand-grad:     linear-gradient(135deg, #b54d53 0%, #842e33 100%);
-  --app-brand-glow:     rgba(181,77,83,0.35);
-  --app-brand-dim:      rgba(181,77,83,0.12);
-  --app-brand-border:   rgba(181,77,83,0.25);
-  --app-divider:        rgba(181,77,83,0.15);
-  --sidebar-bg:         linear-gradient(180deg,#2e1719 0%,#1f0e10 60%,#140708 100%);
-  --sidebar-border:     rgba(181,77,83,0.2);
-  --reader-bg:          #fbf3f0;
-  --reader-text:        #332022;
+  --app-bg:             #fcf2f0;
+  --app-bg-2:           #f5e5e2;
+  --app-bg-3:           #edd5d1;
+  --app-surface:        rgba(255, 250, 249, 0.94);
+  --app-surface-border: rgba(224, 182, 177, 0.7);
+  --app-surface-shadow: rgba(140, 50, 55, 0.07);
+  --app-bar:            rgba(255, 247, 245, 0.95);
+  --app-bar-border:     rgba(224, 182, 177, 0.5);
+  --app-bar-shadow:     rgba(140, 50, 55, 0.06);
+  --app-text:           #241214;
+  --app-text-muted:     #5e3339;
+  --app-text-faint:     #88535a;
+  --app-brand:          #ad3b44;
+  --app-brand-dark:     #7c1e26;
+  --app-brand-grad:     linear-gradient(135deg, #ad3b44 0%, #7c1e26 100%);
+  --app-brand-glow:     rgba(173, 59, 68, 0.35);
+  --app-brand-dim:      rgba(173, 59, 68, 0.14);
+  --app-brand-border:   rgba(173, 59, 68, 0.3);
+  --app-divider:        rgba(173, 59, 68, 0.18);
+  --sidebar-bg:         linear-gradient(180deg, #2a0f13 0%, #1b080b 60%, #0f0305 100%);
+  --sidebar-border:     rgba(224, 182, 177, 0.25);
+  --reader-bg:          #fdf6f5;
+  --reader-text:        #241214;
 }
 
+/* 6. Emerald Theme (Royal Dark Emerald) */
 :root.theme-emerald,
 html.theme-emerald,
 body.theme-emerald,
 .theme-emerald,
 [data-theme="emerald"] {
-  --app-bg:             #07140f;
-  --app-bg-2:           #0c1f17;
-  --app-bg-3:           #122b20;
-  --app-surface:        rgba(12,32,24,0.92);
-  --app-surface-border: rgba(28,66,49,0.8);
-  --app-surface-shadow: rgba(0,20,10,0.4);
-  --app-bar:            rgba(9,24,18,0.94);
-  --app-bar-border:     rgba(30,176,118,0.25);
-  --app-bar-shadow:     rgba(0,20,10,0.35);
-  --app-text:           #e2f3ea;
-  --app-text-muted:     #8dbba5;
-  --app-text-faint:     rgba(141,187,165,0.4);
-  --app-brand:          #1eb076;
-  --app-brand-dark:     #117049;
-  --app-brand-grad:     linear-gradient(135deg, #1eb076 0%, #117049 100%);
-  --app-brand-glow:     rgba(30,176,118,0.35);
-  --app-brand-dim:      rgba(30,176,118,0.15);
-  --app-brand-border:   rgba(30,176,118,0.3);
-  --app-divider:        rgba(30,176,118,0.2);
-  --sidebar-bg:         linear-gradient(180deg,#0a1b14 0%,#06110d 60%,#030906 100%);
-  --sidebar-border:     rgba(30,176,118,0.25);
-  --reader-bg:          #091c14;
-  --reader-text:        #e2f3ea;
+  --app-bg:             #06130e;
+  --app-bg-2:           #0b1e16;
+  --app-bg-3:           #10291f;
+  --app-surface:        rgba(13, 35, 26, 0.94);
+  --app-surface-border: rgba(35, 88, 64, 0.85);
+  --app-surface-shadow: rgba(0, 15, 8, 0.5);
+  --app-bar:            rgba(8, 22, 16, 0.95);
+  --app-bar-border:     rgba(46, 204, 137, 0.3);
+  --app-bar-shadow:     rgba(0, 15, 8, 0.4);
+  --app-text:           #f0fdf4;
+  --app-text-muted:     #bbf7d0;
+  --app-text-faint:     #86efac;
+  --app-brand:          #2ecc89;
+  --app-brand-dark:     #168953;
+  --app-brand-grad:     linear-gradient(135deg, #2ecc89 0%, #168953 100%);
+  --app-brand-glow:     rgba(46, 204, 137, 0.4);
+  --app-brand-dim:      rgba(46, 204, 137, 0.18);
+  --app-brand-border:   rgba(46, 204, 137, 0.35);
+  --app-divider:        rgba(46, 204, 137, 0.22);
+  --sidebar-bg:         linear-gradient(180deg, #0a1f16 0%, #06130e 60%, #030906 100%);
+  --sidebar-border:     rgba(46, 204, 137, 0.25);
+  --reader-bg:          #081912;
+  --reader-text:        #f0fdf4;
 }
 
+/* 7. Midnight Theme (Deep Blue Night) */
 :root.theme-midnight,
 html.theme-midnight,
 body.theme-midnight,
 .theme-midnight,
 [data-theme="midnight"] {
-  --app-bg:             #060c17;
-  --app-bg-2:           #0c1424;
-  --app-bg-3:           #141d33;
-  --app-surface:        rgba(12,20,36,0.92);
-  --app-surface-border: rgba(25,37,64,0.8);
-  --app-surface-shadow: rgba(0,5,15,0.4);
-  --app-bar:            rgba(8,13,24,0.94);
-  --app-bar-border:     rgba(56,189,248,0.22);
-  --app-bar-shadow:     rgba(0,5,15,0.35);
-  --app-text:           #e2e8f0;
-  --app-text-muted:     #94a3b8;
-  --app-text-faint:     rgba(148,163,184,0.4);
+  --app-bg:             #060c18;
+  --app-bg-2:           #0c1426;
+  --app-bg-3:           #121d36;
+  --app-surface:        rgba(14, 23, 42, 0.94);
+  --app-surface-border: rgba(45, 68, 108, 0.85);
+  --app-surface-shadow: rgba(0, 4, 12, 0.5);
+  --app-bar:            rgba(8, 14, 28, 0.95);
+  --app-bar-border:     rgba(56, 189, 248, 0.28);
+  --app-bar-shadow:     rgba(0, 4, 12, 0.4);
+  --app-text:           #f8fafc;
+  --app-text-muted:     #cbd5e1;
+  --app-text-faint:     #94a3b8;
   --app-brand:          #38bdf8;
-  --app-brand-dark:     #1d4ed8;
-  --app-brand-grad:     linear-gradient(135deg, #38bdf8 0%, #1d4ed8 100%);
-  --app-brand-glow:     rgba(56,189,248,0.35);
-  --app-brand-dim:      rgba(56,189,248,0.14);
-  --app-brand-border:   rgba(56,189,248,0.28);
-  --app-divider:        rgba(56,189,248,0.15);
-  --sidebar-bg:         linear-gradient(180deg,#081024 0%,#050a17 60%,#02040a 100%);
-  --sidebar-border:     rgba(56,189,248,0.2);
-  --reader-bg:          #081021;
-  --reader-text:        #e2e8f0;
+  --app-brand-dark:     #0284c7;
+  --app-brand-grad:     linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+  --app-brand-glow:     rgba(56, 189, 248, 0.4);
+  --app-brand-dim:      rgba(56, 189, 248, 0.18);
+  --app-brand-border:   rgba(56, 189, 248, 0.35);
+  --app-divider:        rgba(56, 189, 248, 0.2);
+  --sidebar-bg:         linear-gradient(180deg, #091329 0%, #050a17 60%, #02040b 100%);
+  --sidebar-border:     rgba(56, 189, 248, 0.25);
+  --reader-bg:          #081020;
+  --reader-text:        #f8fafc;
 }
 
+/* 8. Coffee Theme (Arabic Roast Coffee) */
 :root.theme-coffee,
 html.theme-coffee,
 body.theme-coffee,
 .theme-coffee,
 [data-theme="coffee"] {
-  --app-bg:             #120c09;
-  --app-bg-2:           #1b120e;
-  --app-bg-3:           #241914;
-  --app-surface:        rgba(26,18,14,0.92);
-  --app-surface-border: rgba(58,40,31,0.8);
-  --app-surface-shadow: rgba(0,0,0,0.4);
-  --app-bar:            rgba(18,12,9,0.94);
-  --app-bar-border:     rgba(212,163,115,0.22);
-  --app-bar-shadow:     rgba(0,0,0,0.35);
-  --app-text:           #ede0d4;
-  --app-text-muted:     #bda18a;
-  --app-text-faint:     rgba(189,161,138,0.4);
-  --app-brand:          #d4a373;
-  --app-brand-dark:     #8f6239;
-  --app-brand-grad:     linear-gradient(135deg, #d4a373 0%, #8f6239 100%);
-  --app-brand-glow:     rgba(212,163,115,0.35);
-  --app-brand-dim:      rgba(212,163,115,0.14);
-  --app-brand-border:   rgba(212,163,115,0.3);
-  --app-divider:        rgba(212,163,115,0.15);
-  --sidebar-bg:         linear-gradient(180deg,#19100a 0%,#0f0a06 60%,#070402 100%);
-  --sidebar-border:     rgba(212,163,115,0.2);
+  --app-bg:             #120c08;
+  --app-bg-2:           #1c130d;
+  --app-bg-3:           #261a12;
+  --app-surface:        rgba(30, 20, 14, 0.94);
+  --app-surface-border: rgba(77, 52, 38, 0.85);
+  --app-surface-shadow: rgba(0, 0, 0, 0.5);
+  --app-bar:            rgba(18, 12, 8, 0.95);
+  --app-bar-border:     rgba(217, 169, 122, 0.28);
+  --app-bar-shadow:     rgba(0, 0, 0, 0.4);
+  --app-text:           #faf4ee;
+  --app-text-muted:     #e0d0c1;
+  --app-text-faint:     #b89f8a;
+  --app-brand:          #d9a97a;
+  --app-brand-dark:     #9e6c3e;
+  --app-brand-grad:     linear-gradient(135deg, #d9a97a 0%, #9e6c3e 100%);
+  --app-brand-glow:     rgba(217, 169, 122, 0.4);
+  --app-brand-dim:      rgba(217, 169, 122, 0.18);
+  --app-brand-border:   rgba(217, 169, 122, 0.35);
+  --app-divider:        rgba(217, 169, 122, 0.2);
+  --sidebar-bg:         linear-gradient(180deg, #1c1109 0%, #100a05 60%, #060301 100%);
+  --sidebar-border:     rgba(217, 169, 122, 0.25);
   --reader-bg:          #160e0a;
-  --reader-text:        #ede0d4;
+  --reader-text:        #faf4ee;
 }
 
+/* 9. Slate Theme (Charcoal Slate) */
 :root.theme-slate,
 html.theme-slate,
 body.theme-slate,
 .theme-slate,
 [data-theme="slate"] {
-  --app-bg:             #0d1014;
-  --app-bg-2:           #13171e;
-  --app-bg-3:           #1b212b;
-  --app-surface:        rgba(18,22,29,0.92);
-  --app-surface-border: rgba(38,47,60,0.8);
-  --app-surface-shadow: rgba(0,0,0,0.35);
-  --app-bar:            rgba(13,16,20,0.94);
-  --app-bar-border:     rgba(88,166,255,0.22);
-  --app-bar-shadow:     rgba(0,0,0,0.35);
-  --app-text:           #e6edf3;
-  --app-text-muted:     #8b949e;
-  --app-text-faint:     rgba(139,148,158,0.4);
+  --app-bg:             #0c1015;
+  --app-bg-2:           #121820;
+  --app-bg-3:           #1a222e;
+  --app-surface:        rgba(20, 26, 36, 0.94);
+  --app-surface-border: rgba(49, 63, 85, 0.85);
+  --app-surface-shadow: rgba(0, 0, 0, 0.45);
+  --app-bar:            rgba(13, 17, 23, 0.95);
+  --app-bar-border:     rgba(88, 166, 255, 0.28);
+  --app-bar-shadow:     rgba(0, 0, 0, 0.35);
+  --app-text:           #f8fafc;
+  --app-text-muted:     #cbd5e1;
+  --app-text-faint:     #94a3b8;
   --app-brand:          #58a6ff;
   --app-brand-dark:     #1f6feb;
   --app-brand-grad:     linear-gradient(135deg, #58a6ff 0%, #1f6feb 100%);
-  --app-brand-glow:     rgba(88,166,255,0.35);
-  --app-brand-dim:      rgba(88,166,255,0.14);
-  --app-brand-border:   rgba(88,166,255,0.28);
-  --app-divider:        rgba(88,166,255,0.15);
-  --sidebar-bg:         linear-gradient(180deg,#11151c 0%,#0a0d12 60%,#040507 100%);
-  --sidebar-border:     rgba(88,166,255,0.2);
-  --reader-bg:          #10141a;
-  --reader-text:        #e6edf3;
+  --app-brand-glow:     rgba(88, 166, 255, 0.4);
+  --app-brand-dim:      rgba(88, 166, 255, 0.18);
+  --app-brand-border:   rgba(88, 166, 255, 0.35);
+  --app-divider:        rgba(88, 166, 255, 0.2);
+  --sidebar-bg:         linear-gradient(180deg, #111722 0%, #0a0d14 60%, #040508 100%);
+  --sidebar-border:     rgba(88, 166, 255, 0.25);
+  --reader-bg:          #10151c;
+  --reader-text:        #f8fafc;
 }
 
+/* 10. Dark Theme (Pure Luxury AMOLED Dark) */
 :root.theme-dark,
 html.theme-dark,
 body.theme-dark,
 .theme-dark,
 [data-theme="dark"] {
-  --app-bg:             #0a0a0a;
-  --app-bg-2:           #121212;
-  --app-bg-3:           #1a1a1a;
-  --app-surface:        rgba(24,24,24,0.92);
-  --app-surface-border: rgba(50,50,50,0.7);
-  --app-surface-shadow: rgba(0,0,0,0.3);
-  --app-bar:            rgba(14,14,14,0.94);
-  --app-bar-border:     rgba(255,255,255,0.06);
-  --app-bar-shadow:     rgba(0,0,0,0.4);
-  --app-text:           #e0e0e0;
-  --app-text-muted:     rgba(224,206,199,0.6);
-  --app-text-faint:     rgba(224,206,199,0.3);
-  --app-brand:          #d2a18c;
-  --app-brand-dark:     #986a57;
-  --app-brand-grad:     linear-gradient(135deg, #d2a18c 0%, #986a57 100%);
-  --app-brand-glow:     rgba(210,161,140,0.35);
-  --app-brand-dim:      rgba(210,161,140,0.15);
-  --app-brand-border:   rgba(210,161,140,0.3);
-  --app-divider:        rgba(255,255,255,0.07);
-  --sidebar-bg:         linear-gradient(180deg,#141414 0%,#0a0a0a 60%,#040404 100%);
-  --sidebar-border:     rgba(255,255,255,0.06);
-  --reader-bg:          #101010;
-  --reader-text:        #e0e0e0;
+  --app-bg:             #09090b;
+  --app-bg-2:           #141417;
+  --app-bg-3:           #1f1f24;
+  --app-surface:        rgba(24, 24, 28, 0.95);
+  --app-surface-border: rgba(65, 65, 75, 0.8);
+  --app-surface-shadow: rgba(0, 0, 0, 0.5);
+  --app-bar:            rgba(12, 12, 15, 0.95);
+  --app-bar-border:     rgba(220, 166, 145, 0.25);
+  --app-bar-shadow:     rgba(0, 0, 0, 0.45);
+  --app-text:           #ffffff;
+  --app-text-muted:     #d4d4d8;
+  --app-text-faint:     #a1a1aa;
+  --app-brand:          #dfa995;
+  --app-brand-dark:     #a56f5b;
+  --app-brand-grad:     linear-gradient(135deg, #dfa995 0%, #a56f5b 100%);
+  --app-brand-glow:     rgba(223, 169, 149, 0.4);
+  --app-brand-dim:      rgba(223, 169, 149, 0.18);
+  --app-brand-border:   rgba(223, 169, 149, 0.35);
+  --app-divider:        rgba(255, 255, 255, 0.12);
+  --sidebar-bg:         linear-gradient(180deg, #18181c 0%, #0e0e11 60%, #060608 100%);
+  --sidebar-border:     rgba(255, 255, 255, 0.1);
+  --reader-bg:          #101014;
+  --reader-text:        #ffffff;
 }
 
 @layer base {
+  *, ::before, ::after {
+    border-color: var(--app-surface-border);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
     @apply antialiased selection:bg-brand-500 selection:text-white;
-    font-family: var(--app-font-family, 'Noto Naskh Arabic', sans-serif);
+    font-family: var(--app-font-family, 'Noto Naskh Arabic', 'Amiri', sans-serif);
     background: var(--app-bg);
     color: var(--app-text);
-    transition: background 0.35s ease, color 0.35s ease;
+    transition: background 0.3s ease, color 0.3s ease;
   }
 }
 
@@ -358,11 +382,26 @@ body.theme-dark,
 
   /* Floating Glass Dock */
   .glass-dock {
-    background: var(--app-bar);
-    border: 1px solid var(--app-bar-border);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15), 0 0 20px var(--app-brand-glow);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    background: var(--app-surface);
+    border: 1px solid var(--app-surface-border);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2), 0 0 24px var(--app-brand-glow);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+  }
+
+  /* Mobile Luxury Bottom Bar */
+  .mobile-bottom-nav {
+    background: var(--app-surface);
+    border: 1px solid var(--app-surface-border);
+    box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.12), 0 12px 40px rgba(0, 0, 0, 0.25), 0 0 20px var(--app-brand-dim);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+  }
+
+  .mobile-tab-pill-active {
+    background: var(--app-brand-dim);
+    border: 1px solid var(--app-brand-border);
+    box-shadow: 0 0 16px var(--app-brand-glow), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 
   /* ── Sidebar ── */

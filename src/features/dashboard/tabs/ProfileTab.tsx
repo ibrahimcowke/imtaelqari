@@ -529,7 +529,9 @@ export const ProfileTab: React.FC = () => {
               <span className="font-arabic font-bold text-sm block" style={{ color: 'var(--app-text)' }}>
                 خيارات تباعد الأسطر والقراءة الصوتية
               </span>
-              <span className="text-[11px] font-arabic opacity-60">ارتفاع الأسطر، تباعد الفقرات، سرعة الصوت</span>
+              <span className="text-[11px] font-arabic mt-0.5 block" style={{ color: 'var(--app-text-muted)' }}>
+                ارتفاع الأسطر، تباعد الفقرات، سرعة الصوت
+              </span>
             </div>
           </div>
           <ChevronLeft
@@ -564,7 +566,9 @@ export const ProfileTab: React.FC = () => {
                 <span className="font-arabic text-sm font-bold block" style={{ color: 'var(--app-text)' }}>
                   إخفاء أشرطة الأدوات تلقائياً أثناء القراءة
                 </span>
-                <span className="text-[11px] font-arabic opacity-60">انقر على الشاشة لإظهار أو إخفاء الأشرطة</span>
+                <span className="text-[11px] font-arabic mt-0.5 block" style={{ color: 'var(--app-text-muted)' }}>
+                  انقر على الشاشة لإظهار أو إخفاء الأشرطة
+                </span>
               </div>
               <button
                 onClick={() => updatePreferences({ autoHideControls: !preferences.autoHideControls })}

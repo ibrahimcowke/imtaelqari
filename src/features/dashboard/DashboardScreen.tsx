@@ -393,15 +393,20 @@ export const DashboardScreen: React.FC = () => {
       </main>
 
       {/* ══════════════════════════════════════════════════
-          MOBILE FLOATING BOTTOM NAV DOCK
+          MOBILE FLOATING BOTTOM NAV DOCK (REDESIGNED)
           ══════════════════════════════════════════════════ */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-1 pointer-events-none">
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-30 px-3 pointer-events-none"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0.75rem))' }}
+      >
         <div
-          className="pointer-events-auto flex items-center justify-around rounded-3xl p-1.5 border backdrop-blur-2xl"
+          className="pointer-events-auto max-w-md mx-auto grid grid-cols-4 items-center rounded-[28px] p-1.5 border shadow-2xl transition-all duration-300"
           style={{
-            background: 'var(--sidebar-bg)',
-            borderColor: 'var(--sidebar-border)',
-            boxShadow: '0 -4px 30px rgba(0,0,0,0.3), 0 10px 30px rgba(0,0,0,0.4)',
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.22), 0 0 1px var(--app-brand-border)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
           }}
         >
           {(['home', 'chapters', 'annotations', 'profile'] as Tab[]).map((tab) => {
@@ -411,26 +416,55 @@ export const DashboardScreen: React.FC = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all duration-200 active:scale-90 relative ${
-                  active ? 'text-white' : 'text-white/45 hover:text-white/80'
-                }`}
+                className="flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 active:scale-95 relative group select-none"
+                style={{
+                  color: active ? 'var(--app-brand)' : 'var(--app-text-muted)',
+                }}
               >
                 {active && (
                   <motion.div
-                    layoutId="mobileNavPill"
+                    layoutId="mobileNavPillActive"
                     className="absolute inset-0 rounded-2xl"
                     style={{
                       background: 'var(--app-brand-dim)',
                       border: '1px solid var(--app-brand-border)',
                       boxShadow: '0 0 16px var(--app-brand-glow)',
                     }}
-                    transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                    transition={{ type: 'spring', stiffness: 480, damping: 36 }}
                   />
                 )}
-                <Icon className={`w-5 h-5 relative z-10 ${active ? 'text-amber-300 scale-110' : 'opacity-70'}`} />
-                <span className={`text-[10px] font-arabic relative z-10 ${active ? 'font-bold text-white' : 'font-medium'}`}>
-                  {TAB_LABELS[tab].label}
-                </span>
+
+                <div className="relative z-10 flex flex-col items-center gap-1">
+                  <motion.div
+                    animate={active ? { scale: 1.12, y: -1 } : { scale: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  >
+                    <Icon className="w-5 h-5 transition-colors" />
+                  </motion.div>
+
+                  <span
+                    className={`text-[11px] font-arabic leading-none tracking-tight ${
+                      active ? 'font-bold' : 'font-medium'
+                    }`}
+                    style={{
+                      color: active ? 'var(--app-brand)' : 'var(--app-text-muted)',
+                    }}
+                  >
+                    {TAB_LABELS[tab].label}
+                  </span>
+
+                  {active && (
+                    <motion.span
+                      layoutId="mobileNavDot"
+                      className="w-1 h-1 rounded-full"
+                      style={{
+                        background: 'var(--app-brand)',
+                        boxShadow: '0 0 6px var(--app-brand-glow)',
+                      }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </div>
               </button>
             );
           })}

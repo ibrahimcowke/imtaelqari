@@ -672,7 +672,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
             <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
               أصوات التركيز
             </h4>
-            <p className="text-[11px] font-arabic opacity-60 mt-0.5">
+            <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
               مطر، هدوء، وبيئة قراءة هادئة
             </p>
           </div>
@@ -695,7 +695,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
             <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
               المعجم اللغوي
             </h4>
-            <p className="text-[11px] font-arabic opacity-60 mt-0.5">
+            <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
               شرح غريب الألفاظ والمفردات
             </p>
           </div>
@@ -718,7 +718,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
             <h4 className="font-arabic font-bold text-sm" style={{ color: 'var(--app-text)' }}>
               التصفح الموضوعي
             </h4>
-            <p className="text-[11px] font-arabic opacity-60 mt-0.5">
+            <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
               أبواب وموضوعات وحكم الكتاب
             </p>
           </div>
