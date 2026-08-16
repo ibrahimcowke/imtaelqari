@@ -9,7 +9,7 @@ if (-Not (Test-Path $srcPath)) {
 $srcImg = [System.Drawing.Image]::FromFile($srcPath)
 $resBase = "C:\Users\XAAJI XARASH\IMTAAELQAARI\android\app\src\main\res"
 
-function Resize-Icon($img, $width, $height, $outPath, $isRound, $isForeground) {
+function New-ResizedIcon($img, $width, $height, $outPath, $isRound, $isForeground) {
     $destRect = New-Object System.Drawing.Rectangle(0, 0, $width, $height)
     $destImg = New-Object System.Drawing.Bitmap($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
     $g = [System.Drawing.Graphics]::FromImage($destImg)
@@ -49,31 +49,31 @@ function Resize-Icon($img, $width, $height, $outPath, $isRound, $isForeground) {
 }
 
 # mdpi (1x)
-Resize-Icon $srcImg 48 48 "$resBase\mipmap-mdpi\ic_launcher.png" $false $false
-Resize-Icon $srcImg 48 48 "$resBase\mipmap-mdpi\ic_launcher_round.png" $true $false
-Resize-Icon $srcImg 108 108 "$resBase\mipmap-mdpi\ic_launcher_foreground.png" $false $true
+New-ResizedIcon $srcImg 48 48 "$resBase\mipmap-mdpi\ic_launcher.png" $false $false
+New-ResizedIcon $srcImg 48 48 "$resBase\mipmap-mdpi\ic_launcher_round.png" $true $false
+New-ResizedIcon $srcImg 108 108 "$resBase\mipmap-mdpi\ic_launcher_foreground.png" $false $true
 
 # hdpi (1.5x)
-Resize-Icon $srcImg 72 72 "$resBase\mipmap-hdpi\ic_launcher.png" $false $false
-Resize-Icon $srcImg 72 72 "$resBase\mipmap-hdpi\ic_launcher_round.png" $true $false
-Resize-Icon $srcImg 162 162 "$resBase\mipmap-hdpi\ic_launcher_foreground.png" $false $true
+New-ResizedIcon $srcImg 72 72 "$resBase\mipmap-hdpi\ic_launcher.png" $false $false
+New-ResizedIcon $srcImg 72 72 "$resBase\mipmap-hdpi\ic_launcher_round.png" $true $false
+New-ResizedIcon $srcImg 162 162 "$resBase\mipmap-hdpi\ic_launcher_foreground.png" $false $true
 
 # xhdpi (2x)
-Resize-Icon $srcImg 96 96 "$resBase\mipmap-xhdpi\ic_launcher.png" $false $false
-Resize-Icon $srcImg 96 96 "$resBase\mipmap-xhdpi\ic_launcher_round.png" $true $false
-Resize-Icon $srcImg 216 216 "$resBase\mipmap-xhdpi\ic_launcher_foreground.png" $false $true
+New-ResizedIcon $srcImg 96 96 "$resBase\mipmap-xhdpi\ic_launcher.png" $false $false
+New-ResizedIcon $srcImg 96 96 "$resBase\mipmap-xhdpi\ic_launcher_round.png" $true $false
+New-ResizedIcon $srcImg 216 216 "$resBase\mipmap-xhdpi\ic_launcher_foreground.png" $false $true
 
 # xxhdpi (3x)
-Resize-Icon $srcImg 144 144 "$resBase\mipmap-xxhdpi\ic_launcher.png" $false $false
-Resize-Icon $srcImg 144 144 "$resBase\mipmap-xxhdpi\ic_launcher_round.png" $true $false
-Resize-Icon $srcImg 324 324 "$resBase\mipmap-xxhdpi\ic_launcher_foreground.png" $false $true
+New-ResizedIcon $srcImg 144 144 "$resBase\mipmap-xxhdpi\ic_launcher.png" $false $false
+New-ResizedIcon $srcImg 144 144 "$resBase\mipmap-xxhdpi\ic_launcher_round.png" $true $false
+New-ResizedIcon $srcImg 324 324 "$resBase\mipmap-xxhdpi\ic_launcher_foreground.png" $false $true
 
 # xxxhdpi (4x)
-Resize-Icon $srcImg 192 192 "$resBase\mipmap-xxxhdpi\ic_launcher.png" $false $false
-Resize-Icon $srcImg 192 192 "$resBase\mipmap-xxxhdpi\ic_launcher_round.png" $true $false
-Resize-Icon $srcImg 432 432 "$resBase\mipmap-xxxhdpi\ic_launcher_foreground.png" $false $true
+New-ResizedIcon $srcImg 192 192 "$resBase\mipmap-xxxhdpi\ic_launcher.png" $false $false
+New-ResizedIcon $srcImg 192 192 "$resBase\mipmap-xxxhdpi\ic_launcher_round.png" $true $false
+New-ResizedIcon $srcImg 432 432 "$resBase\mipmap-xxxhdpi\ic_launcher_foreground.png" $false $true
 
-function Generate-Splash($img, $width, $height, $outPath) {
+function New-SplashScreen($img, $width, $height, $outPath) {
     $destImg = New-Object System.Drawing.Bitmap($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
     $g = [System.Drawing.Graphics]::FromImage($destImg)
     $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
@@ -105,21 +105,21 @@ function Generate-Splash($img, $width, $height, $outPath) {
 }
 
 # Main drawable splash
-Generate-Splash $srcImg 512 512 "$resBase\drawable\splash.png"
+New-SplashScreen $srcImg 512 512 "$resBase\drawable\splash.png"
 
 # Portrait Splash Screens
-Generate-Splash $srcImg 320 480 "$resBase\drawable-port-mdpi\splash.png"
-Generate-Splash $srcImg 480 800 "$resBase\drawable-port-hdpi\splash.png"
-Generate-Splash $srcImg 640 960 "$resBase\drawable-port-xhdpi\splash.png"
-Generate-Splash $srcImg 960 1600 "$resBase\drawable-port-xxhdpi\splash.png"
-Generate-Splash $srcImg 1280 1920 "$resBase\drawable-port-xxxhdpi\splash.png"
+New-SplashScreen $srcImg 320 480 "$resBase\drawable-port-mdpi\splash.png"
+New-SplashScreen $srcImg 480 800 "$resBase\drawable-port-hdpi\splash.png"
+New-SplashScreen $srcImg 640 960 "$resBase\drawable-port-xhdpi\splash.png"
+New-SplashScreen $srcImg 960 1600 "$resBase\drawable-port-xxhdpi\splash.png"
+New-SplashScreen $srcImg 1280 1920 "$resBase\drawable-port-xxxhdpi\splash.png"
 
 # Landscape Splash Screens
-Generate-Splash $srcImg 480 320 "$resBase\drawable-land-mdpi\splash.png"
-Generate-Splash $srcImg 800 480 "$resBase\drawable-land-hdpi\splash.png"
-Generate-Splash $srcImg 960 640 "$resBase\drawable-land-xhdpi\splash.png"
-Generate-Splash $srcImg 1600 960 "$resBase\drawable-land-xxhdpi\splash.png"
-Generate-Splash $srcImg 1920 1280 "$resBase\drawable-land-xxxhdpi\splash.png"
+New-SplashScreen $srcImg 480 320 "$resBase\drawable-land-mdpi\splash.png"
+New-SplashScreen $srcImg 800 480 "$resBase\drawable-land-hdpi\splash.png"
+New-SplashScreen $srcImg 960 640 "$resBase\drawable-land-xhdpi\splash.png"
+New-SplashScreen $srcImg 1600 960 "$resBase\drawable-land-xxhdpi\splash.png"
+New-SplashScreen $srcImg 1920 1280 "$resBase\drawable-land-xxxhdpi\splash.png"
 
 $srcImg.Dispose()
 Write-Host "All Android App Icons & Splash Screens generated successfully!"
