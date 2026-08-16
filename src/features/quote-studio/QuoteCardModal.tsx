@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 import {
   Download, Share2, Sparkles, X, Check, Copy, Type,
   Palette, Edit3, Smartphone, Square, Monitor,
@@ -458,17 +461,53 @@ export const QuoteCardModal: React.FC<{
     }
   }, [open, renderCanvas]);
 
-  // Download Card
-  const downloadImage = () => {
+  // Download / Save Card to Device
+  const downloadImage = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     setDownloading(true);
 
+    const fileName = `imta_quote_${Date.now()}.png`;
+
     try {
+      const dataUrl = canvas.toDataURL('image/png', 1.0);
+      const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
+
+      if (Capacitor.isNativePlatform()) {
+        const savedFile = await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: Directory.Cache,
+        });
+
+        await Share.share({
+          title: customSource || 'إمتاع القارئ',
+          text: `«${editableQuote}»\n— ${customSource} • ${customAuthor}`,
+          url: savedFile.uri,
+          dialogTitle: 'حفظ أو مشاركة بطاقة الاقتباس',
+        });
+      } else {
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+          const blobUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = `إمتاع_القارئ_اقتباس_${Date.now()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+        }, 'image/png');
+      }
+
+      setCopiedToast(true);
+      setTimeout(() => setCopiedToast(false), 2500);
+    } catch (err) {
+      console.warn('Native save error, running fallback:', err);
       const url = canvas.toDataURL('image/png', 1.0);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `إمتاع_القارئ_اقتباس_${Date.now()}.png`;
+      a.download = `إمتاع_القارئ_${Date.now()}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -492,7 +531,6 @@ export const QuoteCardModal: React.FC<{
           setCopiedToast(true);
           setTimeout(() => setCopiedToast(false), 2500);
         } else {
-          // Fallback to text copy
           await navigator.clipboard.writeText(`«${editableQuote}»\n— ${customSource} (${customAuthor})`);
           setCopiedToast(true);
           setTimeout(() => setCopiedToast(false), 2500);
@@ -504,34 +542,52 @@ export const QuoteCardModal: React.FC<{
     }, 'image/png');
   };
 
-  // Share Card via Web Share API
+  // Share Card via Native or Web Share API
   const shareImage = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    canvas.toBlob(async (blob) => {
-      if (!blob) return;
-      const file = new File([blob], 'imta-quote.png', { type: 'image/png' });
+    try {
+      const dataUrl = canvas.toDataURL('image/png', 1.0);
+      const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
+      const fileName = `imta_quote_share_${Date.now()}.png`;
 
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            files: [file],
-            title: customSource || 'إمتاع القارئ',
-            text: `«${editableQuote}»\n— ${customSource} • ${customAuthor}`,
-          });
-        } catch {
-          // User canceled or fallback
-        }
-      } else if (navigator.share) {
-        navigator.share({
+      if (Capacitor.isNativePlatform()) {
+        const savedFile = await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: Directory.Cache,
+        });
+
+        await Share.share({
           title: customSource || 'إمتاع القارئ',
           text: `«${editableQuote}»\n— ${customSource} • ${customAuthor}`,
-        }).catch(() => downloadImage());
+          url: savedFile.uri,
+          dialogTitle: 'مشاركة بطاقة الاقتباس',
+        });
+      } else if (navigator.share) {
+        canvas.toBlob(async (blob) => {
+          if (!blob) return;
+          const file = new File([blob], 'imta-quote.png', { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: customSource || 'إمتاع القارئ',
+              text: `«${editableQuote}»\n— ${customSource} • ${customAuthor}`,
+            });
+          } else {
+            await navigator.share({
+              title: customSource || 'إمتاع القارئ',
+              text: `«${editableQuote}»\n— ${customSource} • ${customAuthor}`,
+            });
+          }
+        }, 'image/png');
       } else {
-        downloadImage();
+        await downloadImage();
       }
-    }, 'image/png');
+    } catch {
+      await downloadImage();
+    }
   };
 
   // Reset to original

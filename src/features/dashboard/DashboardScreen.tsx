@@ -6,12 +6,13 @@ import { ProfileTab } from './tabs/ProfileTab';
 import {
   BookOpen, List, Bookmark, Search, UserCircle,
   BookOpenCheck, Music, BookMarked, Layers, Sparkles,
-  ChevronLeft
+  ChevronLeft, Bell
 } from 'lucide-react';
 import { SearchSheet } from '../search/SearchSheet';
 import { AmbientSoundModal } from '../audio/AmbientSoundModal';
 import { ArabicDictionaryModal } from '../dictionary/ArabicDictionaryModal';
 import { TopicsModal } from '../topics/TopicsModal';
+import { ReminderModal } from '../reminders/ReminderModal';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReaderStore } from '../../store/readerStore';
@@ -31,6 +32,7 @@ export const DashboardScreen: React.FC = () => {
   const [isSoundOpen, setIsSoundOpen] = useState(false);
   const [isDictOpen, setIsDictOpen] = useState(false);
   const [isTopicsOpen, setIsTopicsOpen] = useState(false);
+  const [isReminderOpen, setIsReminderOpen] = useState(false);
   const navigate = useNavigate();
   const { currentPage } = useReaderStore();
 
@@ -206,6 +208,19 @@ export const DashboardScreen: React.FC = () => {
               <Layers className="w-4 h-4 text-purple-300" />
               <span className="font-medium">التصفح الموضوعي</span>
             </button>
+
+            <button
+              onClick={() => setIsReminderOpen(true)}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+            >
+              <div className="flex items-center gap-2.5">
+                <Bell className="w-4 h-4 text-amber-300" />
+                <span className="font-medium">تذكير الورد اليومي</span>
+              </div>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/15 text-amber-300 border border-white/20">
+                منبه
+              </span>
+            </button>
           </div>
         </nav>
 
@@ -272,6 +287,21 @@ export const DashboardScreen: React.FC = () => {
               </kbd>
             </button>
 
+            {/* Daily Reminder Button */}
+            <button
+              onClick={() => setIsReminderOpen(true)}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-2xl transition-all active:scale-95 text-xs font-arabic font-semibold border"
+              style={{
+                background: 'var(--app-brand-dim)',
+                borderColor: 'var(--app-brand-border)',
+                color: 'var(--app-brand)',
+              }}
+              title="تذكير الورد اليومي"
+            >
+              <Bell className="w-3.5 h-3.5" />
+              <span>التذكير اليومي</span>
+            </button>
+
             {/* Ambient Soundscape Button */}
             <button
               onClick={() => setIsSoundOpen(true)}
@@ -330,6 +360,20 @@ export const DashboardScreen: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-1.5">
+              {/* Daily Reminder button */}
+              <button
+                onClick={() => setIsReminderOpen(true)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-95 border"
+                style={{
+                  background: 'var(--app-brand-dim)',
+                  borderColor: 'var(--app-brand-border)',
+                  color: 'var(--app-brand)',
+                }}
+                title="تذكير الورد"
+              >
+                <Bell className="w-4 h-4" />
+              </button>
+
               {/* Soundscape button */}
               <button
                 onClick={() => setIsSoundOpen(true)}
@@ -474,6 +518,7 @@ export const DashboardScreen: React.FC = () => {
       <AmbientSoundModal open={isSoundOpen} onOpenChange={setIsSoundOpen} />
       <ArabicDictionaryModal open={isDictOpen} onOpenChange={setIsDictOpen} />
       <TopicsModal open={isTopicsOpen} onOpenChange={setIsTopicsOpen} onNavigate={() => navigate('/read')} />
+      <ReminderModal open={isReminderOpen} onOpenChange={setIsReminderOpen} />
     </div>
   );
 };

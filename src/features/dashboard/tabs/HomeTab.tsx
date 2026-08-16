@@ -6,13 +6,23 @@ import {
   BookOpen, Dices, Copy, Check, Share2, Star,
   Flame, Play, Pause, RotateCcw, Sparkles,
   Music, BookMarked, Layers, Clock,
-  ChevronLeft
+  ChevronLeft, Bell
 } from 'lucide-react';
 import { motion, type Variants } from 'framer-motion';
 import { QuoteCardModal } from '../../quote-studio/QuoteCardModal';
 import { AmbientSoundModal } from '../../audio/AmbientSoundModal';
 import { ArabicDictionaryModal } from '../../dictionary/ArabicDictionaryModal';
 import { TopicsModal } from '../../topics/TopicsModal';
+import { ReminderModal } from '../../reminders/ReminderModal';
+import {
+  calculateStreak,
+  checkInToday,
+  isCheckedInToday,
+  getRollingWeekDays,
+  getCheckinHistory,
+  type DayStatus,
+} from '../../../services/streakService';
+import { sendInstantNotification } from '../../../services/notificationService';
 
 const CURATED_WISDOMS = [
   {
@@ -57,8 +67,6 @@ const CURATED_WISDOMS = [
   },
 ];
 
-const DAYS_AR = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
-
 export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) => {
   const { currentPage, setCurrentPage } = useReaderStore();
   const totalPages = bookDataService.getPages().length;
@@ -71,25 +79,30 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
   const [copied, setCopied] = useState(false);
   const [savedStar, setSavedStar] = useState(false);
 
-  // Daily Streak State
-  const [streak, setStreak] = useState(() => {
-    return parseInt(localStorage.getItem('reading_streak') || '3', 10);
-  });
-  const [checkedToday, setCheckedToday] = useState(() => {
-    const lastDate = localStorage.getItem('last_read_date');
-    return lastDate === new Date().toDateString();
-  });
-
-  // Focus Timer State
-  const [timerDuration, setTimerDuration] = useState(15);
-  const [timeLeft, setTimeLeft] = useState(15 * 60);
-  const [timerRunning, setTimerRunning] = useState(false);
+  // Daily Streak State (Real Calendar Days)
+  const [streak, setStreak] = useState(() => calculateStreak(getCheckinHistory()));
+  const [checkedToday, setCheckedToday] = useState(() => isCheckedInToday());
+  const [weekDays, setWeekDays] = useState<DayStatus[]>(() => getRollingWeekDays());
+  const [streakCelebrate, setStreakCelebrate] = useState(false);
 
   // Feature Modals
   const [isCardStudioOpen, setIsCardStudioOpen] = useState(false);
   const [isSoundModalOpen, setIsSoundModalOpen] = useState(false);
   const [isDictModalOpen, setIsDictModalOpen] = useState(false);
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(false);
+  const [isReminderOpen, setIsReminderOpen] = useState(false);
+
+  // Focus Timer State
+  const [timerDuration, setTimerDuration] = useState(15);
+  const [timeLeft, setTimeLeft] = useState(15 * 60);
+  const [timerRunning, setTimerRunning] = useState(false);
+
+  // Refresh week days and streak on mount
+  useEffect(() => {
+    setStreak(calculateStreak(getCheckinHistory()));
+    setCheckedToday(isCheckedInToday());
+    setWeekDays(getRollingWeekDays());
+  }, []);
 
   // Countdown Timer Effect
   useEffect(() => {
@@ -119,14 +132,20 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
     setTimeLeft(timerDuration * 60);
   };
 
-  // Streak check-in
+  // Real Streak check-in
   const handleCheckIn = () => {
-    if (!checkedToday) {
-      const newStreak = streak + 1;
-      setStreak(newStreak);
-      setCheckedToday(true);
-      localStorage.setItem('reading_streak', newStreak.toString());
-      localStorage.setItem('last_read_date', new Date().toDateString());
+    const { streak: newStreak, isNewCheckin } = checkInToday();
+    setStreak(newStreak);
+    setCheckedToday(true);
+    setWeekDays(getRollingWeekDays());
+
+    if (isNewCheckin) {
+      setStreakCelebrate(true);
+      sendInstantNotification(
+        'إنجاز جديد في سلسلة القراءة 🔥',
+        `أحسنت! أتممت قراءة ورد اليوم وأصبحت سلسلتك ${newStreak} أيام متتالية!`
+      );
+      setTimeout(() => setStreakCelebrate(false), 3500);
     }
   };
 
@@ -346,12 +365,26 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
         {/* Daily Streak Tracker */}
         <motion.div
           variants={itemVariants}
-          className="rounded-3xl p-6 flex flex-col justify-between border shadow-sm transition-all"
+          className="rounded-3xl p-6 flex flex-col justify-between border shadow-sm transition-all relative overflow-hidden"
           style={{
             background: 'var(--app-surface)',
             borderColor: 'var(--app-surface-border)',
           }}
         >
+          {streakCelebrate && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-20 flex flex-col items-center justify-center p-4 text-center rounded-3xl backdrop-blur-md"
+              style={{ background: 'rgba(16, 185, 129, 0.9)', color: 'white' }}
+            >
+              <Sparkles className="w-8 h-8 mb-2 animate-bounce" />
+              <h4 className="text-lg font-bold font-arabic mb-1">مبارك! ورد اليوم مسجل بنجاح 🎉</h4>
+              <p className="text-xs font-arabic">سلسلتك الحالية: {streak} أيام متتالية من التدبر</p>
+            </motion.div>
+          )}
+
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -362,55 +395,87 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                   <h3 className="font-arabic font-bold text-base" style={{ color: 'var(--app-text)' }}>
                     سلسلة القراءة اليومية
                   </h3>
-                  <p className="text-xs font-arabic mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
+                  <p className="text-xs font-arabic mt-0.5 font-medium" style={{ color: 'var(--app-text-muted)' }}>
                     ثبت عادة القراءة والتدبر اليومي
                   </p>
                 </div>
               </div>
 
-              <div className="text-left">
-                <span className="text-2xl font-bold font-sans text-amber-500">
-                  {streak}
-                </span>
-                <span className="text-xs font-arabic mr-1 font-semibold" style={{ color: 'var(--app-text-muted)' }}>
-                  أيام
-                </span>
+              <div className="flex items-center gap-2">
+                {/* Reminder Settings Trigger */}
+                <button
+                  onClick={() => setIsReminderOpen(true)}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90 border"
+                  style={{
+                    background: 'var(--app-brand-dim)',
+                    color: 'var(--app-brand)',
+                    borderColor: 'var(--app-brand-border)',
+                  }}
+                  title="ضبط تنبيهات الورد اليومي"
+                >
+                  <Bell className="w-4 h-4" />
+                </button>
+
+                <div className="text-left">
+                  <span className="text-2xl font-bold font-sans text-amber-500">
+                    {streak}
+                  </span>
+                  <span className="text-xs font-arabic mr-1 font-semibold" style={{ color: 'var(--app-text-muted)' }}>
+                    أيام
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* 7-Day Checklist */}
+            {/* 7-Day Real Calendar Checklist */}
             <div className="grid grid-cols-7 gap-1.5 mb-4">
-              {DAYS_AR.map((day, idx) => {
-                const isDone = idx < (streak % 7 || 7);
-                return (
+              {weekDays.map((d) => (
+                <div
+                  key={d.dateStr}
+                  className={`flex flex-col items-center gap-1.5 p-2 rounded-2xl border transition-all ${
+                    d.isCompleted
+                      ? 'border-amber-500/40 shadow-sm'
+                      : d.isToday
+                      ? 'border-dashed border-amber-500/60'
+                      : 'border-transparent'
+                  }`}
+                  style={{
+                    background: d.isCompleted
+                      ? 'rgba(245, 158, 11, 0.14)'
+                      : d.isToday
+                      ? 'var(--app-brand-dim)'
+                      : 'var(--app-bg-2)',
+                  }}
+                >
                   <div
-                    key={day}
-                    className={`flex flex-col items-center gap-1.5 p-2 rounded-2xl border transition-all ${
-                      isDone
-                        ? 'border-amber-500/30'
-                        : 'border-transparent'
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold font-sans ${
+                      d.isCompleted
+                        ? 'bg-amber-500 text-white shadow-sm'
+                        : d.isToday
+                        ? 'border-2 border-amber-500 text-amber-600'
+                        : ''
                     }`}
                     style={{
-                      background: isDone
-                        ? 'rgba(245, 158, 11, 0.12)'
-                        : 'var(--app-bg-2)',
+                      background: !d.isCompleted && !d.isToday ? 'var(--app-divider)' : undefined,
+                      color: !d.isCompleted && !d.isToday ? 'var(--app-text-muted)' : undefined,
                     }}
                   >
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                        isDone ? 'bg-amber-500 text-white' : ''
-                      }`}
-                      style={{
-                        background: !isDone ? 'var(--app-divider)' : undefined,
-                        color: !isDone ? 'var(--app-text-muted)' : undefined,
-                      }}
-                    >
-                      {isDone ? '✓' : idx + 1}
-                    </div>
-                    <span className="text-[10px] font-arabic font-medium truncate" style={{ color: isDone ? 'var(--app-text)' : 'var(--app-text-muted)' }}>{day}</span>
+                    {d.isCompleted ? '✓' : d.dayNumber}
                   </div>
-                );
-              })}
+                  <span
+                    className="text-[10px] font-arabic font-bold truncate"
+                    style={{
+                      color: d.isToday
+                        ? 'var(--app-brand)'
+                        : d.isCompleted
+                        ? 'var(--app-text)'
+                        : 'var(--app-text-muted)',
+                    }}
+                  >
+                    {d.isToday ? 'اليوم' : d.dayName}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -433,7 +498,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
             ) : (
               <>
                 <Flame className="w-4 h-4" />
-                <span>تسجيل ورد اليوم في السلسلة</span>
+                <span>تسجيل ورد اليوم في السلسلة (+1)</span>
               </>
             )}
           </button>
@@ -757,6 +822,10 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
         open={isTopicsModalOpen}
         onOpenChange={setIsTopicsModalOpen}
         onNavigate={onNavigate}
+      />
+      <ReminderModal
+        open={isReminderOpen}
+        onOpenChange={setIsReminderOpen}
       />
     </motion.div>
   );

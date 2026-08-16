@@ -14,6 +14,7 @@ import { ArabicDictionaryModal } from '../dictionary/ArabicDictionaryModal';
 import { db } from '../../lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { checkInToday } from '../../services/streakService';
 
 /* ── Edge Tap Zone with Animated Hand Hint ── */
 const TapZone: React.FC<{
@@ -137,6 +138,11 @@ export const ReaderScreen: React.FC = () => {
     () => db.highlights.where({ page: currentPage }).toArray(),
     [currentPage]
   ) ?? [];
+
+  // Automatically record today's reading streak progress
+  useEffect(() => {
+    checkInToday();
+  }, [currentPage]);
 
   // Touch gesture coordinates for swipe detection
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
