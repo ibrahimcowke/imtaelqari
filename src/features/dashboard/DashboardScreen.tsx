@@ -18,11 +18,11 @@ import { useReaderStore } from '../../store/readerStore';
 
 type Tab = 'home' | 'chapters' | 'annotations' | 'profile';
 
-const TAB_LABELS: Record<Tab, { label: string; icon: React.ComponentType<{ className?: string }>; desc: string }> = {
-  home: { label: 'الرئيسية', icon: BookOpen, desc: 'لوحة التدبر والمتابعة' },
-  chapters: { label: 'فهرس الفصول', icon: List, desc: 'أبواب ومباحث الكتاب' },
-  annotations: { label: 'الملاحظات والفوائد', icon: Bookmark, desc: 'العلامات والتظليلات' },
-  profile: { label: 'الملف والإحصائيات', icon: UserCircle, desc: 'الإنجاز والإعدادات' },
+const TAB_LABELS: Record<Tab, { label: string; shortLabel: string; icon: React.ComponentType<{ className?: string }>; desc: string }> = {
+  home: { label: 'الرئيسية', shortLabel: 'الرئيسية', icon: BookOpen, desc: 'لوحة التدبر والمتابعة' },
+  chapters: { label: 'فهرس الفصول', shortLabel: 'الفهرس', icon: List, desc: 'أبواب ومباحث الكتاب' },
+  annotations: { label: 'الملاحظات والفوائد', shortLabel: 'الفوائد', icon: Bookmark, desc: 'العلامات والتظليلات' },
+  profile: { label: 'الملف والإحصائيات', shortLabel: 'الملف', icon: UserCircle, desc: 'الإنجاز والإعدادات' },
 };
 
 export const DashboardScreen: React.FC = () => {
@@ -450,7 +450,7 @@ export const DashboardScreen: React.FC = () => {
                       color: active ? 'var(--app-brand)' : 'var(--app-text-muted)',
                     }}
                   >
-                    {TAB_LABELS[tab].label}
+                    {TAB_LABELS[tab].shortLabel}
                   </span>
 
                   {active && (
