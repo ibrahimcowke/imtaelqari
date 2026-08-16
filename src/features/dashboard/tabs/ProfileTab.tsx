@@ -158,18 +158,21 @@ export const ProfileTab: React.FC = () => {
         variants={itemVariants}
         className="relative overflow-hidden rounded-3xl p-6 md:p-7 border shadow-2xl transition-all"
         style={{
-          background: 'linear-gradient(135deg, var(--sidebar-bg) 0%, rgba(30,20,15,0.95) 100%)',
+          background: 'var(--sidebar-bg)',
           borderColor: 'var(--app-brand-border)',
           color: 'white',
         }}
       >
         <div
-          className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-20 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #a37c6c 0%, transparent 70%)' }}
+          className="absolute inset-0 bg-gradient-to-tr from-black/50 via-transparent to-amber-500/10 pointer-events-none"
         />
         <div
-          className="absolute -bottom-8 -left-8 w-40 h-40 rounded-full opacity-15 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #d2bab0 0%, transparent 70%)' }}
+          className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-25 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--app-brand-glow) 0%, transparent 70%)' }}
+        />
+        <div
+          className="absolute -bottom-8 -left-8 w-40 h-40 rounded-full opacity-20 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, #f59e0b 0%, transparent 70%)' }}
         />
 
         <div className="relative z-10 flex items-center gap-5">

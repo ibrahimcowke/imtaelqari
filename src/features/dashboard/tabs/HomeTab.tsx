@@ -216,18 +216,23 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
         variants={itemVariants}
         className="relative overflow-hidden rounded-3xl group p-6 sm:p-8 md:p-10 border shadow-2xl transition-all duration-300"
         style={{
-          background: 'linear-gradient(135deg, var(--sidebar-bg) 0%, rgba(30,20,15,0.95) 100%)',
+          background: 'var(--sidebar-bg)',
           borderColor: 'var(--app-brand-border)',
           color: 'white',
         }}
       >
-        {/* Ornate Islamic Background Watermark */}
+        {/* Subtle Luxury Gradient Overlay */}
         <div
-          className="absolute -top-12 -left-12 w-64 h-64 rounded-full opacity-20 pointer-events-none"
+          className="absolute inset-0 bg-gradient-to-tr from-black/50 via-transparent to-amber-500/10 pointer-events-none"
+        />
+
+        {/* Ornate Islamic Background Watermark Glows */}
+        <div
+          className="absolute -top-12 -left-12 w-64 h-64 rounded-full opacity-25 pointer-events-none"
           style={{ background: 'radial-gradient(circle, var(--app-brand-glow) 0%, transparent 70%)' }}
         />
         <div
-          className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full opacity-15 pointer-events-none"
+          className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full opacity-20 pointer-events-none"
           style={{ background: 'radial-gradient(circle, #f59e0b 0%, transparent 70%)' }}
         />
 
