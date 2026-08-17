@@ -7,7 +7,7 @@ import {
   Download, Share2, Sparkles, X, Check, Copy, Type,
   Palette, Edit3, Smartphone, Square, Monitor,
   Sliders, RefreshCw, CheckCircle2, BookOpen, ChevronRight, ChevronLeft,
-  Quote,
+  Search, FileText, List, RotateCcw
 } from 'lucide-react';
 import { bookDataService } from '../../data/service';
 import { useReaderStore } from '../../store/readerStore';
@@ -182,6 +182,31 @@ export const QuoteCardModal: React.FC<{
   const totalPages = useMemo(() => bookDataService.getPages().length || 174, []);
   const activePageData = useMemo(() => bookDataService.getPage(readingPage), [readingPage]);
 
+  // Page selection extraction mode & filters
+  const [pageExtractionMode, setPageExtractionMode] = useState<'paragraphs' | 'sentences' | 'full'>('paragraphs');
+  const [pageSearchQuery, setPageSearchQuery] = useState<string>('');
+  const [jumpPageInput, setJumpPageInput] = useState<string>('');
+
+  // Extract chapters for quick navigation dropdown
+  const chaptersList = useMemo(() => {
+    const pages = bookDataService.getPages();
+    return pages
+      .filter((p) => p.title && p.title.length > 3 && !p.title.startsWith('صفحة'))
+      .map((p) => ({ page: p.page, title: p.title }));
+  }, []);
+
+  // Intelligent Sentence & Wisdom Extractor for the active page
+  const pageSentences = useMemo(() => {
+    if (!activePageData?.display_text) return [];
+    const raw = activePageData.display_text;
+    const splitRegex = /[.\n!؟؛]+/;
+    const sentences = raw
+      .split(splitRegex)
+      .map((s) => s.replace(/^[«\s\-"•]+|[»\s\-"•]+$/g, '').trim())
+      .filter((s) => s.length >= 15 && s.length <= 260);
+    return sentences;
+  }, [activePageData]);
+
   // Editable text & metadata
   const [editableQuote, setEditableQuote] = useState<string>(initialQuote);
   const [customAuthor, setCustomAuthor] = useState<string>('محمد بن سعد النهاري');
@@ -199,6 +224,7 @@ export const QuoteCardModal: React.FC<{
     if (open) {
       const pageToUse = pageNumber || readerCurrentPage || 1;
       setReadingPage(pageToUse);
+      setJumpPageInput(`${pageToUse}`);
 
       if (initialQuote && initialQuote.trim().length > 0) {
         setEditableQuote(initialQuote);
@@ -232,6 +258,7 @@ export const QuoteCardModal: React.FC<{
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
     setReadingPage(newPage);
+    setJumpPageInput(`${newPage}`);
     const p = bookDataService.getPage(newPage);
     if (p) {
       setCustomPage(`${newPage}`);
@@ -843,34 +870,49 @@ export const QuoteCardModal: React.FC<{
                   </button>
                 </div>
 
-                {/* TAB 0: CURRENT READING PAGE (محتوى وتصفح الصفحة المقروءة) */}
+                {/* TAB 0: CURRENT READING PAGE (محتوى وتصفح واختيار الصفحة المقروءة) */}
                 {activeTab === 'page' && (
                   <div className="space-y-4 animate-fade-in">
                     {/* Active Reading Page Stepper & Selector */}
                     <div
-                      className="p-3.5 rounded-2xl border flex flex-col gap-2.5"
+                      className="p-3.5 rounded-2xl border flex flex-col gap-3 shadow-xs"
                       style={{
                         background: 'var(--app-brand-dim)',
                         borderColor: 'var(--app-brand-border)',
                       }}
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
                         <div className="flex items-center gap-2">
                           <BookOpen className="w-4 h-4" style={{ color: 'var(--app-brand)' }} />
                           <span className="text-xs font-arabic font-bold" style={{ color: 'var(--app-brand)' }}>
-                            تصفح واقتباس صفحات القراءة
+                            تصفح واقتباس صفحات الكتاب
                           </span>
                         </div>
-                        <span className="text-[11px] font-arabic font-semibold opacity-75">
-                          {readingPage} / {totalPages}
-                        </span>
+
+                        {/* Return to Reader Current Page button if navigated away */}
+                        {readingPage !== (readerCurrentPage || 1) && (
+                          <button
+                            onClick={() => handlePageChange(readerCurrentPage || 1)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-arabic font-bold transition-all border active:scale-95 shadow-xs cursor-pointer"
+                            style={{
+                              background: 'var(--app-brand-grad)',
+                              color: 'white',
+                              borderColor: 'transparent',
+                            }}
+                            title="العودة فوراً إلى الصفحة المفتوحة حالياً في شاشة القراءة"
+                          >
+                            <RotateCcw className="w-3 h-3" />
+                            <span>العودة لصفحة القراءة (ص {readerCurrentPage})</span>
+                          </button>
+                        )}
                       </div>
 
-                      <div className="flex items-center justify-between gap-2">
+                      {/* Stepper & Direct Page Jump */}
+                      <div className="flex items-center justify-between gap-1.5 flex-wrap sm:flex-nowrap">
                         <button
                           onClick={() => handlePageChange(readingPage - 1)}
                           disabled={readingPage <= 1}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-arabic font-bold transition-all border disabled:opacity-30 disabled:pointer-events-none active:scale-95"
+                          className="flex-1 sm:flex-initial flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-arabic font-bold transition-all border disabled:opacity-30 disabled:pointer-events-none active:scale-95 cursor-pointer"
                           style={{
                             background: 'var(--app-surface)',
                             borderColor: 'var(--app-surface-border)',
@@ -878,109 +920,266 @@ export const QuoteCardModal: React.FC<{
                           }}
                         >
                           <ChevronRight className="w-3.5 h-3.5" />
-                          <span>الصفحة السابقة</span>
+                          <span>السابقة</span>
                         </button>
 
-                        <div className="text-center px-2 py-1 rounded-xl bg-black/5 dark:bg-white/5">
-                          <span className="text-xs font-arabic font-bold block truncate max-w-36 sm:max-w-48">
-                            {activePageData?.title || `صفحة ${readingPage}`}
-                          </span>
+                        {/* Fast Chapter Selection Dropdown */}
+                        <div className="flex-1 min-w-36">
+                          <select
+                            value={readingPage}
+                            onChange={(e) => handlePageChange(Number(e.target.value))}
+                            className="w-full text-xs font-arabic font-bold py-1.5 px-2.5 rounded-xl border bg-transparent text-center truncate cursor-pointer focus:outline-none"
+                            style={{
+                              background: 'var(--app-surface)',
+                              borderColor: 'var(--app-surface-border)',
+                              color: 'var(--app-text)',
+                            }}
+                          >
+                            {chaptersList.map((ch) => (
+                              <option key={ch.page} value={ch.page} className="text-black bg-white dark:bg-zinc-900 dark:text-white">
+                                ص {ch.page} • {ch.title}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Direct Jump Input */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          <input
+                            type="number"
+                            min={1}
+                            max={totalPages}
+                            value={jumpPageInput}
+                            onChange={(e) => setJumpPageInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                const val = parseInt(jumpPageInput, 10);
+                                if (!isNaN(val)) handlePageChange(val);
+                              }
+                            }}
+                            className="w-14 py-1.5 px-1.5 text-center text-xs font-mono font-bold rounded-xl border focus:outline-none"
+                            style={{
+                              background: 'var(--app-surface)',
+                              borderColor: 'var(--app-surface-border)',
+                              color: 'var(--app-text)',
+                            }}
+                            placeholder="رقم"
+                          />
+                          <button
+                            onClick={() => {
+                              const val = parseInt(jumpPageInput, 10);
+                              if (!isNaN(val)) handlePageChange(val);
+                            }}
+                            className="px-2 py-1.5 rounded-xl text-xs font-arabic font-bold border active:scale-95 cursor-pointer"
+                            style={{
+                              background: 'var(--app-surface)',
+                              borderColor: 'var(--app-surface-border)',
+                              color: 'var(--app-brand)',
+                            }}
+                          >
+                            انتقال
+                          </button>
                         </div>
 
                         <button
                           onClick={() => handlePageChange(readingPage + 1)}
                           disabled={readingPage >= totalPages}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-arabic font-bold transition-all border disabled:opacity-30 disabled:pointer-events-none active:scale-95"
+                          className="flex-1 sm:flex-initial flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-arabic font-bold transition-all border disabled:opacity-30 disabled:pointer-events-none active:scale-95 cursor-pointer"
                           style={{
                             background: 'var(--app-surface)',
                             borderColor: 'var(--app-surface-border)',
                             color: 'var(--app-text)',
                           }}
                         >
-                          <span>الصفحة التالية</span>
+                          <span>التالية</span>
                           <ChevronLeft className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
 
+                    {/* Extraction Mode Segmented Control */}
+                    <div className="flex items-center justify-between gap-1 p-1 rounded-2xl border" style={{ background: 'var(--app-bg-2)', borderColor: 'var(--app-divider)' }}>
+                      <button
+                        onClick={() => setPageExtractionMode('paragraphs')}
+                        className="flex-1 py-1.5 rounded-xl text-xs font-arabic font-bold transition-all flex items-center justify-center gap-1"
+                        style={
+                          pageExtractionMode === 'paragraphs'
+                            ? { background: 'var(--app-surface)', color: 'var(--app-brand)', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }
+                            : { opacity: 0.7, color: 'var(--app-text-muted)' }
+                        }
+                      >
+                        <List className="w-3.5 h-3.5" />
+                        <span>فقرات الصفحة ({activePageData?.blocks?.length || 0})</span>
+                      </button>
+
+                      <button
+                        onClick={() => setPageExtractionMode('sentences')}
+                        className="flex-1 py-1.5 rounded-xl text-xs font-arabic font-bold transition-all flex items-center justify-center gap-1"
+                        style={
+                          pageExtractionMode === 'sentences'
+                            ? { background: 'var(--app-surface)', color: 'var(--app-brand)', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }
+                            : { opacity: 0.7, color: 'var(--app-text-muted)' }
+                        }
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                        <span>استخراج الحِكَم ({pageSentences.length})</span>
+                      </button>
+
+                      <button
+                        onClick={() => setPageExtractionMode('full')}
+                        className="flex-1 py-1.5 rounded-xl text-xs font-arabic font-bold transition-all flex items-center justify-center gap-1"
+                        style={
+                          pageExtractionMode === 'full'
+                            ? { background: 'var(--app-surface)', color: 'var(--app-brand)', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }
+                            : { opacity: 0.7, color: 'var(--app-text-muted)' }
+                        }
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>كامل النص</span>
+                      </button>
+                    </div>
+
+                    {/* In-page Search Filter */}
+                    <div className="relative">
+                      <Search className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 opacity-50" />
+                      <input
+                        type="text"
+                        value={pageSearchQuery}
+                        onChange={(e) => setPageSearchQuery(e.target.value)}
+                        placeholder="ابحث عن كلمة أو عبارة داخل الصفحة..."
+                        className="w-full pr-8 pl-3 py-1.5 rounded-xl text-xs font-arabic border focus:outline-none"
+                        style={{
+                          background: 'var(--app-bg-2)',
+                          borderColor: 'var(--app-divider)',
+                          color: 'var(--app-text)',
+                        }}
+                      />
+                      {pageSearchQuery && (
+                        <button
+                          onClick={() => setPageSearchQuery('')}
+                          className="absolute left-2.5 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+
                     {/* Excerpts List from Current Reading Page */}
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="text-xs font-arabic font-bold opacity-80 flex items-center gap-1.5">
-                          <Quote className="w-3.5 h-3.5" />
-                          فقرات ومقتطفات الصفحة {readingPage} (اضغط للاقتباس فوراً)
-                        </label>
-                        <span className="text-[10px] font-arabic opacity-60">
-                          {activePageData?.blocks?.length || 1} فقرات متاحة
-                        </span>
-                      </div>
+                    <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
+                      
+                      {/* MODE 1: PARAGRAPHS */}
+                      {pageExtractionMode === 'paragraphs' && (
+                        activePageData?.blocks
+                          ?.filter((b) => !pageSearchQuery || b.text.toLowerCase().includes(pageSearchQuery.toLowerCase()))
+                          .map((block, index) => {
+                            const isCurrentQuote = editableQuote.trim() === block.text.trim();
+                            const badgeLabel =
+                              block.type === 'heading' ? 'عنوان' :
+                              block.type === 'quote' ? 'حكمة / قول' :
+                              block.type === 'bullet' ? 'نقطة' : `الفقرة ${index + 1}`;
 
-                      <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-1">
-                        {/* Full page excerpt button */}
-                        {activePageData?.display_text && (
-                          <button
-                            onClick={() => handleSelectParagraph(activePageData.display_text.slice(0, 320), activePageData.title)}
-                            className="w-full text-right p-3 rounded-2xl border transition-all text-xs font-arabic active:scale-[0.99] flex flex-col gap-1 hover:border-amber-400/50"
-                            style={{
-                              background: 'var(--app-bg-2)',
-                              borderColor: 'var(--app-surface-border)',
-                            }}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                                مطلع الصفحة كاملاً
-                              </span>
-                              <span className="text-[10px] opacity-60">
-                                {Math.min(activePageData.display_text.length, 320)} حرف
-                              </span>
-                            </div>
-                            <p className="line-clamp-2 leading-relaxed opacity-90">
-                              {activePageData.display_text}
-                            </p>
-                          </button>
-                        )}
-
-                        {/* Individual blocks / paragraphs */}
-                        {activePageData?.blocks?.map((block, index) => {
-                          const isCurrentQuote = editableQuote.trim() === block.text.trim();
-                          const badgeLabel =
-                            block.type === 'heading' ? 'عنوان' :
-                            block.type === 'quote' ? 'حكمة / قول' :
-                            block.type === 'bullet' ? 'نقطة' : `الفقرة ${index + 1}`;
-
-                          return (
-                            <button
-                              key={block.id || index}
-                              onClick={() => handleSelectParagraph(block.text, activePageData.title)}
-                              className="w-full text-right p-3 rounded-2xl border transition-all text-xs font-arabic active:scale-[0.99] flex flex-col gap-1"
-                              style={{
-                                background: isCurrentQuote ? 'var(--app-brand-dim)' : 'var(--app-bg-2)',
-                                borderColor: isCurrentQuote ? 'var(--app-brand)' : 'var(--app-surface-border)',
-                              }}
-                            >
-                              <div className="flex items-center justify-between">
-                                <span
-                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                                  style={{
-                                    background: isCurrentQuote ? 'var(--app-brand)' : 'rgba(0,0,0,0.06)',
-                                    color: isCurrentQuote ? 'white' : 'inherit',
-                                  }}
-                                >
-                                  {badgeLabel}
-                                </span>
-                                {isCurrentQuote && (
-                                  <span className="text-[10px] font-bold text-amber-500 flex items-center gap-1">
-                                    <Check className="w-3 h-3" /> تم الاختيار
+                            return (
+                              <button
+                                key={block.id || index}
+                                onClick={() => handleSelectParagraph(block.text, activePageData.title)}
+                                className="w-full text-right p-3 rounded-2xl border transition-all text-xs font-arabic active:scale-[0.99] flex flex-col gap-1 cursor-pointer hover:border-amber-400/50"
+                                style={{
+                                  background: isCurrentQuote ? 'var(--app-brand-dim)' : 'var(--app-bg-2)',
+                                  borderColor: isCurrentQuote ? 'var(--app-brand)' : 'var(--app-surface-border)',
+                                }}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span
+                                    className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                    style={{
+                                      background: isCurrentQuote ? 'var(--app-brand)' : 'rgba(0,0,0,0.06)',
+                                      color: isCurrentQuote ? 'white' : 'inherit',
+                                    }}
+                                  >
+                                    {badgeLabel}
                                   </span>
-                                )}
-                              </div>
-                              <p className="line-clamp-2 leading-relaxed opacity-90">
-                                {block.text}
-                              </p>
-                            </button>
-                          );
-                        })}
-                      </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] opacity-60 font-mono">
+                                      {block.text.length} حرف
+                                    </span>
+                                    {isCurrentQuote && (
+                                      <span className="text-[10px] font-bold text-amber-500 flex items-center gap-1">
+                                        <Check className="w-3 h-3" /> مقتبس حالياً
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <p className="line-clamp-2 leading-relaxed opacity-90 font-medium">
+                                  {block.text}
+                                </p>
+                              </button>
+                            );
+                          })
+                      )}
+
+                      {/* MODE 2: SMART SENTENCES & WISDOM */}
+                      {pageExtractionMode === 'sentences' && (
+                        pageSentences
+                          .filter((s) => !pageSearchQuery || s.toLowerCase().includes(pageSearchQuery.toLowerCase()))
+                          .map((sentence, sIdx) => {
+                            const isCurrentQuote = editableQuote.trim() === sentence.trim();
+                            return (
+                              <button
+                                key={sIdx}
+                                onClick={() => handleSelectParagraph(sentence, activePageData?.title)}
+                                className="w-full text-right p-3 rounded-2xl border transition-all text-xs font-arabic active:scale-[0.99] flex flex-col gap-1 cursor-pointer hover:border-amber-400/50"
+                                style={{
+                                  background: isCurrentQuote ? 'var(--app-brand-dim)' : 'var(--app-bg-2)',
+                                  borderColor: isCurrentQuote ? 'var(--app-brand)' : 'var(--app-surface-border)',
+                                }}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                                    <Sparkles className="w-2.5 h-2.5" />
+                                    حكمة {sIdx + 1}
+                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] opacity-60 font-mono">
+                                      {sentence.length} حرف
+                                    </span>
+                                    {isCurrentQuote && (
+                                      <span className="text-[10px] font-bold text-amber-500 flex items-center gap-1">
+                                        <Check className="w-3 h-3" /> مقتبس حالياً
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <p className="leading-relaxed opacity-90 font-medium">
+                                  «{sentence}»
+                                </p>
+                              </button>
+                            );
+                          })
+                      )}
+
+                      {/* MODE 3: FULL PAGE TEXT */}
+                      {pageExtractionMode === 'full' && activePageData?.display_text && (
+                        <button
+                          onClick={() => handleSelectParagraph(activePageData.display_text.slice(0, 360), activePageData.title)}
+                          className="w-full text-right p-3 rounded-2xl border transition-all text-xs font-arabic active:scale-[0.99] flex flex-col gap-1 cursor-pointer hover:border-amber-400/50"
+                          style={{
+                            background: 'var(--app-bg-2)',
+                            borderColor: 'var(--app-surface-border)',
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                              مطلع الصفحة كاملاً
+                            </span>
+                            <span className="text-[10px] opacity-60 font-mono">
+                              {Math.min(activePageData.display_text.length, 360)} حرف
+                            </span>
+                          </div>
+                          <p className="line-clamp-4 leading-relaxed opacity-90 font-medium">
+                            {activePageData.display_text}
+                          </p>
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
