@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   ArrowRight, Settings, Bookmark,
   List, Volume2, VolumeX, PanelRightOpen,
-  Music, Sparkles, BookMarked, MoreVertical,
+  Music, Sparkles, BookMarked,
   BookOpen, ChevronDown, Trophy, Layers, Mic, Image as ImageIcon, Lightbulb
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -56,9 +56,104 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
 
   const progressPercent = Math.round((currentPage / totalPages) * 100);
 
+  const toolsList = [
+    {
+      id: 'companion',
+      label: 'الشارح التراثي',
+      desc: 'تفسير وبلاغة ذكية',
+      icon: Lightbulb,
+      color: 'text-amber-500',
+      bg: 'bg-amber-500/10',
+      border: 'border-amber-500/20',
+      badge: 'ذكي',
+      action: onOpenCompanion,
+    },
+    {
+      id: 'quote-studio',
+      label: 'استوديو الاقتباسات',
+      desc: 'تصميم بطاقات فاخرة',
+      icon: Sparkles,
+      color: 'text-amber-600 dark:text-amber-400',
+      bg: 'bg-amber-500/10',
+      border: 'border-amber-500/20',
+      badge: 'HD',
+      action: onOpenQuoteStudio,
+    },
+    {
+      id: 'manuscript',
+      label: 'مطابقة المخطوطة',
+      desc: 'مقارنة النص بالأصل',
+      icon: ImageIcon,
+      color: 'text-teal-500',
+      bg: 'bg-teal-500/10',
+      border: 'border-teal-500/20',
+      action: onOpenManuscript,
+    },
+    {
+      id: 'voice-studio',
+      label: 'استوديو الصوت',
+      desc: 'تسجيل القراءة ومشاركتها',
+      icon: Mic,
+      color: 'text-rose-500',
+      bg: 'bg-rose-500/10',
+      border: 'border-rose-500/20',
+      action: onOpenVoiceStudio,
+    },
+    {
+      id: 'khatma',
+      label: 'الختمات والأوراد',
+      desc: 'تحديات القراءة اليومية',
+      icon: Trophy,
+      color: 'text-yellow-500',
+      bg: 'bg-yellow-500/10',
+      border: 'border-yellow-500/20',
+      action: onOpenKhatma,
+    },
+    {
+      id: 'flashcards',
+      label: 'بطاقات المراجعة',
+      desc: 'تثبيت وحفظ الفوائد',
+      icon: Layers,
+      color: 'text-purple-500',
+      bg: 'bg-purple-500/10',
+      border: 'border-purple-500/20',
+      action: onOpenFlashcards,
+    },
+    {
+      id: 'ambient',
+      label: 'أصوات التركيز',
+      desc: 'مطر، هدوء، ومكتبة',
+      icon: Music,
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-500/10',
+      border: 'border-emerald-500/20',
+      action: onOpenSoundModal,
+    },
+    {
+      id: 'dictionary',
+      label: 'المعجم اللغوي',
+      desc: 'شرح غريب المفردات',
+      icon: BookMarked,
+      color: 'text-indigo-500',
+      bg: 'bg-indigo-500/10',
+      border: 'border-indigo-500/20',
+      action: onOpenDictModal,
+    },
+    {
+      id: 'annotations',
+      label: 'الملاحظات والفوائد',
+      desc: 'العلامات والتظليلات',
+      icon: PanelRightOpen,
+      color: 'text-cyan-500',
+      bg: 'bg-cyan-500/10',
+      border: 'border-cyan-500/20',
+      action: onOpenAnnotations,
+    },
+  ];
+
   return (
     <header
-      className={`absolute top-0 w-full z-20 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] select-none border-b shadow-sm ${
+      className={`absolute top-0 w-full z-30 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] select-none border-b shadow-sm ${
         showControls ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
       }`}
       style={{
@@ -70,15 +165,16 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
       }}
       dir="rtl"
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-2 flex items-center justify-between gap-2 sm:gap-4 h-14 sm:h-16">
+      <div className="max-w-7xl mx-auto px-2.5 sm:px-4 md:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
+        
         {/* ══════════════════════════════════════════════════
-            1. RIGHT / START: Back Button & Title Info (RTL)
+            1. RIGHT / START: Navigation & Chapter Information
             ══════════════════════════════════════════════════ */}
         <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 md:flex-initial">
-          {/* Back to Home Button */}
+          {/* Home Return Button */}
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl transition-all duration-200 active:scale-95 hover:shadow-sm shrink-0 group border"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl transition-all duration-200 active:scale-95 hover:brightness-105 shrink-0 group border shadow-xs cursor-pointer"
             style={{
               background: 'var(--app-surface)',
               borderColor: 'var(--app-surface-border)',
@@ -87,357 +183,258 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
             title="العودة إلى الرئيسية"
           >
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-            <span className="hidden md:inline font-arabic text-xs font-bold">الرئيسية</span>
+            <span className="hidden sm:inline font-arabic text-xs font-bold">الرئيسية</span>
           </button>
 
-          {/* Vertical subtle divider on desktop */}
           <div
-            className="hidden sm:block w-px h-6 shrink-0"
+            className="hidden sm:block w-px h-5 shrink-0"
             style={{ background: 'var(--app-divider)' }}
           />
 
-          {/* Book / Chapter Info */}
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-1.5">
-              <h1
-                className="text-xs sm:text-sm font-bold font-arabic truncate max-w-44 sm:max-w-xs md:max-w-md"
-                style={{ color: 'var(--app-text)' }}
-                title={chapterTitle}
-              >
-                {chapterTitle || 'إمتاع القارئ'}
-              </h1>
-            </div>
+          {/* Book / Chapter Info & Page Pill */}
+          <div className="flex flex-col min-w-0 justify-center">
+            <h1
+              className="text-xs sm:text-sm font-extrabold font-arabic truncate max-w-36 sm:max-w-xs md:max-w-sm"
+              style={{ color: 'var(--app-text)' }}
+              title={chapterTitle || 'إمتاع القارئ'}
+            >
+              {chapterTitle || 'إمتاع القارئ'}
+            </h1>
 
-            {/* Sub-label with clickable page pill */}
-            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-arabic opacity-75">
-              <span className="hidden sm:inline">إمتاع القارئ</span>
-              <span className="hidden sm:inline opacity-40">•</span>
-              <button
-                onClick={onOpenTOC}
-                className="hover:underline flex items-center gap-0.5 font-bold transition-opacity"
-                style={{ color: 'var(--app-brand)' }}
-                title="فتح فهرس المحتويات"
-              >
-                <span>ص {currentPage}</span>
-                <span className="opacity-60">/ {totalPages}</span>
-                <ChevronDown className="w-3 h-3 opacity-60" />
-              </button>
-            </div>
+            {/* Clickable Chapter / Page Jump Pill */}
+            <button
+              onClick={onOpenTOC}
+              className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-arabic font-bold transition-all opacity-85 hover:opacity-100 cursor-pointer w-fit text-right"
+              style={{ color: 'var(--app-brand)' }}
+              title="فتح فهرس المحتويات وتغيير الصفحة"
+            >
+              <span className="hidden md:inline font-medium" style={{ color: 'var(--app-text-muted)' }}>
+                إمتاع القارئ •
+              </span>
+              <span>ص {currentPage}</span>
+              <span className="opacity-60 font-normal">من {totalPages}</span>
+              <ChevronDown className="w-3 h-3 opacity-75 inline" />
+            </button>
           </div>
         </div>
 
         {/* ══════════════════════════════════════════════════
-            2. CENTER: Progress Pill (Desktop / Tablet)
+            2. CENTER: Reading Progress Indicator (Desktop / Tablet)
             ══════════════════════════════════════════════════ */}
-        <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full border shadow-inner"
+        <div
+          onClick={onOpenTOC}
+          className="hidden lg:flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border shadow-2xs transition-all hover:scale-102 cursor-pointer"
           style={{
-            background: 'var(--app-brand-dim)',
-            borderColor: 'var(--app-brand-border)',
+            background: 'var(--app-surface)',
+            borderColor: 'var(--app-surface-border)',
           }}
+          title="عرض فهرس الصفحات ومستوى الإنجاز"
         >
-          <BookOpen className="w-3.5 h-3.5" style={{ color: 'var(--app-brand)' }} />
-          <span className="text-[11px] font-arabic font-bold" style={{ color: 'var(--app-brand)' }}>
-            إنجاز {progressPercent}%
-          </span>
+          <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ background: 'var(--app-brand-dim)' }}>
+            <BookOpen className="w-2.5 h-2.5" style={{ color: 'var(--app-brand)' }} />
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-arabic">
+            <span className="font-medium" style={{ color: 'var(--app-text-muted)' }}>إنجاز القراءة:</span>
+            <span className="font-black font-sans" style={{ color: 'var(--app-brand)' }}>{progressPercent}%</span>
+          </div>
+          <div className="w-12 h-1.5 rounded-full overflow-hidden bg-black/10 dark:bg-white/10">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{ width: `${progressPercent}%`, background: 'var(--app-brand-grad)' }}
+            />
+          </div>
         </div>
 
         {/* ══════════════════════════════════════════════════
-            3. LEFT / END: Action Tools (Desktop & Mobile)
+            3. LEFT / END: Curated Actions & Tools Suite Hub
             ══════════════════════════════════════════════════ */}
         <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          {/* DESKTOP STUDY & ENHANCEMENT TOOLS */}
-          <div className="hidden md:flex items-center gap-1">
-            {/* Ambient Sound */}
-            <HeaderIconButton
-              onClick={onOpenSoundModal}
-              icon={<Music className="w-4 h-4" />}
-              label="أصوات التركيز والطبيعة"
-            />
+          
+          {/* Quick Table of Contents (Desktop/Tablet) */}
+          <button
+            onClick={onOpenTOC}
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 active:scale-95 font-arabic text-xs font-bold border cursor-pointer hover:brightness-105"
+            style={{
+              background: 'var(--app-surface)',
+              borderColor: 'var(--app-surface-border)',
+              color: 'var(--app-text)',
+            }}
+            title="فهرس فصول وأبواب الكتاب"
+          >
+            <List className="w-4 h-4" style={{ color: 'var(--app-brand)' }} />
+            <span className="hidden xl:inline">الفهرس</span>
+          </button>
 
-            {/* Lexicon / Dictionary */}
-            <HeaderIconButton
-              onClick={onOpenDictModal}
-              icon={<BookMarked className="w-4 h-4" />}
-              label="المعجم اللغوي التراثي"
-            />
-
-            {/* AI Heritage Companion */}
-            <HeaderIconButton
-              onClick={onOpenCompanion}
-              icon={<Lightbulb className="w-4 h-4 text-amber-500" />}
-              label="الشارح التراثي والمعاني"
-              highlight
-            />
-
-            {/* Manuscript Comparison */}
-            <HeaderIconButton
-              onClick={onOpenManuscript}
-              icon={<ImageIcon className="w-4 h-4 text-teal-500" />}
-              label="مطابقة المخطوطة الأصلية"
-            />
-
-            {/* Voice Studio */}
-            <HeaderIconButton
-              onClick={onOpenVoiceStudio}
-              icon={<Mic className="w-4 h-4 text-rose-500" />}
-              label="استوديو التسجيل الصوتي"
-            />
-
-            {/* Quote Card Studio */}
-            <HeaderIconButton
-              onClick={onOpenQuoteStudio}
-              icon={<Sparkles className="w-4 h-4 text-amber-500" />}
-              label="استوديو بطاقات الاقتباسات"
-              highlight
-            />
-
-            {/* Khatma & Challenges */}
-            <HeaderIconButton
-              onClick={onOpenKhatma}
-              icon={<Trophy className="w-4 h-4 text-amber-500" />}
-              label="الختمات وتحديات القراءة"
-            />
-
-            {/* Flashcards */}
-            <HeaderIconButton
-              onClick={onOpenFlashcards}
-              icon={<Layers className="w-4 h-4 text-purple-500" />}
-              label="بطاقات المراجعة والحفظ"
-            />
-
-            {/* Notes / Annotations */}
-            <HeaderIconButton
-              onClick={onOpenAnnotations}
-              icon={<PanelRightOpen className="w-4 h-4" />}
-              label="الملاحظات والتحديدات"
-            />
-
-            {/* Vertical Divider */}
-            <div
-              className="w-px h-6 mx-1 shrink-0"
-              style={{ background: 'var(--app-divider)' }}
-            />
-          </div>
-
-          {/* CORE READING TOOLS (Available on all screens) */}
-
-          {/* Table of Contents (Desktop only; mobile accesses via tools menu or page pill) */}
-          <div className="hidden sm:block">
-            <HeaderIconButton
-              onClick={onOpenTOC}
-              icon={<List className="w-4 h-4" />}
-              label="فهرس الكتاب"
-            />
-          </div>
-
-          {/* Text-to-Speech (Audio Reader) */}
-          <HeaderIconButton
+          {/* Audio TTS Toggle */}
+          <button
             onClick={onToggleReadingAloud}
-            icon={
-              isReadingAloud ? (
-                <div className="relative flex items-center justify-center">
-                  <Volume2 className="w-4 h-4 text-emerald-500 animate-pulse" />
-                  <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                </div>
-              ) : (
-                <VolumeX className="w-4 h-4" />
-              )
-            }
-            label={isReadingAloud ? 'إيقاف القراءة الصوتية' : 'قراءة صوتية ذكية'}
-            active={isReadingAloud}
-          />
+            className="w-9 h-9 sm:w-auto sm:px-2.5 sm:py-1.5 flex items-center justify-center gap-1.5 rounded-xl transition-all duration-200 active:scale-95 font-arabic text-xs font-bold border cursor-pointer"
+            style={{
+              background: isReadingAloud ? 'rgba(16, 185, 129, 0.15)' : 'var(--app-surface)',
+              borderColor: isReadingAloud ? 'rgba(16, 185, 129, 0.4)' : 'var(--app-surface-border)',
+              color: isReadingAloud ? '#059669' : 'var(--app-text)',
+            }}
+            title={isReadingAloud ? 'إيقاف القراءة الصوتية' : 'تشغيل القراءة الصوتية الذكية'}
+          >
+            {isReadingAloud ? (
+              <div className="relative flex items-center justify-center">
+                <Volume2 className="w-4 h-4 text-emerald-500 animate-pulse" />
+                <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+              </div>
+            ) : (
+              <VolumeX className="w-4 h-4 opacity-70" />
+            )}
+            <span className="hidden xl:inline">{isReadingAloud ? 'جاري الاستماع' : 'استماع'}</span>
+          </button>
 
           {/* Bookmark Toggle */}
-          <HeaderIconButton
+          <button
             onClick={onToggleBookmark}
-            icon={
-              <Bookmark
-                className={`w-4 h-4 transition-all duration-200 ${
-                  isBookmarked
-                    ? 'fill-amber-500 text-amber-500 scale-110'
-                    : 'text-current'
-                }`}
-              />
-            }
-            label={isBookmarked ? 'محفوظ في العلامات المرجعية' : 'حفظ كعلامة مرجعية'}
-            active={isBookmarked}
-          />
+            className="w-9 h-9 flex items-center justify-center rounded-xl transition-all duration-200 active:scale-90 border cursor-pointer shrink-0"
+            style={{
+              background: isBookmarked ? 'var(--app-brand-dim)' : 'var(--app-surface)',
+              borderColor: isBookmarked ? 'var(--app-brand)' : 'var(--app-surface-border)',
+              color: isBookmarked ? 'var(--app-brand)' : 'var(--app-text-muted)',
+            }}
+            title={isBookmarked ? 'الصفحة محفوظة في العلامات المرجعية' : 'إضافة إلى العلامات المرجعية'}
+          >
+            <Bookmark
+              className={`w-4 h-4 transition-transform duration-200 ${
+                isBookmarked ? 'fill-amber-500 text-amber-500 scale-110' : ''
+              }`}
+            />
+          </button>
 
-          {/* Settings Button */}
+          {/* Typography & Appearance Settings */}
           <button
             onClick={onOpenSettings}
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl sm:rounded-2xl transition-all duration-200 active:scale-95 font-arabic text-xs font-bold border shadow-sm"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl transition-all duration-200 active:scale-95 font-arabic text-xs font-bold border cursor-pointer hover:brightness-105"
             style={{
               background: 'var(--app-brand-dim)',
               borderColor: 'var(--app-brand-border)',
               color: 'var(--app-brand)',
             }}
-            title="تخصيص الخط والمظهر"
+            title="تخصيص الخط، الحجم، والمظهر"
           >
             <Settings className="w-4 h-4" />
-            <span className="hidden sm:inline">الخط والمظهر</span>
+            <span className="hidden md:inline">الخط والمظهر</span>
           </button>
 
-          {/* MOBILE ONLY: TOOLS OVERFLOW MENU POPOVER */}
-          <div className="md:hidden">
-            <Popover.Root open={isToolsOpen} onOpenChange={setIsToolsOpen}>
-              <Popover.Trigger asChild>
-                <button
-                  className="w-9 h-9 flex items-center justify-center rounded-xl transition-all duration-200 active:scale-90 border relative"
-                  style={{
-                    background: isToolsOpen ? 'var(--app-brand-dim)' : 'var(--app-surface)',
-                    borderColor: isToolsOpen ? 'var(--app-brand)' : 'var(--app-surface-border)',
-                    color: isToolsOpen ? 'var(--app-brand)' : 'var(--app-text)',
-                  }}
-                  title="المزيد من الأدوات"
-                >
-                  <MoreVertical className="w-4 h-4" />
-                  <span
-                    className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full"
-                    style={{ background: 'var(--app-brand)' }}
-                  />
-                </button>
-              </Popover.Trigger>
+          {/* ══════════════════════════════════════════════════
+              UNIFIED HERITAGE TOOLS SUITE (POPOVER FOR DESKTOP & MOBILE)
+              ══════════════════════════════════════════════════ */}
+          <Popover.Root open={isToolsOpen} onOpenChange={setIsToolsOpen}>
+            <Popover.Trigger asChild>
+              <button
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl transition-all duration-200 active:scale-95 font-arabic text-xs font-bold border cursor-pointer relative shadow-sm hover:brightness-105"
+                style={{
+                  background: isToolsOpen ? 'var(--app-brand-grad)' : 'var(--app-surface)',
+                  borderColor: isToolsOpen ? 'transparent' : 'var(--app-surface-border)',
+                  color: isToolsOpen ? 'white' : 'var(--app-text)',
+                }}
+                title="أدوات القارئ والشارح التراثي"
+              >
+                <Sparkles className={`w-4 h-4 ${isToolsOpen ? 'text-amber-200' : 'text-amber-500'} animate-pulse`} />
+                <span className="hidden sm:inline">الأدوات</span>
+                <ChevronDown className={`w-3 h-3 opacity-60 transition-transform duration-200 ${isToolsOpen ? 'rotate-180' : ''}`} />
+              </button>
+            </Popover.Trigger>
 
-              <Popover.Portal>
-                <Popover.Content
-                  className="z-50 w-64 rounded-2xl p-2 shadow-2xl border backdrop-blur-xl animate-fade-in focus:outline-none max-h-[85vh] overflow-y-auto custom-scrollbar"
-                  style={{
-                    background: 'var(--app-surface)',
-                    borderColor: 'var(--app-surface-border)',
-                    color: 'var(--app-text)',
-                  }}
-                  sideOffset={8}
-                  align="end"
-                  dir="rtl"
-                >
-                  <div className="text-[11px] font-arabic font-bold px-3 py-1.5 opacity-60">
-                    أدوات القارئ المتقدمة
+            <Popover.Portal>
+              <Popover.Content
+                className="z-50 w-80 sm:w-96 rounded-3xl p-3 sm:p-4 shadow-2xl border backdrop-blur-2xl animate-fade-in focus:outline-none max-h-[85vh] overflow-y-auto custom-scrollbar"
+                style={{
+                  background: 'var(--app-surface)',
+                  borderColor: 'var(--app-surface-border)',
+                  color: 'var(--app-text)',
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.22)',
+                }}
+                sideOffset={10}
+                align="end"
+                dir="rtl"
+              >
+                {/* Modal Header */}
+                <div className="flex items-center justify-between pb-3 mb-3 border-b" style={{ borderColor: 'var(--app-divider)' }}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'var(--app-brand-dim)' }}>
+                      <Sparkles className="w-4 h-4" style={{ color: 'var(--app-brand)' }} />
+                    </div>
+                    <div>
+                      <h3 className="font-arabic font-bold text-xs" style={{ color: 'var(--app-text)' }}>
+                        أدوات القارئ التفاعلية
+                      </h3>
+                      <p className="text-[10px] font-arabic font-medium" style={{ color: 'var(--app-text-muted)' }}>
+                        تسهيل التدبر، الحفظ، وتوثيق الفوائد
+                      </p>
+                    </div>
                   </div>
+                  <span className="text-[10px] font-arabic font-bold px-2 py-0.5 rounded-full border" style={{ background: 'var(--app-bg-2)', borderColor: 'var(--app-divider)', color: 'var(--app-brand)' }}>
+                    9 أدوات
+                  </span>
+                </div>
 
-                  <div className="space-y-1">
-                    <MobileMenuItem
-                      icon={<Lightbulb className="w-4 h-4 text-amber-500" />}
-                      label="الشارح التراثي والمعاني"
-                      badge="ذكي"
-                      onClick={() => { setIsToolsOpen(false); onOpenCompanion(); }}
-                    />
-                    <MobileMenuItem
-                      icon={<ImageIcon className="w-4 h-4 text-teal-500" />}
-                      label="مطابقة المخطوطة الأصلية"
-                      onClick={() => { setIsToolsOpen(false); onOpenManuscript(); }}
-                    />
-                    <MobileMenuItem
-                      icon={<Mic className="w-4 h-4 text-rose-500" />}
-                      label="استوديو التسجيل الصوتي"
-                      onClick={() => { setIsToolsOpen(false); onOpenVoiceStudio(); }}
-                    />
-                    <MobileMenuItem
-                      icon={<Trophy className="w-4 h-4 text-amber-500" />}
-                      label="الختمات وتحديات القراءة"
-                      badge="أوراد"
-                      onClick={() => { setIsToolsOpen(false); onOpenKhatma(); }}
-                    />
-                    <MobileMenuItem
-                      icon={<Layers className="w-4 h-4 text-purple-500" />}
-                      label="بطاقات المراجعة والحفظ"
-                      onClick={() => { setIsToolsOpen(false); onOpenFlashcards(); }}
-                    />
-                    <MobileMenuItem
-                      icon={<List className="w-4 h-4 text-sky-500" />}
-                      label="فهرس الكتاب الكامل"
-                      onClick={() => { setIsToolsOpen(false); onOpenTOC(); }}
-                    />
-                    <MobileMenuItem
-                      icon={<Sparkles className="w-4 h-4 text-amber-500" />}
-                      label="استوديو بطاقات الاقتباسات"
-                      badge="HD"
-                      onClick={() => { setIsToolsOpen(false); onOpenQuoteStudio(); }}
-                    />
-                    <MobileMenuItem
-                      icon={<Music className="w-4 h-4 text-emerald-500" />}
-                      label="أصوات التركيز والطبيعة"
-                      onClick={() => { setIsToolsOpen(false); onOpenSoundModal(); }}
-                    />
-                    <MobileMenuItem
-                      icon={<BookMarked className="w-4 h-4 text-purple-500" />}
-                      label="المعجم اللغوي التراثي"
-                      onClick={() => { setIsToolsOpen(false); onOpenDictModal(); }}
-                    />
-                    <MobileMenuItem
-                      icon={<PanelRightOpen className="w-4 h-4 text-rose-500" />}
-                      label="الملاحظات والتحديدات"
-                      onClick={() => { setIsToolsOpen(false); onOpenAnnotations(); }}
-                    />
-                  </div>
-                </Popover.Content>
-              </Popover.Portal>
-            </Popover.Root>
-          </div>
+                {/* 2-Column Responsive Grid of Heritage Tools */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {toolsList.map((tool) => {
+                    const IconComponent = tool.icon;
+                    return (
+                      <button
+                        key={tool.id}
+                        onClick={() => {
+                          setIsToolsOpen(false);
+                          tool.action();
+                        }}
+                        className="flex items-center gap-2.5 p-2.5 rounded-2xl border transition-all duration-200 active:scale-95 text-right hover:scale-101 hover:shadow-sm cursor-pointer group"
+                        style={{
+                          background: 'var(--app-bg-2)',
+                          borderColor: 'var(--app-divider)',
+                        }}
+                      >
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${tool.bg} ${tool.border} ${tool.color} shadow-xs`}>
+                          <IconComponent className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="font-arabic font-bold text-xs truncate" style={{ color: 'var(--app-text)' }}>
+                              {tool.label}
+                            </span>
+                            {tool.badge && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                                {tool.badge}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] font-arabic truncate font-medium mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
+                            {tool.desc}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Quick Chapter TOC Footer Row */}
+                <div className="mt-3 pt-2.5 border-t flex items-center justify-between" style={{ borderColor: 'var(--app-divider)' }}>
+                  <button
+                    onClick={() => {
+                      setIsToolsOpen(false);
+                      onOpenTOC();
+                    }}
+                    className="w-full py-2 px-3 rounded-xl flex items-center justify-center gap-2 font-arabic text-xs font-bold transition-all hover:brightness-105 cursor-pointer"
+                    style={{
+                      background: 'var(--app-brand-dim)',
+                      color: 'var(--app-brand)',
+                    }}
+                  >
+                    <List className="w-3.5 h-3.5" />
+                    <span>فتح فهرس الكتاب الكامل</span>
+                  </button>
+                </div>
+              </Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
         </div>
       </div>
     </header>
   );
 };
-
-/* ── Reusable Desktop Header Icon Button ── */
-const HeaderIconButton: React.FC<{
-  onClick: (e: React.MouseEvent) => void;
-  icon: React.ReactNode;
-  label: string;
-  active?: boolean;
-  highlight?: boolean;
-}> = ({ onClick, icon, label, active = false, highlight = false }) => (
-  <button
-    onClick={(e) => {
-      e.stopPropagation();
-      onClick(e);
-    }}
-    title={label}
-    className="w-9 h-9 flex items-center justify-center rounded-xl sm:rounded-2xl transition-all duration-200 active:scale-90 shrink-0 border relative group"
-    style={{
-      background: active || highlight
-        ? 'var(--app-brand-dim)'
-        : 'transparent',
-      borderColor: active
-        ? 'var(--app-brand)'
-        : highlight
-        ? 'var(--app-brand-border)'
-        : 'transparent',
-      color: active || highlight
-        ? 'var(--app-brand)'
-        : 'var(--app-text-muted)',
-    }}
-  >
-    {icon}
-  </button>
-);
-
-/* ── Reusable Mobile Menu Item ── */
-const MobileMenuItem: React.FC<{
-  icon: React.ReactNode;
-  label: string;
-  badge?: string;
-  onClick: () => void;
-}> = ({ icon, label, badge, onClick }) => (
-  <button
-    onClick={onClick}
-    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-arabic font-medium transition-all active:scale-98 hover:bg-black/5"
-    style={{ color: 'var(--app-text)' }}
-  >
-    <div className="flex items-center gap-2.5">
-      <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-black/5 shrink-0">
-        {icon}
-      </div>
-      <span>{label}</span>
-    </div>
-    {badge && (
-      <span
-        className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
-        style={{ background: 'var(--app-brand-dim)', color: 'var(--app-brand)' }}
-      >
-        {badge}
-      </span>
-    )}
-  </button>
-);
