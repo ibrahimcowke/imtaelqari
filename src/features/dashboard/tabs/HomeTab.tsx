@@ -241,25 +241,19 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
           ══════════════════════════════════════════════════ */}
       <motion.div
         variants={itemVariants}
-        className="relative overflow-hidden rounded-3xl group p-6 sm:p-8 md:p-10 border shadow-2xl transition-all duration-300"
+        className="relative overflow-hidden rounded-3xl group p-6 sm:p-8 md:p-10 border shadow-lg transition-all duration-300"
         style={{
-          background: 'var(--sidebar-bg)',
-          borderColor: 'var(--app-brand-border)',
-          color: 'white',
+          background: 'var(--app-surface)',
+          borderColor: 'var(--app-surface-border)',
         }}
       >
-        {/* Subtle Luxury Gradient Overlay */}
+        {/* Subtle Ambient Brand Glows */}
         <div
-          className="absolute inset-0 bg-linear-to-tr from-black/50 via-transparent to-amber-500/10 pointer-events-none"
-        />
-
-        {/* Ornate Islamic Background Watermark Glows */}
-        <div
-          className="absolute -top-12 -left-12 w-64 h-64 rounded-full opacity-25 pointer-events-none"
+          className="absolute -top-12 -left-12 w-64 h-64 rounded-full opacity-15 pointer-events-none"
           style={{ background: 'radial-gradient(circle, var(--app-brand-glow) 0%, transparent 70%)' }}
         />
         <div
-          className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full opacity-20 pointer-events-none"
+          className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full opacity-15 pointer-events-none"
           style={{ background: 'radial-gradient(circle, #f59e0b 0%, transparent 70%)' }}
         />
 
@@ -268,56 +262,78 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
           <div className="flex-1 text-center md:text-right">
             {/* Top pill badge */}
             <div
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-arabic font-bold mb-3 border shadow-sm"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-arabic font-bold mb-3.5 border shadow-xs"
               style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                borderColor: 'rgba(255, 255, 255, 0.15)',
-                color: '#fde68a',
+                background: 'var(--app-brand-dim)',
+                borderColor: 'var(--app-brand-border)',
+                color: 'var(--app-brand)',
               }}
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
               <span>محراب القراءة والتدبر</span>
             </div>
 
             {/* Book Title */}
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-arabic text-white mb-2 leading-tight">
+            <h2
+              className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-arabic mb-3 leading-tight tracking-tight"
+              style={{ color: 'var(--app-text)' }}
+            >
               {book.title}
             </h2>
 
             {/* Current Chapter Preview */}
-            <p className="text-amber-100 font-arabic text-xs sm:text-sm mb-6 flex items-center justify-center md:justify-start gap-2 flex-wrap">
-              <span className="font-bold text-white">
-                {currentPageData?.title ? currentPageData.title : `صفحة ${currentPage}`}
-              </span>
-              <span className="opacity-60">•</span>
-              <span className="text-white/90 font-medium">ص {currentPage} من {totalPages} صفحة</span>
-            </p>
+            <div className="flex items-center justify-center md:justify-start gap-2.5 flex-wrap mb-6">
+              <div
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border text-xs font-arabic font-bold"
+                style={{
+                  background: 'var(--app-bg-2)',
+                  borderColor: 'var(--app-divider)',
+                  color: 'var(--app-text)',
+                }}
+              >
+                <BookMarked className="w-3.5 h-3.5 text-amber-500" />
+                <span>{currentPageData?.title ? currentPageData.title : `صفحة ${currentPage}`}</span>
+              </div>
+              <span className="text-amber-500/60 font-bold">•</span>
+              <div
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border text-xs font-arabic font-medium"
+                style={{
+                  background: 'var(--app-bg-2)',
+                  borderColor: 'var(--app-divider)',
+                  color: 'var(--app-text-muted)',
+                }}
+              >
+                <Layers className="w-3.5 h-3.5" style={{ color: 'var(--app-brand)' }} />
+                <span>ص {currentPage} من {totalPages} صفحة</span>
+              </div>
+            </div>
 
             {/* Action Buttons */}
             <div className="flex items-center justify-center md:justify-start gap-3 flex-wrap">
               <button
                 onClick={onNavigate}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-arabic text-sm font-bold transition-all duration-300 active:scale-95 text-white shadow-xl hover:brightness-110 group"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-arabic text-sm font-bold transition-all duration-300 active:scale-95 text-white shadow-xl hover:brightness-110 group cursor-pointer"
                 style={{
                   background: 'var(--app-brand-grad)',
                   boxShadow: '0 6px 24px var(--app-brand-glow)',
                 }}
               >
-                <BookOpen className="w-4 h-4" />
+                <BookOpen className="w-4 h-4 text-amber-200" />
                 <span>استئناف القراءة</span>
                 <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
               </button>
 
               <button
                 onClick={handleRandomPage}
-                className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl font-arabic text-xs font-bold transition-all duration-300 active:scale-95 hover:bg-white/15 text-white border"
+                className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl font-arabic text-xs font-bold transition-all duration-300 active:scale-95 border cursor-pointer hover:brightness-105"
                 style={{
-                  background: 'rgba(255,255,255,0.1)',
-                  borderColor: 'rgba(255,255,255,0.22)',
+                  background: 'var(--app-brand-dim)',
+                  borderColor: 'var(--app-brand-border)',
+                  color: 'var(--app-text)',
                 }}
                 title="اقرأ صفحة أو حكمة عشوائية من الكتاب"
               >
-                <Dices className="w-4 h-4 text-amber-300" />
+                <Dices className="w-4 h-4 text-amber-500" />
                 <span>درة عشوائية</span>
               </button>
             </div>
@@ -331,7 +347,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
                 cy="60"
                 r={radius}
                 fill="none"
-                stroke="rgba(255,255,255,0.15)"
+                stroke="var(--app-divider)"
                 strokeWidth="7"
               />
               <circle
@@ -348,17 +364,24 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
               />
               <defs>
                 <linearGradient id="heroProgressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#fbbf24" />
-                  <stop offset="100%" stopColor="#f59e0b" />
+                  <stop offset="0%" stopColor="#f59e0b" />
+                  <stop offset="100%" stopColor="#d97706" />
                 </linearGradient>
               </defs>
             </svg>
 
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span className="text-3xl font-bold font-sans text-white tracking-tight">
+              <span className="text-3xl font-black font-sans tracking-tight" style={{ color: 'var(--app-text)' }}>
                 {progress}%
               </span>
-              <span className="text-xs text-amber-200 font-arabic font-bold">
+              <span
+                className="text-[11px] font-arabic font-bold px-2 py-0.5 rounded-full border mt-0.5"
+                style={{
+                  background: 'var(--app-brand-dim)',
+                  color: 'var(--app-brand)',
+                  borderColor: 'var(--app-brand-border)',
+                }}
+              >
                 مكتمل
               </span>
             </div>
