@@ -68,29 +68,7 @@ const TapZone: React.FC<{
   );
 };
 
-/* ── Mobile Navigation Pill ── */
-const MobileNavBtn: React.FC<{
-  direction: 'next' | 'prev';
-  onClick: () => void;
-  disabled?: boolean;
-}> = ({ direction, onClick, disabled }) => (
-  <motion.button
-    onClick={(e) => { e.stopPropagation(); onClick(); }}
-    disabled={disabled}
-    whileTap={{ scale: 0.88 }}
-    className="flex items-center justify-center rounded-2xl transition-all disabled:opacity-20 shrink-0 app-surface"
-    style={{
-      width: 44,
-      height: 44,
-    }}
-    aria-label={direction === 'next' ? 'الصفحة التالية' : 'الصفحة السابقة'}
-  >
-    {direction === 'next'
-      ? <ChevronLeft  className="w-5 h-5" style={{ color: 'var(--app-brand)' }} />
-      : <ChevronRight className="w-5 h-5" style={{ color: 'var(--app-brand)' }} />
-    }
-  </motion.button>
-);
+
 
 
 
@@ -486,46 +464,9 @@ export const ReaderScreen: React.FC = () => {
       </div>
 
       {/* ══════════════════════════════════════════════════
-          3. BOTTOM SCRUBBAR & MOBILE CONTROLS
+          3. BOTTOM SCRUBBAR & CONTROLS
           ══════════════════════════════════════════════════ */}
       <div className={`transition-transform duration-300 absolute bottom-0 left-0 right-0 z-20 ${showControls ? 'translate-y-0' : 'translate-y-full'}`}>
-        {/* Mobile prev/next row above progress bar */}
-        <div
-          className="md:hidden flex items-center justify-between px-4 py-2 gap-3 app-bar border-t"
-          style={{
-            borderTopColor: 'var(--app-bar-border)',
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Next page (RTL: left arrow) */}
-          <MobileNavBtn
-            direction="next"
-            onClick={handleNextPage}
-            disabled={currentPage >= totalPages}
-          />
-
-          {/* Page info */}
-          <div className="flex-1 text-center">
-            <div className="text-xs font-bold font-arabic" style={{ color: 'var(--app-text)' }}>
-              صفحة {currentPage} من {totalPages}
-            </div>
-            <div className="mt-1 h-1.5 rounded-full overflow-hidden bg-black/10 dark:bg-white/10">
-              <motion.div
-                className="h-full rounded-full"
-                style={{ background: 'var(--app-brand-grad)', width: `${Math.round((currentPage / totalPages) * 100)}%` }}
-                layout
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              />
-            </div>
-          </div>
-
-          {/* Prev page (RTL: right arrow) */}
-          <MobileNavBtn
-            direction="prev"
-            onClick={handlePrevPage}
-            disabled={currentPage <= 1}
-          />
-        </div>
         <ProgressBar />
       </div>
 
