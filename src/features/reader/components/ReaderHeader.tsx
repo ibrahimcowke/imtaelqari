@@ -3,10 +3,12 @@ import {
   ArrowRight, Settings, Bookmark,
   List, Volume2, VolumeX, PanelRightOpen,
   Music, Sparkles, BookMarked,
-  BookOpen, ChevronDown, Trophy, Layers, Mic, Image as ImageIcon, Lightbulb
+  BookOpen, ChevronDown, Trophy, Layers, Mic, Image as ImageIcon, Lightbulb,
+  Users, Music2, Film, Clock, Database
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import * as Popover from '@radix-ui/react-popover';
+import { TopThemeChanger } from '../../theme/TopThemeChanger';
 
 export interface ReaderHeaderProps {
   showControls: boolean;
@@ -28,6 +30,12 @@ export interface ReaderHeaderProps {
   onOpenVoiceStudio: () => void;
   onOpenKhatma: () => void;
   onOpenFlashcards: () => void;
+  onOpenQuiz?: () => void;
+  onOpenBiographies?: () => void;
+  onOpenPoetry?: () => void;
+  onOpenReels?: () => void;
+  onOpenZen?: () => void;
+  onOpenBackup?: () => void;
 }
 
 export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
@@ -50,6 +58,12 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
   onOpenVoiceStudio,
   onOpenKhatma,
   onOpenFlashcards,
+  onOpenQuiz,
+  onOpenBiographies,
+  onOpenPoetry,
+  onOpenReels,
+  onOpenZen,
+  onOpenBackup,
 }) => {
   const navigate = useNavigate();
   const [isToolsOpen, setIsToolsOpen] = useState(false);
@@ -67,6 +81,58 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
       border: 'border-amber-500/20',
       badge: 'ذكي',
       action: onOpenCompanion,
+    },
+    {
+      id: 'quiz',
+      label: 'تحدي المسابقات',
+      desc: 'اختبار الحصيلة الأدبية',
+      icon: Trophy,
+      color: 'text-amber-600 dark:text-amber-400',
+      bg: 'bg-amber-500/10',
+      border: 'border-amber-500/20',
+      badge: 'جديد',
+      action: onOpenQuiz || (() => {}),
+    },
+    {
+      id: 'biographies',
+      label: 'أعلام وشخصيات',
+      desc: 'تراجم ومواضع الاستشهاد',
+      icon: Users,
+      color: 'text-blue-500',
+      bg: 'bg-blue-500/10',
+      border: 'border-blue-500/20',
+      action: onOpenBiographies || (() => {}),
+    },
+    {
+      id: 'poetry',
+      label: 'محلل البحور الشعرية',
+      desc: 'علم العروض والقوافي',
+      icon: Music2,
+      color: 'text-indigo-500',
+      bg: 'bg-indigo-500/10',
+      border: 'border-indigo-500/20',
+      action: onOpenPoetry || (() => {}),
+    },
+    {
+      id: 'reels',
+      label: 'استوديو الريلز',
+      desc: 'قصص متحركة 9:16',
+      icon: Film,
+      color: 'text-rose-500',
+      bg: 'bg-rose-500/10',
+      border: 'border-rose-500/20',
+      badge: 'Story',
+      action: onOpenReels || (() => {}),
+    },
+    {
+      id: 'zen',
+      label: 'وضع الصفاء والتركيز',
+      desc: 'مؤقت تدبر بومودورو',
+      icon: Clock,
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-500/10',
+      border: 'border-emerald-500/20',
+      action: onOpenZen || (() => {}),
     },
     {
       id: 'quote-studio',
@@ -138,6 +204,16 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
       bg: 'bg-indigo-500/10',
       border: 'border-indigo-500/20',
       action: onOpenDictModal,
+    },
+    {
+      id: 'backup',
+      label: 'النسخ والطباعة',
+      desc: 'تصدير كراسة الفوائد',
+      icon: Database,
+      color: 'text-teal-500',
+      bg: 'bg-teal-500/10',
+      border: 'border-teal-500/20',
+      action: onOpenBackup || (() => {}),
     },
     {
       id: 'annotations',
@@ -304,6 +380,9 @@ export const ReaderHeader: React.FC<ReaderHeaderProps> = ({
               }`}
             />
           </button>
+
+          {/* Quick Theme Changer */}
+          <TopThemeChanger />
 
           {/* Typography & Appearance Settings */}
           <button

@@ -6,13 +6,20 @@ import { ProfileTab } from './tabs/ProfileTab';
 import {
   BookOpen, List, Bookmark, Search, UserCircle,
   BookOpenCheck, Music, BookMarked, Layers, Sparkles,
-  ChevronLeft, Bell
+  ChevronLeft, Bell, Trophy, Users, Music2, Film, Clock, Database
 } from 'lucide-react';
 import { SearchSheet } from '../search/SearchSheet';
 import { AmbientSoundModal } from '../audio/AmbientSoundModal';
 import { ArabicDictionaryModal } from '../dictionary/ArabicDictionaryModal';
 import { TopicsModal } from '../topics/TopicsModal';
 import { ReminderModal } from '../reminders/ReminderModal';
+import { TopThemeChanger } from '../theme/TopThemeChanger';
+import { HeritageQuizModal } from '../quiz/HeritageQuizModal';
+import { BiographiesModal } from '../biographies/BiographiesModal';
+import { PoeticMeterModal } from '../poetry/PoeticMeterModal';
+import { ReelsStudioModal } from '../reels/ReelsStudioModal';
+import { ZenReaderModal } from '../zen/ZenReaderModal';
+import { BackupExportModal } from '../backup/BackupExportModal';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReaderStore } from '../../store/readerStore';
@@ -33,6 +40,12 @@ export const DashboardScreen: React.FC = () => {
   const [isDictOpen, setIsDictOpen] = useState(false);
   const [isTopicsOpen, setIsTopicsOpen] = useState(false);
   const [isReminderOpen, setIsReminderOpen] = useState(false);
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
+  const [isBioOpen, setIsBioOpen] = useState(false);
+  const [isPoetryOpen, setIsPoetryOpen] = useState(false);
+  const [isReelsOpen, setIsReelsOpen] = useState(false);
+  const [isZenOpen, setIsZenOpen] = useState(false);
+  const [isBackupOpen, setIsBackupOpen] = useState(false);
   const navigate = useNavigate();
   const { currentPage } = useReaderStore();
 
@@ -221,6 +234,64 @@ export const DashboardScreen: React.FC = () => {
                 منبه
               </span>
             </button>
+
+            <button
+              onClick={() => setIsQuizOpen(true)}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+            >
+              <div className="flex items-center gap-2.5">
+                <Trophy className="w-4 h-4 text-yellow-400" />
+                <span className="font-medium">تحدي المسابقات وروائع الحكم</span>
+              </div>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+                جديد
+              </span>
+            </button>
+
+            <button
+              onClick={() => setIsBioOpen(true)}
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+            >
+              <Users className="w-4 h-4 text-blue-300" />
+              <span className="font-medium">دليل الأعلام والشخصيات</span>
+            </button>
+
+            <button
+              onClick={() => setIsPoetryOpen(true)}
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+            >
+              <Music2 className="w-4 h-4 text-indigo-300" />
+              <span className="font-medium">محلل البحور الشعرية</span>
+            </button>
+
+            <button
+              onClick={() => setIsReelsOpen(true)}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+            >
+              <div className="flex items-center gap-2.5">
+                <Film className="w-4 h-4 text-rose-300" />
+                <span className="font-medium">استوديو القصص والريلز</span>
+              </div>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                9:16
+              </span>
+            </button>
+
+            <button
+              onClick={() => setIsZenOpen(true)}
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+            >
+              <Clock className="w-4 h-4 text-emerald-300" />
+              <span className="font-medium">وضع الصفاء ومؤقت التدبر</span>
+            </button>
+
+            <button
+              onClick={() => setIsBackupOpen(true)}
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+            >
+              <Database className="w-4 h-4 text-teal-300" />
+              <span className="font-medium">النسخ الاحتياطي والطباعة</span>
+            </button>
           </div>
         </nav>
 
@@ -317,6 +388,9 @@ export const DashboardScreen: React.FC = () => {
               <span>أصوات التركيز</span>
             </button>
 
+            {/* Quick Top Theme Changer */}
+            <TopThemeChanger variant="pill" showLabel={true} />
+
             {/* Resume Reading Primary CTA */}
             <button
               onClick={() => navigate('/read')}
@@ -360,6 +434,9 @@ export const DashboardScreen: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-1.5">
+              {/* Quick Mobile Theme Changer */}
+              <TopThemeChanger variant="compact" />
+
               {/* Daily Reminder button */}
               <button
                 onClick={() => setIsReminderOpen(true)}
@@ -519,6 +596,12 @@ export const DashboardScreen: React.FC = () => {
       <ArabicDictionaryModal open={isDictOpen} onOpenChange={setIsDictOpen} />
       <TopicsModal open={isTopicsOpen} onOpenChange={setIsTopicsOpen} onNavigate={() => navigate('/read')} />
       <ReminderModal open={isReminderOpen} onOpenChange={setIsReminderOpen} />
+      <HeritageQuizModal open={isQuizOpen} onOpenChange={setIsQuizOpen} onNavigateToPage={() => navigate('/read')} />
+      <BiographiesModal open={isBioOpen} onOpenChange={setIsBioOpen} onNavigateToPage={() => navigate('/read')} />
+      <PoeticMeterModal open={isPoetryOpen} onOpenChange={setIsPoetryOpen} onNavigateToPage={() => navigate('/read')} />
+      <ReelsStudioModal open={isReelsOpen} onOpenChange={setIsReelsOpen} />
+      <ZenReaderModal open={isZenOpen} onOpenChange={setIsZenOpen} currentPage={currentPage} onNavigateToPage={() => navigate('/read')} />
+      <BackupExportModal open={isBackupOpen} onOpenChange={setIsBackupOpen} />
     </div>
   );
 };

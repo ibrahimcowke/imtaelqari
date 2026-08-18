@@ -16,6 +16,14 @@ import { ManuscriptModal } from './components/ManuscriptModal';
 import { VoiceStudioModal } from '../voice-studio/VoiceStudioModal';
 import { KhatmaModal } from '../khatma/KhatmaModal';
 import { FlashcardsModal } from '../flashcards/FlashcardsModal';
+import { HeritageQuizModal } from '../quiz/HeritageQuizModal';
+import { BiographiesModal } from '../biographies/BiographiesModal';
+import { PoeticMeterModal } from '../poetry/PoeticMeterModal';
+import { ReelsStudioModal } from '../reels/ReelsStudioModal';
+import { ZenReaderModal } from '../zen/ZenReaderModal';
+import { BackupExportModal } from '../backup/BackupExportModal';
+import { ArabicAudioPlayer } from '../audio/ArabicAudioPlayer';
+import { arabicTtsService } from '../../services/arabicTtsService';
 import { db } from '../../lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
@@ -100,7 +108,7 @@ const pageFlipVariants: Variants = {
 };
 
 export const ReaderScreen: React.FC = () => {
-  const { currentPage, preferences, setCurrentPage, toggleControls, isControlsVisible, isReadingAloud, toggleReadingAloud } = useReaderStore();
+  const { currentPage, preferences, setCurrentPage, toggleControls, isControlsVisible } = useReaderStore();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAnnotationsOpen, setIsAnnotationsOpen] = useState(false);
   const [isTOCOpen, setIsTOCOpen] = useState(false);
@@ -113,6 +121,12 @@ export const ReaderScreen: React.FC = () => {
   const [isVoiceStudioOpen, setIsVoiceStudioOpen] = useState(false);
   const [isKhatmaOpen, setIsKhatmaOpen] = useState(false);
   const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
+  const [isBioOpen, setIsBioOpen] = useState(false);
+  const [isPoetryOpen, setIsPoetryOpen] = useState(false);
+  const [isReelsOpen, setIsReelsOpen] = useState(false);
+  const [isZenOpen, setIsZenOpen] = useState(false);
+  const [isBackupOpen, setIsBackupOpen] = useState(false);
   const [slideDir, setSlideDir] = useState<-1 | 1>(-1); // -1: Next, 1: Prev
   const totalPages = bookDataService.getPages().length;
 
@@ -163,58 +177,50 @@ export const ReaderScreen: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleNextPage, handlePrevPage]);
 
-  // Text to speech
+  // Natural Arabic TTS Engine State Synchronization
+  const [ttsActiveBlockId, setTtsActiveBlockId] = useState<string | null>(null);
+  const [isAudioTtsPlaying, setIsAudioTtsPlaying] = useState(false);
+
   useEffect(() => {
-    const hasSpeechSynthesis = typeof window !== 'undefined' && 'speechSynthesis' in window && !!window.speechSynthesis;
+    const unsubscribe = arabicTtsService.subscribe((state) => {
+      setTtsActiveBlockId(state.currentBlockId);
+      setIsAudioTtsPlaying(state.isPlaying && !state.isPaused);
+    });
+    return () => unsubscribe();
+  }, []);
 
-    if (!hasSpeechSynthesis) {
-      return;
-    }
+  const handleToggleReadingAloud = useCallback(() => {
+    const state = arabicTtsService.getState();
+    if (state.isPlaying) {
+      arabicTtsService.stop();
+    } else if (pageData) {
+      const blocksToRead = pageData.blocks?.length
+        ? pageData.blocks.map(b => ({ id: b.id, text: b.text }))
+        : [{ id: 'main', text: pageData.display_text }];
 
-    try {
-      if (isReadingAloud) {
-        window.speechSynthesis.cancel();
-        const textToRead = pageData?.display_text || '';
-        if (!textToRead) return;
-
-        if (typeof SpeechSynthesisUtterance === 'undefined') return;
-
-        const utterance = new SpeechSynthesisUtterance(textToRead);
-        utterance.lang = 'ar-SA';
-        utterance.rate = preferences.ttsRate;
-
-        utterance.onend = () => {
-          if (isReadingAloud) {
-            if (currentPage < totalPages) {
-              handleNextPage();
-            } else {
-              toggleReadingAloud();
-            }
-          }
-        };
-
-        utterance.onerror = () => {
-          // Gracefully ignore TTS playback errors
-        };
-
-        window.speechSynthesis.speak(utterance);
-      } else {
-        window.speechSynthesis.cancel();
-      }
-    } catch {
-      // Graceful fallback if speech synthesis fails
-    }
-
-    return () => {
-      if (hasSpeechSynthesis) {
-        try {
-          window.speechSynthesis.cancel();
-        } catch {
-          // Ignore cleanup errors
+      arabicTtsService.readBlocks(blocksToRead, () => {
+        if (currentPage < totalPages) {
+          handleNextPage();
         }
-      }
-    };
-  }, [isReadingAloud, currentPage, preferences.ttsRate, pageData, totalPages, handleNextPage, toggleReadingAloud]);
+      });
+    }
+  }, [pageData, currentPage, totalPages, handleNextPage]);
+
+  // Seamlessly continue reading next page when page changes during active playback
+  useEffect(() => {
+    const state = arabicTtsService.getState();
+    if (state.isPlaying && pageData) {
+      const blocksToRead = pageData.blocks?.length
+        ? pageData.blocks.map(b => ({ id: b.id, text: b.text }))
+        : [{ id: 'main', text: pageData.display_text }];
+
+      arabicTtsService.readBlocks(blocksToRead, () => {
+        if (currentPage < totalPages) {
+          handleNextPage();
+        }
+      });
+    }
+  }, [currentPage]);
 
   const toggleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -338,9 +344,9 @@ export const ReaderScreen: React.FC = () => {
         currentPage={currentPage}
         totalPages={totalPages}
         isBookmarked={!!isBookmarked}
-        isReadingAloud={isReadingAloud}
+        isReadingAloud={isAudioTtsPlaying}
         onToggleBookmark={toggleBookmark}
-        onToggleReadingAloud={toggleReadingAloud}
+        onToggleReadingAloud={handleToggleReadingAloud}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenTOC={() => setIsTOCOpen(true)}
         onOpenAnnotations={() => setIsAnnotationsOpen(true)}
@@ -355,6 +361,12 @@ export const ReaderScreen: React.FC = () => {
         onOpenVoiceStudio={() => setIsVoiceStudioOpen(true)}
         onOpenKhatma={() => setIsKhatmaOpen(true)}
         onOpenFlashcards={() => setIsFlashcardsOpen(true)}
+        onOpenQuiz={() => setIsQuizOpen(true)}
+        onOpenBiographies={() => setIsBioOpen(true)}
+        onOpenPoetry={() => setIsPoetryOpen(true)}
+        onOpenReels={() => setIsReelsOpen(true)}
+        onOpenZen={() => setIsZenOpen(true)}
+        onOpenBackup={() => setIsBackupOpen(true)}
       />
 
       {/* ── Left & Right Edge Tap Zones ── */}
@@ -388,49 +400,56 @@ export const ReaderScreen: React.FC = () => {
           >
             {preferences.mode === 'text' && (
               <div>
-                {pageData.blocks.map(block => (
-                  <div
-                    key={block.id}
-                    data-block-id={block.id}
-                    className="mb-4 relative group"
-                    style={{ marginBottom: `${preferences.paragraphSpacing}em` }}
-                  >
-                    {block.type === 'heading' && (
-                      <div className="my-7 text-center">
-                        <h2
-                          className="text-2xl md:text-3xl font-bold font-arabic mb-2 leading-relaxed"
-                          style={{ color: 'var(--app-brand)' }}
+                {pageData.blocks.map(block => {
+                  const isActiveBlock = ttsActiveBlockId === block.id;
+                  return (
+                    <div
+                      key={block.id}
+                      data-block-id={block.id}
+                      className={`mb-4 relative group transition-all duration-300 rounded-2xl ${
+                        isActiveBlock
+                          ? 'p-3.5 bg-amber-500/10 border-r-4 border-amber-500 shadow-sm'
+                          : ''
+                      }`}
+                      style={{ marginBottom: `${preferences.paragraphSpacing}em` }}
+                    >
+                      {block.type === 'heading' && (
+                        <div className="my-7 text-center">
+                          <h2
+                            className="text-2xl md:text-3xl font-bold font-arabic mb-2 leading-relaxed"
+                            style={{ color: 'var(--app-brand)' }}
+                          >
+                            {renderTextWithHighlights(block.text, block.id)}
+                          </h2>
+                          <div className="ornament-divider text-xs text-brand-400">
+                            <span>❊ ❊ ❊</span>
+                          </div>
+                        </div>
+                      )}
+                      {block.type === 'paragraph' && (
+                        <p className="leading-relaxed font-arabic">
+                          {renderTextWithHighlights(block.text, block.id)}
+                        </p>
+                      )}
+                      {block.type === 'bullet' && (
+                        <li className="list-disc list-inside ms-4 leading-relaxed font-arabic">
+                          {renderTextWithHighlights(block.text, block.id)}
+                        </li>
+                      )}
+                      {block.type === 'quote' && (
+                        <blockquote
+                          className="border-r-4 pr-4 italic my-6 p-4 rounded-l-2xl font-arabic leading-relaxed"
+                          style={{
+                            borderColor: 'var(--app-brand)',
+                            background: 'var(--app-brand-dim)',
+                          }}
                         >
                           {renderTextWithHighlights(block.text, block.id)}
-                        </h2>
-                        <div className="ornament-divider text-xs text-brand-400">
-                          <span>❊ ❊ ❊</span>
-                        </div>
-                      </div>
-                    )}
-                    {block.type === 'paragraph' && (
-                      <p className="leading-relaxed font-arabic">
-                        {renderTextWithHighlights(block.text, block.id)}
-                      </p>
-                    )}
-                    {block.type === 'bullet' && (
-                      <li className="list-disc list-inside ms-4 leading-relaxed font-arabic">
-                        {renderTextWithHighlights(block.text, block.id)}
-                      </li>
-                    )}
-                    {block.type === 'quote' && (
-                      <blockquote
-                        className="border-r-4 pr-4 italic my-6 p-4 rounded-l-2xl font-arabic leading-relaxed"
-                        style={{
-                          borderColor: 'var(--app-brand)',
-                          background: 'var(--app-brand-dim)',
-                        }}
-                      >
-                        {renderTextWithHighlights(block.text, block.id)}
-                      </blockquote>
-                    )}
-                  </div>
-                ))}
+                        </blockquote>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </motion.div>
@@ -517,6 +536,40 @@ export const ReaderScreen: React.FC = () => {
         onOpenChange={setIsFlashcardsOpen}
         onNavigateToPage={setCurrentPage}
       />
+      <HeritageQuizModal
+        open={isQuizOpen}
+        onOpenChange={setIsQuizOpen}
+        onNavigateToPage={setCurrentPage}
+      />
+      <BiographiesModal
+        open={isBioOpen}
+        onOpenChange={setIsBioOpen}
+        onNavigateToPage={setCurrentPage}
+      />
+      <PoeticMeterModal
+        open={isPoetryOpen}
+        onOpenChange={setIsPoetryOpen}
+        onNavigateToPage={setCurrentPage}
+      />
+      <ReelsStudioModal
+        open={isReelsOpen}
+        onOpenChange={setIsReelsOpen}
+        defaultQuote={pageData?.blocks?.[0]?.text || pageData?.display_text?.slice(0, 180)}
+        defaultAuthor={pageData?.title || 'إمتاع القارئ'}
+      />
+      <ZenReaderModal
+        open={isZenOpen}
+        onOpenChange={setIsZenOpen}
+        currentPage={currentPage}
+        onNavigateToPage={setCurrentPage}
+      />
+      <BackupExportModal
+        open={isBackupOpen}
+        onOpenChange={setIsBackupOpen}
+      />
+
+      {/* Floating Natural Arabic Audio Player Bar */}
+      <ArabicAudioPlayer onNextPage={handleNextPage} />
     </div>
   );
 };
