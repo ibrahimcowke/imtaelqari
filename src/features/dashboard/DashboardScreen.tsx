@@ -23,15 +23,9 @@ import { BackupExportModal } from '../backup/BackupExportModal';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReaderStore } from '../../store/readerStore';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 type Tab = 'home' | 'chapters' | 'annotations' | 'profile';
-
-const TAB_LABELS: Record<Tab, { label: string; shortLabel: string; icon: React.ComponentType<{ className?: string }>; desc: string }> = {
-  home: { label: 'الرئيسية', shortLabel: 'الرئيسية', icon: BookOpen, desc: 'لوحة التدبر والمتابعة' },
-  chapters: { label: 'فهرس الفصول', shortLabel: 'الفهرس', icon: List, desc: 'أبواب ومباحث الكتاب' },
-  annotations: { label: 'الملاحظات والفوائد', shortLabel: 'الفوائد', icon: Bookmark, desc: 'العلامات والتظليلات' },
-  profile: { label: 'الملف والإحصائيات', shortLabel: 'الملف', icon: UserCircle, desc: 'الإنجاز والإعدادات' },
-};
 
 export const DashboardScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('home');
@@ -48,6 +42,34 @@ export const DashboardScreen: React.FC = () => {
   const [isBackupOpen, setIsBackupOpen] = useState(false);
   const navigate = useNavigate();
   const { currentPage } = useReaderStore();
+  const { t, isRTL, dir } = useLanguage();
+
+  const tabLabels: Record<Tab, { label: string; shortLabel: string; icon: React.ComponentType<{ className?: string }>; desc: string }> = {
+    home: {
+      label: isRTL ? 'الرئيسية' : 'Home',
+      shortLabel: isRTL ? 'الرئيسية' : 'Home',
+      icon: BookOpen,
+      desc: isRTL ? 'لوحة التدبر والمتابعة' : 'Reading overview',
+    },
+    chapters: {
+      label: isRTL ? 'فهرس الفصول' : 'Chapters',
+      shortLabel: isRTL ? 'الفهرس' : 'Index',
+      icon: List,
+      desc: isRTL ? 'أبواب ومباحث الكتاب' : 'Table of contents',
+    },
+    annotations: {
+      label: isRTL ? 'الملاحظات والفوائد' : 'Notes & Highlights',
+      shortLabel: isRTL ? 'الفوائد' : 'Notes',
+      icon: Bookmark,
+      desc: isRTL ? 'العلامات والتظليلات' : 'Saved highlights',
+    },
+    profile: {
+      label: isRTL ? 'الملف والإحصائيات' : 'Profile & Stats',
+      shortLabel: isRTL ? 'الملف' : 'Profile',
+      icon: UserCircle,
+      desc: isRTL ? 'الإنجاز والإعدادات' : 'Goals & progress',
+    },
+  };
 
   const renderTab = () => {
     switch (activeTab) {
@@ -62,7 +84,7 @@ export const DashboardScreen: React.FC = () => {
     <div
       className="flex flex-col h-screen md:flex-row relative selection:bg-brand-500 selection:text-white"
       style={{ background: 'var(--app-bg)', color: 'var(--app-text)', overflow: 'hidden' }}
-      dir="rtl"
+      dir={dir}
     >
       {/* ══════════════════════════════════════════════════
           DYNAMIC AMBIENT BACKGROUND GLOWS
@@ -127,12 +149,12 @@ export const DashboardScreen: React.FC = () => {
             <span
               className="text-[10px] font-sans font-bold uppercase tracking-widest text-amber-300/90"
             >
-              أقسام التطبيق
+              {isRTL ? 'أقسام التطبيق' : 'Sections'}
             </span>
           </div>
 
           {(['home', 'chapters', 'annotations', 'profile'] as Tab[]).map((tab) => {
-            const Icon = TAB_LABELS[tab].icon;
+            const Icon = tabLabels[tab].icon;
             const active = activeTab === tab;
             return (
               <button
@@ -154,10 +176,10 @@ export const DashboardScreen: React.FC = () => {
                   >
                     <Icon className="w-4 h-4" />
                   </div>
-                  <div className="text-right">
-                    <span className="block leading-tight font-bold">{TAB_LABELS[tab].label}</span>
+                  <div className={isRTL ? 'text-right' : 'text-left'}>
+                    <span className="block leading-tight font-bold">{tabLabels[tab].label}</span>
                     <span className="text-[11px] font-medium text-white/70 block mt-0.5">
-                      {TAB_LABELS[tab].desc}
+                      {tabLabels[tab].desc}
                     </span>
                   </div>
                 </div>
@@ -335,7 +357,7 @@ export const DashboardScreen: React.FC = () => {
             />
             <div>
               <h2 className="text-lg font-bold font-arabic tracking-tight" style={{ color: 'var(--app-text)' }}>
-                {TAB_LABELS[activeTab].label}
+                {tabLabels[activeTab].label}
               </h2>
             </div>
           </div>
@@ -427,9 +449,11 @@ export const DashboardScreen: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-sm font-bold font-arabic leading-none" style={{ color: 'var(--app-text)' }}>
-                  {TAB_LABELS[activeTab].label}
+                  {tabLabels[activeTab].label}
                 </h1>
-                <p className="text-[10px] font-arabic font-medium mt-1" style={{ color: 'var(--app-text-muted)' }}>كتاب إمتاع القارئ</p>
+                <p className="text-[10px] font-arabic font-medium mt-1" style={{ color: 'var(--app-text-muted)' }}>
+                  {t('app_title')}
+                </p>
               </div>
             </div>
 
@@ -446,7 +470,7 @@ export const DashboardScreen: React.FC = () => {
                   borderColor: 'var(--app-brand-border)',
                   color: 'var(--app-brand)',
                 }}
-                title="تذكير الورد"
+                title={isRTL ? 'تذكير الورد' : 'Daily Reminder'}
               >
                 <Bell className="w-4 h-4" />
               </button>
@@ -460,7 +484,7 @@ export const DashboardScreen: React.FC = () => {
                   borderColor: 'var(--app-brand-border)',
                   color: 'var(--app-brand)',
                 }}
-                title="أصوات التركيز"
+                title={t('tool_ambient')}
               >
                 <Music className="w-4 h-4" />
               </button>
@@ -474,7 +498,7 @@ export const DashboardScreen: React.FC = () => {
                   borderColor: 'var(--app-brand-border)',
                   color: 'var(--app-brand)',
                 }}
-                title="بحث"
+                title={t('search')}
               >
                 <Search className="w-4 h-4" />
               </button>
@@ -489,7 +513,7 @@ export const DashboardScreen: React.FC = () => {
                 }}
               >
                 <BookOpenCheck className="w-3.5 h-3.5" />
-                <span>ص {currentPage}</span>
+                <span>{t('page')} {currentPage}</span>
               </button>
             </div>
           </div>
@@ -529,7 +553,7 @@ export const DashboardScreen: React.FC = () => {
           }}
         >
           {(['home', 'chapters', 'annotations', 'profile'] as Tab[]).map((tab) => {
-            const Icon = TAB_LABELS[tab].icon;
+            const Icon = tabLabels[tab].icon;
             const active = activeTab === tab;
             return (
               <button
@@ -569,7 +593,7 @@ export const DashboardScreen: React.FC = () => {
                       color: active ? 'var(--app-brand)' : 'var(--app-text-muted)',
                     }}
                   >
-                    {TAB_LABELS[tab].shortLabel}
+                    {tabLabels[tab].shortLabel}
                   </span>
 
                   {active && (

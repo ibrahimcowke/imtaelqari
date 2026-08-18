@@ -1,13 +1,15 @@
 import React from 'react';
 import { motion, type Variants } from 'framer-motion';
-import { BookOpen, Sparkles, Music, Layers, ArrowLeft, BookOpenCheck } from 'lucide-react';
+import { BookOpen, Sparkles, Music, Layers, ArrowLeft, ArrowRight, BookOpenCheck, Globe } from 'lucide-react';
 import { useReaderStore } from '../../store/readerStore';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export const WelcomeScreen: React.FC<{
   onStart: () => void;
   onOpenReader: () => void;
 }> = ({ onStart, onOpenReader }) => {
   const { currentPage } = useReaderStore();
+  const { language, setLanguage, isRTL, dir, t } = useLanguage();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -26,6 +28,8 @@ export const WelcomeScreen: React.FC<{
     },
   };
 
+  const StartIcon = isRTL ? ArrowLeft : ArrowRight;
+
   return (
     <div
       className="min-h-screen relative flex flex-col items-center justify-center p-4 md:p-8 overflow-y-auto custom-scrollbar"
@@ -33,8 +37,29 @@ export const WelcomeScreen: React.FC<{
         background: 'linear-gradient(180deg, #090e17 0%, #060910 60%, #030508 100%)',
         color: '#f3ede8',
       }}
-      dir="rtl"
+      dir={dir}
     >
+      {/* Top Language Switcher Bar */}
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 flex items-center gap-1.5 p-1 rounded-2xl border border-white/20 bg-black/40 backdrop-blur-md">
+        <Globe className="w-4 h-4 ml-1 text-amber-400" />
+        <button
+          onClick={() => setLanguage('ar')}
+          className={`px-3 py-1 rounded-xl text-xs font-arabic font-bold transition-all cursor-pointer ${
+            language === 'ar' ? 'bg-amber-500 text-black shadow' : 'text-white/70 hover:text-white'
+          }`}
+        >
+          العربية
+        </button>
+        <button
+          onClick={() => setLanguage('en')}
+          className={`px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer ${
+            language === 'en' ? 'bg-amber-500 text-black shadow' : 'text-white/70 hover:text-white'
+          }`}
+        >
+          English
+        </button>
+      </div>
+
       {/* Background Cinematic Atmosphere */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div
@@ -64,7 +89,7 @@ export const WelcomeScreen: React.FC<{
             <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl overflow-hidden shadow-2xl border border-white/20 p-0.5 bg-black/40">
               <img
                 src="/app-logo.png"
-                alt="شعار إمتاع القارئ"
+                alt="App Logo"
                 className="w-full h-full object-cover rounded-[22px]"
               />
             </div>
@@ -82,15 +107,19 @@ export const WelcomeScreen: React.FC<{
             }}
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            المكتبة الأدبية الرقمية الفاخرة
+            {isRTL ? 'المكتبة الأدبية الرقمية الفاخرة' : 'Classical Digital Heritage Library'}
           </span>
 
           <h1 className="text-2xl sm:text-4xl font-bold font-arabic tracking-tight text-white leading-snug">
-            إمتاع القارئ بجمال الكلم وروائع الحكم
+            {t('app_title')} — {t('app_subtitle')}
           </h1>
 
           <p className="text-sm sm:text-base font-arabic text-white/70 font-medium">
-            تأليف الأديب: <strong className="text-amber-300 font-bold">محمد بن سعد النهاري</strong>
+            {isRTL ? (
+              <>تأليف الأديب: <strong className="text-amber-300 font-bold">محمد بن سعد النهاري</strong></>
+            ) : (
+              <>By scholar: <strong className="text-amber-300 font-bold">Mohammed bin Saad Al-Nahari</strong></>
+            )}
           </p>
         </motion.div>
 
@@ -101,10 +130,14 @@ export const WelcomeScreen: React.FC<{
               style={{ background: 'rgba(212,175,55,0.15)', color: '#f3db8b' }}>
               <BookOpen className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="font-arabic font-bold text-sm text-white mb-0.5">قراءة وتصفح غامر</h3>
+            <div className={isRTL ? 'text-right' : 'text-left'}>
+              <h3 className="font-arabic font-bold text-sm text-white mb-0.5">
+                {isRTL ? 'قراءة وتصفح غامر' : 'Immersive Reading'}
+              </h3>
               <p className="font-arabic text-[11px] text-white/60 leading-relaxed">
-                تقليب صفحات سلس باللمس، علامات مرجعية وتظليلات ملونة.
+                {isRTL
+                  ? 'تقليب صفحات سلس باللمس، علامات مرجعية وتظليلات ملونة.'
+                  : 'Fluid gestures, color highlights, and smart bookmarks.'}
               </p>
             </div>
           </div>
@@ -114,10 +147,14 @@ export const WelcomeScreen: React.FC<{
               style={{ background: 'rgba(46,168,121,0.15)', color: '#a3e8ca' }}>
               <Layers className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="font-arabic font-bold text-sm text-white mb-0.5">10 سمات و5 خطوط</h3>
+            <div className={isRTL ? 'text-right' : 'text-left'}>
+              <h3 className="font-arabic font-bold text-sm text-white mb-0.5">
+                {isRTL ? '10 سمات و5 خطوط' : '10 Themes & Fonts'}
+              </h3>
               <p className="font-arabic text-[11px] text-white/60 leading-relaxed">
-                تناغم كامل مع الوضع الليلي والخطوط العربية الكلاسيكية.
+                {isRTL
+                  ? 'تناغم كامل مع الوضع الليلي والخطوط العربية الكلاسيكية.'
+                  : 'Full dark mode harmonies and classical typography.'}
               </p>
             </div>
           </div>
@@ -127,10 +164,14 @@ export const WelcomeScreen: React.FC<{
               style={{ background: 'rgba(56,189,248,0.15)', color: '#93c5fd' }}>
               <Music className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="font-arabic font-bold text-sm text-white mb-0.5">أصوات واستوديو بطاقات</h3>
+            <div className={isRTL ? 'text-right' : 'text-left'}>
+              <h3 className="font-arabic font-bold text-sm text-white mb-0.5">
+                {isRTL ? 'أصوات واستوديو بطاقات' : 'Sound & Studios'}
+              </h3>
               <p className="font-arabic text-[11px] text-white/60 leading-relaxed">
-                مطر وهدوء طبيعي مع مولد بطاقات اقتباسات فائقة الجودة.
+                {isRTL
+                  ? 'مطر وهدوء طبيعي مع ريلز وبطاقات اقتباسات فائقة الجودة.'
+                  : 'Calming rain audio, 9:16 reels, and HD quote cards.'}
               </p>
             </div>
           </div>
@@ -140,30 +181,32 @@ export const WelcomeScreen: React.FC<{
         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 justify-center items-center">
           <button
             onClick={onStart}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-arabic font-bold text-sm shadow-xl flex items-center justify-center gap-2 transition-all active:scale-95 group text-black"
+            className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-arabic font-bold text-sm shadow-xl flex items-center justify-center gap-2 transition-all active:scale-95 group text-black cursor-pointer"
             style={{
               background: 'linear-gradient(135deg, #f5d77f 0%, #d4af37 60%, #b89324 100%)',
               boxShadow: '0 4px 24px rgba(212,175,55,0.4)',
             }}
           >
-            <span>دخول لوحة القراءة والتحكم</span>
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <span>{isRTL ? 'دخول لوحة القراءة والتحكم' : 'Open Dashboard & Reader'}</span>
+            <StartIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
           </button>
 
           {currentPage > 1 && (
             <button
               onClick={onOpenReader}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-2xl font-arabic font-bold text-sm bg-white/10 hover:bg-white/15 border border-white/15 text-white transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-2xl font-arabic font-bold text-sm bg-white/10 hover:bg-white/15 border border-white/15 text-white transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg cursor-pointer"
             >
               <BookOpenCheck className="w-4 h-4 text-emerald-400" />
-              <span>استئناف القراءة (ص {currentPage})</span>
+              <span>{t('continue_reading')} ({t('page')} {currentPage})</span>
             </button>
           )}
         </motion.div>
 
         {/* Footer info */}
         <motion.div variants={itemVariants} className="mt-8 text-center text-xs font-arabic text-white/40">
-          نسخة رقمية وتجربة تفاعلية حديثة للكتاب • جميع الحقوق محفوظة
+          {isRTL
+            ? 'نسخة رقمية وتجربة تفاعلية حديثة للكتاب • جميع الحقوق محفوظة'
+            : 'Modern interactive digital edition • All rights reserved'}
         </motion.div>
       </motion.div>
     </div>

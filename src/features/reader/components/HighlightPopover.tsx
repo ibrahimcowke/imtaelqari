@@ -4,6 +4,7 @@ import { useReaderStore } from '../../../store/readerStore';
 import { Copy, Check, Sparkles, Volume2, Film, Music2 } from 'lucide-react';
 import type { HighlightColor } from '../../../types/book';
 import { arabicTtsService } from '../../../services/arabicTtsService';
+import { useLanguage } from '../../../i18n/LanguageContext';
 
 interface SelectionState {
   text: string;
@@ -27,6 +28,7 @@ export const HighlightPopover: React.FC<HighlightPopoverProps> = ({
   const [selection, setSelection] = useState<SelectionState | null>(null);
   const [copied, setCopied] = useState(false);
   const { currentPage } = useReaderStore();
+  const { t, isRTL, dir } = useLanguage();
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -129,15 +131,16 @@ export const HighlightPopover: React.FC<HighlightPopoverProps> = ({
         border: '1px solid rgba(255,255,255,0.18)',
         boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
       }}
+      dir={dir}
       onMouseDown={(e) => e.stopPropagation()}
     >
       {/* Highlight Color Pickers */}
-      <div className="flex items-center gap-1.5 border-l border-white/20 pl-2">
+      <div className={`flex items-center gap-1.5 ${isRTL ? 'border-l pl-2' : 'border-r pr-2'} border-white/20`}>
         {[
-          { color: 'amber' as HighlightColor, bg: 'bg-amber-400', title: 'تظليل أصفر' },
-          { color: 'rose' as HighlightColor, bg: 'bg-rose-400', title: 'تظليل أحمر' },
-          { color: 'sage' as HighlightColor, bg: 'bg-teal-400', title: 'تظليل أخضر' },
-          { color: 'blue-gray' as HighlightColor, bg: 'bg-slate-400', title: 'تظليل رمادي' },
+          { color: 'amber' as HighlightColor, bg: 'bg-amber-400', title: t('popover_highlight_amber') },
+          { color: 'rose' as HighlightColor, bg: 'bg-rose-400', title: t('popover_highlight_rose') },
+          { color: 'sage' as HighlightColor, bg: 'bg-teal-400', title: t('popover_highlight_sage') },
+          { color: 'blue-gray' as HighlightColor, bg: 'bg-slate-400', title: t('popover_highlight_blue') },
         ].map(c => (
           <button
             key={c.color}
@@ -152,20 +155,20 @@ export const HighlightPopover: React.FC<HighlightPopoverProps> = ({
       <button
         onClick={handleCopy}
         className="flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-arabic hover:bg-white/10 transition-colors cursor-pointer"
-        title="نسخ النص"
+        title={t('popover_copy')}
       >
         {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 opacity-80" />}
-        <span>{copied ? 'تم' : 'نسخ'}</span>
+        <span>{copied ? t('popover_copied') : t('popover_copy')}</span>
       </button>
 
       {/* Listen / TTS Action */}
       <button
         onClick={handleSpeakSelected}
         className="flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-arabic hover:bg-white/10 transition-colors cursor-pointer text-emerald-300 font-medium"
-        title="استماع للنص المظلل بصوت فصيح"
+        title={t('popover_listen')}
       >
         <Volume2 className="w-3.5 h-3.5" />
-        <span>استماع</span>
+        <span>{t('popover_listen')}</span>
       </button>
 
       {/* Quote Card */}
@@ -179,10 +182,10 @@ export const HighlightPopover: React.FC<HighlightPopoverProps> = ({
             onOpenQuoteCard(textToQuote);
           }}
           className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-arabic hover:bg-white/15 transition-all text-amber-300 font-bold border border-amber-400/30 bg-amber-400/10 active:scale-95 cursor-pointer shrink-0"
-          title="صنع بطاقة اقتباس فاخرة"
+          title={t('tool_quote_studio')}
         >
           <Sparkles className="w-3.5 h-3.5" />
-          <span>بطاقة</span>
+          <span>{t('popover_quote_card')}</span>
         </button>
       )}
 
@@ -197,10 +200,10 @@ export const HighlightPopover: React.FC<HighlightPopoverProps> = ({
             onOpenReels(textToReel);
           }}
           className="flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-arabic hover:bg-white/15 transition-all text-rose-300 font-bold border border-rose-400/30 bg-rose-400/10 active:scale-95 cursor-pointer shrink-0"
-          title="صنع قصة ريلز 9:16"
+          title={t('tool_reels')}
         >
           <Film className="w-3.5 h-3.5" />
-          <span>ريلز</span>
+          <span>{t('popover_reels')}</span>
         </button>
       )}
 
@@ -214,10 +217,10 @@ export const HighlightPopover: React.FC<HighlightPopoverProps> = ({
             onOpenPoetry(selection.text);
           }}
           className="flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-arabic hover:bg-white/10 transition-colors cursor-pointer text-indigo-300 shrink-0"
-          title="تحليل الوزن العروضي"
+          title={t('tool_poetry')}
         >
           <Music2 className="w-3.5 h-3.5" />
-          <span>العروض</span>
+          <span>{t('popover_poetry')}</span>
         </button>
       )}
     </div>

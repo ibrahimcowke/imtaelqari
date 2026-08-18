@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import * as Popover from '@radix-ui/react-popover';
-import { Palette, Check, Sun, Moon, Sparkles } from 'lucide-react';
+import { Palette, Check, Sun, Moon, Globe } from 'lucide-react';
 import { useReaderStore } from '../../store/readerStore';
 import type { ReaderTheme } from '../../types/book';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export interface ThemeOption {
   id: ReaderTheme;
   label: string;
+  enLabel: string;
   subLabel: string;
+  enSubLabel: string;
   bg: string;
   surface: string;
   border: string;
@@ -21,7 +24,9 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'paper',
     label: 'ورقي كلاسيكي',
+    enLabel: 'Classic Paper',
     subLabel: 'مريح للعين والقراءة المطولة',
+    enSubLabel: 'Gentle on the eyes for reading',
     bg: '#fbf6f0',
     surface: '#ffffff',
     border: '#b89685',
@@ -33,7 +38,9 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'sepia',
     label: 'بني تراثي',
+    enLabel: 'Vintage Sepia',
     subLabel: 'أصالة المخطوطات القديمة',
+    enSubLabel: 'Authentic manuscript tone',
     bg: '#eee5d3',
     surface: '#faf4e8',
     border: '#bfa37e',
@@ -45,7 +52,9 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'white',
     label: 'أبيض ناصع',
+    enLabel: 'Pristine White',
     subLabel: 'وضوح فائق وتصميم عصري',
+    enSubLabel: 'High clarity modern style',
     bg: '#f8fafc',
     surface: '#ffffff',
     border: '#cbd5e1',
@@ -57,7 +66,9 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'sage',
     label: 'أخضر هادئ',
+    enLabel: 'Green Oasis',
     subLabel: 'راحة بصرية وطبيعة خضراء',
+    enSubLabel: 'Soothing nature hue',
     bg: '#e2ebdf',
     surface: '#f2f7f0',
     border: '#94b38e',
@@ -69,7 +80,9 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'rose',
     label: 'وردي أندلسي',
+    enLabel: 'Warm Ruby',
     subLabel: 'طابع شعري دافئ وناعم',
+    enSubLabel: 'Poetic warm aesthetics',
     bg: '#fcedea',
     surface: '#fdf4f2',
     border: '#d49b9b',
@@ -81,7 +94,9 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'dark',
     label: 'ليلي أسود',
+    enLabel: 'Midnight Charcoal',
     subLabel: 'قراءة مريحة في الظلام التام',
+    enSubLabel: 'Night reading in dark',
     bg: '#05070a',
     surface: '#0f141d',
     border: '#1f2a3c',
@@ -93,7 +108,9 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'midnight',
     label: 'كحلي ليلي',
+    enLabel: 'Twilight Sky',
     subLabel: 'سماء صافية وهدوء ليلي',
+    enSubLabel: 'Serene deep blue night',
     bg: '#040b14',
     surface: '#081424',
     border: '#163152',
@@ -105,7 +122,9 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'emerald',
     label: 'زمردي ملكي',
+    enLabel: 'Royal Emerald',
     subLabel: 'أخضر فاخر وهيبة تراثية',
+    enSubLabel: 'Lush royal emerald green',
     bg: '#02120b',
     surface: '#052215',
     border: '#0d472d',
@@ -117,7 +136,9 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'coffee',
     label: 'قهوة عربية',
+    enLabel: 'Arabian Coffee',
     subLabel: 'دفء الليالي التراثية',
+    enSubLabel: 'Warm heritage roast',
     bg: '#0e0805',
     surface: '#1a100b',
     border: '#382216',
@@ -129,7 +150,9 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'slate',
     label: 'رمادي فحمي',
+    enLabel: 'Indigo Marble',
     subLabel: 'تباين هادئ ومظهر تقني',
+    enSubLabel: 'Sleek contrast slate tone',
     bg: '#0b0f15',
     surface: '#131923',
     border: '#243042',
@@ -153,8 +176,10 @@ export const TopThemeChanger: React.FC<TopThemeChangerProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { preferences, updatePreferences } = useReaderStore();
+  const { language, setLanguage, isRTL, t } = useLanguage();
 
   const currentTheme = THEME_OPTIONS.find((t) => t.id === preferences.theme) || THEME_OPTIONS[0];
+  const themeTitle = isRTL ? currentTheme.label : currentTheme.enLabel;
 
   const handleSelectTheme = (themeId: ReaderTheme) => {
     updatePreferences({ theme: themeId });
@@ -163,10 +188,8 @@ export const TopThemeChanger: React.FC<TopThemeChangerProps> = ({
   const handleToggleLightDark = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (currentTheme.isDark) {
-      // Switch to default paper light theme
       updatePreferences({ theme: 'paper' });
     } else {
-      // Switch to default dark theme
       updatePreferences({ theme: 'dark' });
     }
   };
@@ -182,7 +205,7 @@ export const TopThemeChanger: React.FC<TopThemeChangerProps> = ({
               borderColor: isOpen ? 'var(--app-brand)' : 'var(--app-surface-border)',
               color: 'var(--app-text)',
             }}
-            title="تغيير مظهر ولون السمة"
+            title={t('theme_changer')}
           >
             <div
               className="w-5 h-5 rounded-lg flex items-center justify-center text-xs shrink-0 shadow-2xs"
@@ -191,10 +214,9 @@ export const TopThemeChanger: React.FC<TopThemeChangerProps> = ({
                 border: `1px solid ${currentTheme.border}`,
               }}
             >
-              {currentTheme.icon}
+              <span>{currentTheme.icon}</span>
             </div>
-            <span className="truncate max-w-20 sm:max-w-none">{currentTheme.label}</span>
-            <Palette className="w-3.5 h-3.5 opacity-60" style={{ color: 'var(--app-brand)' }} />
+            <span className="truncate max-w-[80px] sm:max-w-none">{themeTitle}</span>
           </button>
         ) : (
           <button
@@ -204,8 +226,8 @@ export const TopThemeChanger: React.FC<TopThemeChangerProps> = ({
               borderColor: isOpen ? 'var(--app-brand)' : 'var(--app-surface-border)',
               color: 'var(--app-brand)',
             }}
-            title={`تغيير السمة (${currentTheme.label})`}
-            aria-label="تغيير سمة التطبيق"
+            title={`${t('theme_changer')} (${themeTitle})`}
+            aria-label={t('theme_changer')}
           >
             <div className="relative flex items-center justify-center">
               <Palette className="w-4 h-4 transition-transform group-hover:scale-110" />
@@ -230,11 +252,11 @@ export const TopThemeChanger: React.FC<TopThemeChangerProps> = ({
             boxShadow: '0 20px 50px rgba(0,0,0,0.25)',
           }}
           sideOffset={8}
-          align="end"
-          dir="rtl"
+          align={isRTL ? 'end' : 'start'}
+          dir={isRTL ? 'rtl' : 'ltr'}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between pb-3 mb-3 border-b" style={{ borderColor: 'var(--app-divider)' }}>
+          {/* Header with Title & Day/Night Toggle */}
+          <div className="flex items-center justify-between pb-3 mb-2.5 border-b" style={{ borderColor: 'var(--app-divider)' }}>
             <div className="flex items-center gap-2">
               <div
                 className="w-8 h-8 rounded-xl flex items-center justify-center shadow-xs"
@@ -244,10 +266,10 @@ export const TopThemeChanger: React.FC<TopThemeChangerProps> = ({
               </div>
               <div>
                 <h3 className="font-arabic font-bold text-xs" style={{ color: 'var(--app-text)' }}>
-                  سمات ومظهر القارئ
+                  {t('theme_changer')}
                 </h3>
-                <p className="text-[10px] font-arabic font-medium" style={{ color: 'var(--app-text-muted)' }}>
-                  اختر النمط المناسب لراحتك البصرية
+                <p className="text-[10px] font-arabic font-medium opacity-80" style={{ color: 'var(--app-text-muted)' }}>
+                  {isRTL ? 'اختر النمط المناسب لراحتك البصرية' : 'Choose your reading aesthetic'}
                 </p>
               </div>
             </div>
@@ -261,40 +283,87 @@ export const TopThemeChanger: React.FC<TopThemeChangerProps> = ({
                 borderColor: currentTheme.isDark ? 'rgba(212, 147, 93, 0.4)' : 'var(--app-surface-border)',
                 color: 'var(--app-brand)',
               }}
-              title={currentTheme.isDark ? 'التحويل إلى وضع النهار' : 'التحويل إلى وضع الليل'}
+              title={currentTheme.isDark ? t('day_mode') : t('night_mode')}
             >
               {currentTheme.isDark ? (
                 <>
                   <Sun className="w-3.5 h-3.5 text-amber-500" />
-                  <span>نهاري</span>
+                  <span>{isRTL ? 'نهاري' : 'Day'}</span>
                 </>
               ) : (
                 <>
                   <Moon className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                  <span>ليلي</span>
+                  <span>{isRTL ? 'ليلي' : 'Night'}</span>
                 </>
               )}
             </button>
+          </div>
+
+          {/* Language Switcher Bar */}
+          <div
+            className="flex items-center justify-between p-2 rounded-2xl border mb-3 text-xs"
+            style={{ background: 'var(--app-bg-2)', borderColor: 'var(--app-divider)' }}
+          >
+            <div className="flex items-center gap-1.5">
+              <Globe className="w-3.5 h-3.5" style={{ color: 'var(--app-brand)' }} />
+              <span className="font-arabic font-bold text-[11px]" style={{ color: 'var(--app-text)' }}>
+                {t('language_toggle')}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1 p-0.5 rounded-xl border bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10">
+              <button
+                onClick={() => setLanguage('ar')}
+                className={`px-2.5 py-0.5 rounded-lg font-arabic font-bold text-[10px] transition-all cursor-pointer ${
+                  language === 'ar'
+                    ? 'shadow-xs text-white'
+                    : 'opacity-70 hover:opacity-100'
+                }`}
+                style={{
+                  background: language === 'ar' ? 'var(--app-brand-grad)' : 'transparent',
+                }}
+              >
+                العربية
+              </button>
+              <button
+                onClick={() => setLanguage('en')}
+                className={`px-2.5 py-0.5 rounded-lg font-sans font-bold text-[10px] transition-all cursor-pointer ${
+                  language === 'en'
+                    ? 'shadow-xs text-white'
+                    : 'opacity-70 hover:opacity-100'
+                }`}
+                style={{
+                  background: language === 'en' ? 'var(--app-brand-grad)' : 'transparent',
+                }}
+              >
+                English
+              </button>
+            </div>
           </div>
 
           {/* Themes Grid */}
           <div className="grid grid-cols-2 gap-2">
             {THEME_OPTIONS.map((theme) => {
               const isSelected = preferences.theme === theme.id;
+              const label = isRTL ? theme.label : theme.enLabel;
+              const subLabel = isRTL ? theme.subLabel : theme.enSubLabel;
+
               return (
                 <button
                   key={theme.id}
                   onClick={() => handleSelectTheme(theme.id)}
-                  className="flex items-center gap-2.5 p-2 rounded-2xl border transition-all duration-150 active:scale-95 text-right relative group cursor-pointer"
+                  className={`flex items-center gap-2.5 p-2 rounded-2xl border transition-all duration-150 active:scale-95 relative group cursor-pointer ${
+                    isRTL ? 'text-right' : 'text-left'
+                  }`}
                   style={{
                     background: isSelected ? 'var(--app-brand-dim)' : 'var(--app-bg-2)',
-                    borderColor: isSelected ? theme.ring : 'var(--app-divider)',
-                    boxShadow: isSelected ? `0 0 12px ${theme.ring}33` : 'none',
+                    borderColor: isSelected ? 'var(--app-brand)' : 'var(--app-surface-border)',
+                    boxShadow: isSelected ? '0 0 0 1.5px var(--app-brand)' : 'none',
                   }}
                 >
-                  {/* Theme Color Preview Bubble */}
+                  {/* Theme Swatch Preview */}
                   <div
-                    className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm text-sm border relative"
+                    className="w-7 h-7 rounded-xl flex items-center justify-center text-sm shrink-0 border relative shadow-2xs"
                     style={{
                       background: theme.bg,
                       borderColor: theme.border,
@@ -314,33 +383,22 @@ export const TopThemeChanger: React.FC<TopThemeChangerProps> = ({
 
                   {/* Theme Info */}
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between">
-                      <span
-                        className="font-arabic font-bold text-[11px] truncate block"
-                        style={{ color: isSelected ? 'var(--app-brand)' : 'var(--app-text)' }}
-                      >
-                        {theme.label}
-                      </span>
-                    </div>
                     <span
-                      className="text-[9px] font-arabic font-medium truncate block opacity-75"
+                      className="font-arabic font-bold text-[11px] truncate block"
+                      style={{ color: isSelected ? 'var(--app-brand)' : 'var(--app-text)' }}
+                    >
+                      {label}
+                    </span>
+                    <span
+                      className="text-[9px] font-arabic opacity-70 block truncate"
                       style={{ color: 'var(--app-text-muted)' }}
                     >
-                      {theme.isDark ? 'داكن' : 'فاتح'}
+                      {subLabel}
                     </span>
                   </div>
                 </button>
               );
             })}
-          </div>
-
-          {/* Footer note */}
-          <div className="mt-3 pt-2 border-t flex items-center justify-between text-[10px] font-arabic font-medium" style={{ borderColor: 'var(--app-divider)', color: 'var(--app-text-muted)' }}>
-            <span className="flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-amber-500" />
-              <span>السمة الحالية: <strong className="font-bold" style={{ color: 'var(--app-brand)' }}>{currentTheme.label}</strong></span>
-            </span>
-            <span className="opacity-70">10 سمات متناسقة</span>
           </div>
         </Popover.Content>
       </Popover.Portal>

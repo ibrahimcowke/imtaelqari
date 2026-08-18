@@ -6,12 +6,14 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { arabicTtsService, type TtsState } from '../../services/arabicTtsService';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export const ArabicAudioPlayer: React.FC<{
   onNextPage?: () => void;
 }> = () => {
   const [ttsState, setTtsState] = useState<TtsState>(arabicTtsService.getState());
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t, isRTL, dir } = useLanguage();
 
   useEffect(() => {
     const unsubscribe = arabicTtsService.subscribe((state) => {
@@ -26,6 +28,9 @@ export const ArabicAudioPlayer: React.FC<{
 
   const speedRates = [0.75, 1.0, 1.25, 1.5, 1.75];
 
+  const PrevIcon = isRTL ? SkipBack : SkipForward;
+  const NextIcon = isRTL ? SkipForward : SkipBack;
+
   return (
     <AnimatePresence>
       <motion.div
@@ -34,7 +39,7 @@ export const ArabicAudioPlayer: React.FC<{
         exit={{ y: 80, opacity: 0, scale: 0.95 }}
         transition={{ type: 'spring', damping: 28, stiffness: 350 }}
         className="fixed bottom-14 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-[94vw] max-w-lg select-none"
-        dir="rtl"
+        dir={dir}
       >
         <div
           className="rounded-3xl border shadow-2xl p-3 sm:p-4 backdrop-blur-2xl transition-all relative overflow-hidden"
@@ -58,7 +63,7 @@ export const ArabicAudioPlayer: React.FC<{
 
           {/* Main Row */}
           <div className="flex items-center justify-between gap-2.5">
-            {/* Right: Audio Wave & Engine Badge */}
+            {/* Right/Start: Audio Wave & Engine Badge */}
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
               <div
                 className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border relative shadow-sm"
@@ -84,7 +89,7 @@ export const ArabicAudioPlayer: React.FC<{
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <span className="text-[9px] font-arabic font-bold px-1.5 py-0.2 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                    {ttsState.engineMode === 'neural' ? 'صوت طبيعي فصيح' : 'صوت الجهاز'}
+                    {ttsState.engineMode === 'neural' ? t('tts_natural_voice') : t('tts_device_voice')}
                   </span>
                   <span className="text-[10px] font-sans font-bold opacity-60">
                     {ttsState.progress}%
@@ -96,7 +101,7 @@ export const ArabicAudioPlayer: React.FC<{
                   title={ttsState.currentSentence}
                   style={{ color: 'var(--app-text)' }}
                 >
-                  {ttsState.currentSentence || 'جاري القراءة الصوتية...'}
+                  {ttsState.currentSentence || t('tts_playing')}
                 </p>
               </div>
             </div>
@@ -108,9 +113,9 @@ export const ArabicAudioPlayer: React.FC<{
                 onClick={() => arabicTtsService.prevSentence()}
                 className="w-8 h-8 rounded-xl flex items-center justify-center border transition-all active:scale-90 cursor-pointer app-surface hover:brightness-105"
                 style={{ color: 'var(--app-text)' }}
-                title="الجملة السابقة"
+                title={t('tts_prev_sentence')}
               >
-                <SkipBack className="w-3.5 h-3.5" />
+                <PrevIcon className="w-3.5 h-3.5" />
               </button>
 
               {/* Play / Pause Primary Button */}
@@ -118,7 +123,7 @@ export const ArabicAudioPlayer: React.FC<{
                 onClick={() => arabicTtsService.togglePlayPause()}
                 className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-md text-white transition-all active:scale-90 cursor-pointer hover:brightness-110"
                 style={{ background: 'var(--app-brand-grad)' }}
-                title={ttsState.isPaused ? 'استئناف' : 'إيقاف مؤقت'}
+                title={ttsState.isPaused ? (isRTL ? 'استئناف' : 'Resume') : (isRTL ? 'إيقاف مؤقت' : 'Pause')}
               >
                 {ttsState.isPaused ? (
                   <Play className="w-4 h-4 fill-white translate-x-0.5" />
@@ -132,9 +137,9 @@ export const ArabicAudioPlayer: React.FC<{
                 onClick={() => arabicTtsService.nextSentence()}
                 className="w-8 h-8 rounded-xl flex items-center justify-center border transition-all active:scale-90 cursor-pointer app-surface hover:brightness-105"
                 style={{ color: 'var(--app-text)' }}
-                title="الجملة التالية"
+                title={t('tts_next_sentence')}
               >
-                <SkipForward className="w-3.5 h-3.5" />
+                <NextIcon className="w-3.5 h-3.5" />
               </button>
 
               {/* Expand Settings */}
@@ -142,7 +147,7 @@ export const ArabicAudioPlayer: React.FC<{
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="w-8 h-8 rounded-xl flex items-center justify-center border transition-all active:scale-90 cursor-pointer app-surface hover:brightness-105"
                 style={{ color: 'var(--app-brand)' }}
-                title="خيارات الصوت والسرعة"
+                title={isRTL ? 'خيارات الصوت والسرعة' : 'Speed & Voice Options'}
               >
                 {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
               </button>
@@ -152,7 +157,7 @@ export const ArabicAudioPlayer: React.FC<{
                 onClick={() => arabicTtsService.stop()}
                 className="w-8 h-8 rounded-xl flex items-center justify-center border transition-all active:scale-90 cursor-pointer hover:bg-rose-500/10 hover:text-rose-500"
                 style={{ borderColor: 'var(--app-divider)', color: 'var(--app-text-muted)' }}
-                title="إغلاق القراءة"
+                title={t('tts_close')}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -186,7 +191,7 @@ export const ArabicAudioPlayer: React.FC<{
                   {/* Speed Selector */}
                   <div className="flex items-center gap-1">
                     <span className="text-[10px] font-arabic font-bold opacity-70 ml-1" style={{ color: 'var(--app-text-muted)' }}>
-                      السرعة:
+                      {t('tts_speed')}
                     </span>
                     {speedRates.map((rate) => {
                       const isSelected = ttsState.rate === rate;
@@ -217,10 +222,10 @@ export const ArabicAudioPlayer: React.FC<{
                         borderColor: ttsState.engineMode === 'neural' ? 'var(--app-brand)' : 'var(--app-divider)',
                         color: 'var(--app-brand)',
                       }}
-                      title="صوت طبيعي نقي عبر الإنترنت"
+                      title={isRTL ? 'صوت طبيعي نقي عبر الإنترنت' : 'Natural Neural Stream (Online)'}
                     >
                       <Sparkles className="w-3 h-3 text-amber-500" />
-                      <span>صوت طبيعي (Neural)</span>
+                      <span>{t('tts_engine_online')}</span>
                     </button>
 
                     <button
@@ -231,10 +236,10 @@ export const ArabicAudioPlayer: React.FC<{
                         borderColor: ttsState.engineMode === 'system' ? 'var(--app-brand)' : 'var(--app-divider)',
                         color: 'var(--app-brand)',
                       }}
-                      title="صوت النظام المدمج دون اتصال"
+                      title={isRTL ? 'صوت الجهاز المدمج دون اتصال' : 'Built-in Device Speech (Offline)'}
                     >
                       <Radio className="w-3 h-3" />
-                      <span>صوت الجهاز</span>
+                      <span>{t('tts_engine_offline')}</span>
                     </button>
                   </div>
                 </div>
