@@ -72,15 +72,22 @@ export const PoeticMeterModal: React.FC<{
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onNavigateToPage?: (page: number) => void;
-}> = ({ open, onOpenChange, onNavigateToPage }) => {
+  defaultVerse?: string;
+}> = ({ open, onOpenChange, onNavigateToPage, defaultVerse }) => {
   const [selectedSample, setSelectedSample] = useState<MeterSample>(POETRY_SAMPLES[0]);
-  const [customVerse, setCustomVerse] = useState('');
+  const [customVerse, setCustomVerse] = useState(defaultVerse || '');
   const [analyzedCustom, setAnalyzedCustom] = useState<{
     meter: string;
     tafeela: string;
     rhyme: string;
     insight: string;
   } | null>(null);
+
+  React.useEffect(() => {
+    if (defaultVerse) {
+      setCustomVerse(defaultVerse);
+    }
+  }, [defaultVerse]);
 
   const handleAnalyzeCustom = () => {
     if (!customVerse.trim()) return;

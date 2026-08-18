@@ -114,6 +114,8 @@ export const ReaderScreen: React.FC = () => {
   const [isTOCOpen, setIsTOCOpen] = useState(false);
   const [isCardStudioOpen, setIsCardStudioOpen] = useState(false);
   const [quoteStudioInitialText, setQuoteStudioInitialText] = useState<string>('');
+  const [reelsInitialText, setReelsInitialText] = useState<string>('');
+  const [poetryInitialText, setPoetryInitialText] = useState<string>('');
   const [isSoundModalOpen, setIsSoundModalOpen] = useState(false);
   const [isDictModalOpen, setIsDictModalOpen] = useState(false);
   const [isCompanionOpen, setIsCompanionOpen] = useState(false);
@@ -333,6 +335,14 @@ export const ReaderScreen: React.FC = () => {
           setQuoteStudioInitialText(selectedText);
           setIsCardStudioOpen(true);
         }}
+        onOpenReels={(selectedText) => {
+          setReelsInitialText(selectedText);
+          setIsReelsOpen(true);
+        }}
+        onOpenPoetry={(selectedText) => {
+          setPoetryInitialText(selectedText);
+          setIsPoetryOpen(true);
+        }}
       />
 
       {/* ══════════════════════════════════════════════════
@@ -550,11 +560,12 @@ export const ReaderScreen: React.FC = () => {
         open={isPoetryOpen}
         onOpenChange={setIsPoetryOpen}
         onNavigateToPage={setCurrentPage}
+        defaultVerse={poetryInitialText}
       />
       <ReelsStudioModal
         open={isReelsOpen}
         onOpenChange={setIsReelsOpen}
-        defaultQuote={pageData?.blocks?.[0]?.text || pageData?.display_text?.slice(0, 180)}
+        defaultQuote={reelsInitialText || pageData?.blocks?.[0]?.text || pageData?.display_text?.slice(0, 180)}
         defaultAuthor={pageData?.title || 'إمتاع القارئ'}
       />
       <ZenReaderModal

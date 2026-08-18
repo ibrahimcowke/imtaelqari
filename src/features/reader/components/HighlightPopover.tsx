@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { db } from '../../../lib/db';
 import { useReaderStore } from '../../../store/readerStore';
-import { Copy, Check, Sparkles } from 'lucide-react';
+import { Copy, Check, Sparkles, Volume2, Film, Music2 } from 'lucide-react';
 import type { HighlightColor } from '../../../types/book';
+import { arabicTtsService } from '../../../services/arabicTtsService';
 
 interface SelectionState {
   text: string;
@@ -12,9 +13,17 @@ interface SelectionState {
   endOffset: number;
 }
 
-export const HighlightPopover: React.FC<{
+export interface HighlightPopoverProps {
   onOpenQuoteCard?: (selectedText: string) => void;
-}> = ({ onOpenQuoteCard }) => {
+  onOpenReels?: (selectedText: string) => void;
+  onOpenPoetry?: (selectedText: string) => void;
+}
+
+export const HighlightPopover: React.FC<HighlightPopoverProps> = ({
+  onOpenQuoteCard,
+  onOpenReels,
+  onOpenPoetry,
+}) => {
   const [selection, setSelection] = useState<SelectionState | null>(null);
   const [copied, setCopied] = useState(false);
   const { currentPage } = useReaderStore();
@@ -97,24 +106,33 @@ export const HighlightPopover: React.FC<{
     }, 1000);
   };
 
+  const handleSpeakSelected = () => {
+    if (!selection) return;
+    const textToSpeak = selection.text;
+    window.getSelection()?.removeAllRanges();
+    setSelection(null);
+    arabicTtsService.readText(textToSpeak);
+  };
+
   if (!selection) return null;
 
   return (
     <div
       ref={popoverRef}
-      className="fixed z-50 rounded-2xl p-2 flex items-center gap-3 shadow-2xl animate-fade-in select-none"
+      className="fixed z-50 rounded-2xl p-2 flex items-center gap-2 shadow-2xl animate-fade-in select-none max-w-[96vw] overflow-x-auto custom-scrollbar"
       style={{
         top: Math.max(12, selection.rect.top - 54) + 'px',
-        left: Math.max(12, Math.min(window.innerWidth - 220, selection.rect.left + (selection.rect.width / 2) - 100)) + 'px',
-        background: 'rgba(20, 20, 20, 0.92)',
+        left: Math.max(12, Math.min(window.innerWidth - 320, selection.rect.left + (selection.rect.width / 2) - 150)) + 'px',
+        background: 'rgba(20, 20, 20, 0.94)',
         color: '#ffffff',
         backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(255,255,255,0.15)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+        border: '1px solid rgba(255,255,255,0.18)',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
       }}
       onMouseDown={(e) => e.stopPropagation()}
     >
-      <div className="flex items-center gap-1.5 border-l border-white/20 pl-2.5">
+      {/* Highlight Color Pickers */}
+      <div className="flex items-center gap-1.5 border-l border-white/20 pl-2">
         {[
           { color: 'amber' as HighlightColor, bg: 'bg-amber-400', title: 'تظليل أصفر' },
           { color: 'rose' as HighlightColor, bg: 'bg-rose-400', title: 'تظليل أحمر' },
@@ -124,19 +142,33 @@ export const HighlightPopover: React.FC<{
           <button
             key={c.color}
             onClick={() => handleHighlight(c.color)}
-            className={`w-6 h-6 rounded-full ${c.bg} transition-all hover:scale-125 active:scale-95 shadow-sm`}
+            className={`w-5 h-5 rounded-full ${c.bg} transition-all hover:scale-125 active:scale-95 shadow-sm cursor-pointer`}
             title={c.title}
           />
         ))}
       </div>
+
+      {/* Copy Action */}
       <button
         onClick={handleCopy}
-        className="flex items-center gap-1.5 px-2 py-1 rounded-xl text-xs font-arabic hover:bg-white/10 transition-colors"
+        className="flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-arabic hover:bg-white/10 transition-colors cursor-pointer"
+        title="نسخ النص"
       >
         {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 opacity-80" />}
-        <span>{copied ? 'تم النسخ' : 'نسخ'}</span>
+        <span>{copied ? 'تم' : 'نسخ'}</span>
       </button>
 
+      {/* Listen / TTS Action */}
+      <button
+        onClick={handleSpeakSelected}
+        className="flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-arabic hover:bg-white/10 transition-colors cursor-pointer text-emerald-300 font-medium"
+        title="استماع للنص المظلل بصوت فصيح"
+      >
+        <Volume2 className="w-3.5 h-3.5" />
+        <span>استماع</span>
+      </button>
+
+      {/* Quote Card */}
       {onOpenQuoteCard && (
         <button
           onClick={() => {
@@ -146,11 +178,46 @@ export const HighlightPopover: React.FC<{
             setSelection(null);
             onOpenQuoteCard(textToQuote);
           }}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-arabic hover:bg-white/15 transition-all text-amber-300 font-bold border border-amber-400/30 bg-amber-400/10 active:scale-95"
-          title="صنع بطاقة اقتباس فاخرة من النص المظلل"
+          className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-arabic hover:bg-white/15 transition-all text-amber-300 font-bold border border-amber-400/30 bg-amber-400/10 active:scale-95 cursor-pointer shrink-0"
+          title="صنع بطاقة اقتباس فاخرة"
         >
-          <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-          <span>بطاقة اقتباس</span>
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>بطاقة</span>
+        </button>
+      )}
+
+      {/* Story Reel */}
+      {onOpenReels && (
+        <button
+          onClick={() => {
+            if (!selection) return;
+            const textToReel = selection.text;
+            window.getSelection()?.removeAllRanges();
+            setSelection(null);
+            onOpenReels(textToReel);
+          }}
+          className="flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-arabic hover:bg-white/15 transition-all text-rose-300 font-bold border border-rose-400/30 bg-rose-400/10 active:scale-95 cursor-pointer shrink-0"
+          title="صنع قصة ريلز 9:16"
+        >
+          <Film className="w-3.5 h-3.5" />
+          <span>ريلز</span>
+        </button>
+      )}
+
+      {/* Poetic Meter */}
+      {onOpenPoetry && (
+        <button
+          onClick={() => {
+            if (!selection) return;
+            window.getSelection()?.removeAllRanges();
+            setSelection(null);
+            onOpenPoetry(selection.text);
+          }}
+          className="flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-arabic hover:bg-white/10 transition-colors cursor-pointer text-indigo-300 shrink-0"
+          title="تحليل الوزن العروضي"
+        >
+          <Music2 className="w-3.5 h-3.5" />
+          <span>العروض</span>
         </button>
       )}
     </div>
