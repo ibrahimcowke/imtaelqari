@@ -216,7 +216,7 @@ export const TopThemeChanger: React.FC<TopThemeChangerProps> = ({
             >
               <span>{currentTheme.icon}</span>
             </div>
-            <span className="truncate max-w-[80px] sm:max-w-none">{themeTitle}</span>
+            <span className="truncate max-w-20 sm:max-w-none">{themeTitle}</span>
           </button>
         ) : (
           <button
