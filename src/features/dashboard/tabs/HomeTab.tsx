@@ -257,7 +257,7 @@ export const HomeTab: React.FC<{ onNavigate: () => void }> = ({ onNavigate }) =>
           ══════════════════════════════════════════════════ */}
       <motion.div
         variants={itemVariants}
-        className="rounded-[32px] p-6 sm:p-8 relative overflow-hidden border shadow-2xl transition-all duration-300 group"
+        className="rounded-4xl p-6 sm:p-8 relative overflow-hidden border shadow-2xl transition-all duration-300 group"
         style={{
           background: 'var(--app-surface)',
           borderColor: 'var(--app-surface-border)',
