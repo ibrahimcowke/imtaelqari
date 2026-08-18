@@ -197,20 +197,21 @@ export const DashboardScreen: React.FC = () => {
           })}
 
           {/* Quick Reader Tools Section */}
+          {/* Quick Reader Tools Section */}
           <div className="pt-4 border-t border-white/10 mt-4 space-y-1">
             <span
               className="text-[10px] font-sans font-bold uppercase tracking-widest px-3 mb-2.5 block text-amber-300/90"
             >
-              أدوات القارئ
+              {isRTL ? 'أدوات القارئ' : 'Reader Tools'}
             </span>
 
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10 cursor-pointer"
             >
               <div className="flex items-center gap-2.5">
                 <Search className="w-4 h-4 text-sky-300" />
-                <span className="font-medium">البحث الذكي في الكتاب</span>
+                <span className="font-medium">{t('search')}</span>
               </div>
               <kbd className="px-1.5 py-0.5 text-[9px] font-mono bg-white/15 rounded border border-white/20 text-white">
                 ⌘K
@@ -219,80 +220,80 @@ export const DashboardScreen: React.FC = () => {
 
             <button
               onClick={() => setIsSoundOpen(true)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10 cursor-pointer"
             >
               <div className="flex items-center gap-2.5">
                 <Music className="w-4 h-4 text-amber-300" />
-                <span className="font-medium">أصوات التركيز والطبيعة</span>
+                <span className="font-medium">{t('tool_ambient')}</span>
               </div>
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
             </button>
 
             <button
               onClick={() => setIsDictOpen(true)}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10 cursor-pointer"
             >
               <BookMarked className="w-4 h-4 text-emerald-300" />
-              <span className="font-medium">المعجم اللغوي التراثي</span>
+              <span className="font-medium">{t('tool_dictionary')}</span>
             </button>
 
             <button
               onClick={() => setIsTopicsOpen(true)}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10 cursor-pointer"
             >
               <Layers className="w-4 h-4 text-purple-300" />
-              <span className="font-medium">التصفح الموضوعي</span>
+              <span className="font-medium">{isRTL ? 'التصفح الموضوعي' : 'Topics Browser'}</span>
             </button>
 
             <button
               onClick={() => setIsReminderOpen(true)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10 cursor-pointer"
             >
               <div className="flex items-center gap-2.5">
                 <Bell className="w-4 h-4 text-amber-300" />
-                <span className="font-medium">تذكير الورد اليومي</span>
+                <span className="font-medium">{isRTL ? 'تذكير الورد اليومي' : 'Daily Reminder'}</span>
               </div>
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/15 text-amber-300 border border-white/20">
-                منبه
+                {isRTL ? 'منبه' : 'Alarm'}
               </span>
             </button>
 
             <button
               onClick={() => setIsQuizOpen(true)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10 cursor-pointer"
             >
               <div className="flex items-center gap-2.5">
                 <Trophy className="w-4 h-4 text-yellow-400" />
-                <span className="font-medium">تحدي المسابقات وروائع الحكم</span>
+                <span className="font-medium">{t('tool_quiz')}</span>
               </div>
               <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
-                جديد
+                {isRTL ? 'جديد' : 'NEW'}
               </span>
             </button>
 
             <button
               onClick={() => setIsBioOpen(true)}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10 cursor-pointer"
             >
               <Users className="w-4 h-4 text-blue-300" />
-              <span className="font-medium">دليل الأعلام والشخصيات</span>
+              <span className="font-medium">{t('tool_biographies')}</span>
             </button>
 
             <button
               onClick={() => setIsPoetryOpen(true)}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10 cursor-pointer"
             >
               <Music2 className="w-4 h-4 text-indigo-300" />
-              <span className="font-medium">محلل البحور الشعرية</span>
+              <span className="font-medium">{t('tool_poetry')}</span>
             </button>
 
             <button
               onClick={() => setIsReelsOpen(true)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10 cursor-pointer"
             >
               <div className="flex items-center gap-2.5">
                 <Film className="w-4 h-4 text-rose-300" />
-                <span className="font-medium">استوديو القصص والريلز</span>
+                <span className="font-medium">{t('tool_reels')}</span>
               </div>
               <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
                 9:16
@@ -301,18 +302,18 @@ export const DashboardScreen: React.FC = () => {
 
             <button
               onClick={() => setIsZenOpen(true)}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10 cursor-pointer"
             >
               <Clock className="w-4 h-4 text-emerald-300" />
-              <span className="font-medium">وضع الصفاء ومؤقت التدبر</span>
+              <span className="font-medium">{t('tool_zen')}</span>
             </button>
 
             <button
               onClick={() => setIsBackupOpen(true)}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white/85 hover:text-white hover:bg-white/10 transition-all text-xs font-arabic border border-transparent hover:border-white/10 cursor-pointer"
             >
               <Database className="w-4 h-4 text-teal-300" />
-              <span className="font-medium">النسخ الاحتياطي والطباعة</span>
+              <span className="font-medium">{t('tool_backup')}</span>
             </button>
           </div>
         </nav>
